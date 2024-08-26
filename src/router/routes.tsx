@@ -386,11 +386,11 @@ const routes = [
     },
     // Users page
     {
-        path: '/users/profile',
+        path: '/users/profile/:id',
         element: <Profile />,
     },
     {
-        path: '/users/user-account-settings',
+        path: '/users/user-account-settings/:id',
         element: <AccountSetting />,
     },
     // pages
