@@ -158,7 +158,10 @@ const Students = () => {
             padding: '10px 20px',
         });
     };
-
+//view students details
+const viewUser = (id: string) => {
+    window.location.href = `/users/profile/${id}`
+}
     return (
         <div>
             <div className="flex items-center justify-between flex-wrap gap-4">
@@ -219,6 +222,9 @@ const Students = () => {
                                                 </button>
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
                                                     Delete
+                                                </button>
+                                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(item._id)}>
+                                                    View
                                                 </button>
                                             </div>
                                         </td>

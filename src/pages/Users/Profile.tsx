@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import Dropdown from '../../components/Dropdown';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import IconPencilPaper from '../../components/Icon/IconPencilPaper';
 import IconCoffee from '../../components/Icon/IconCoffee';
 import IconCalendar from '../../components/Icon/IconCalendar';
@@ -18,6 +18,8 @@ import IconTag from '../../components/Icon/IconTag';
 import IconCreditCard from '../../components/Icon/IconCreditCard';
 import IconClock from '../../components/Icon/IconClock';
 import IconHorizontalDots from '../../components/Icon/IconHorizontalDots';
+import axios from 'axios';
+import { BASE_URL } from '../Helper/handle-api';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -25,6 +27,26 @@ const Profile = () => {
         dispatch(setPageTitle('Profile'));
     });
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+
+    //fetch students
+    const [students, setStudents] = useState<any>({});
+    const { id } = useParams();
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`${BASE_URL}/students/${id}`);
+          setStudents(response.data);
+        } catch (error) {
+          console.error("Error fetching student details:", error);
+        }
+      };
+      fetchData();
+    }, [id]);
+  
+    // Format the date
+    const formattedDate = students.dateOfBirth ? new Date(students.dateOfBirth).toISOString().split('T')[0] : '';
+  
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -42,38 +64,39 @@ const Profile = () => {
                     <div className="panel">
                         <div className="flex items-center justify-between mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Profile</h5>
-                            <Link to="/users/user-account-settings" className="ltr:ml-auto rtl:mr-auto btn btn-primary p-2 rounded-full">
+                            <Link to={`/users/user-account-settings/${students._id}`} className="ltr:ml-auto rtl:mr-auto btn btn-primary p-2 rounded-full">
                                 <IconPencilPaper />
                             </Link>
                         </div>
                         <div className="mb-5">
                             <div className="flex flex-col justify-center items-center">
-                                <img src="/assets/images/profile-34.jpeg" alt="img" className="w-24 h-24 rounded-full object-cover  mb-5" />
-                                <p className="font-semibold text-primary text-xl">Jimmy Turner</p>
+                                <img src={`${BASE_URL}/images/${students.image}`} alt="img" className="w-24 h-24 rounded-full object-cover  mb-5" />
+                                <p className="font-semibold text-primary text-xl">{students.name}</p>
                             </div>
                             <ul className="mt-5 flex flex-col max-w-[160px] m-auto space-y-4 font-semibold text-white-dark">
                                 <li className="flex items-center gap-2">
                                     <IconCoffee className="shrink-0" />
-                                    Web Developer
+                                    {students.courseName}
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <IconCalendar className="shrink-0" />
-                                    Jan 20, 1989
+                                    {formattedDate}
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <IconMapPin className="shrink-0" />
-                                    New York, USA
+                                    {students.fullAddress}<br/>
+                                    {students.pinCode}
                                 </li>
                                 <li>
                                     <button className="flex items-center gap-2">
                                         <IconMail className="w-5 h-5 shrink-0" />
-                                        <span className="text-primary truncate">jimmy@gmail.com</span>
+                                        <span className="text-primary truncate">{students.email ||"info@gmail.com"}</span>
                                     </button>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <IconPhone />
                                     <span className="whitespace-nowrap" dir="ltr">
-                                        +1 (530) 555-12121
+                                        +91 {students.mobileNumber}
                                     </span>
                                 </li>
                             </ul>

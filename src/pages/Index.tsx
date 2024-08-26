@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import React, { ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../store';
@@ -20,6 +21,8 @@ import IconBolt from '../components/Icon/IconBolt';
 import IconCaretDown from '../components/Icon/IconCaretDown';
 import IconPlus from '../components/Icon/IconPlus';
 import IconMultipleForwardRight from '../components/Icon/IconMultipleForwardRight';
+import { fetchAdmin, BASE_URL, adminEdit, adminUpdate, deleteAdmin } from './Helper/handle-api';
+import { useForm } from './Helper/useForm';
 
 const Index = () => {
     const dispatch = useDispatch();
@@ -400,7 +403,111 @@ const Index = () => {
             },
         },
     };
+    //Fetch admins
 
+    const [admin, setAdmin] = useState<any>([]);
+    const [image, setImage] = useState<any>(null);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [editId, setEditId] = useState<any>(null);
+
+    const [values, handleChange, setValues] = useForm({
+        email: '',
+        password: '',
+        role: '',
+        name: '',
+        phone: '',
+    });
+    //fetch admins
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        try {
+            const response = await fetchAdmin();
+            setAdmin(response);
+        } catch (error) {
+            console.error('Error fetching admin details:', error);
+        }
+    };
+
+    const handleImage = (e: ChangeEvent<HTMLInputElement>): void => {
+        const selectedImage = e.target.files?.[0]; // Use optional chaining in case `files` is null
+        if (selectedImage) {
+            setImage(selectedImage);
+        }
+    };
+
+    interface Admin {
+        email: string;
+        role: string;
+        phone: Number;
+        name: string;
+        image: string;
+    }
+    //handle Edit
+    const handleEditClick = async (id: string): Promise<void> => {
+        setIsPopupOpen(true);
+        try {
+            const admins: Admin | any = await adminEdit(id);
+            if (admins) {
+                setValues({
+                    email: admins.email,
+                    role: admins.role,
+                    phone: admins.phone,
+                    name: admins.name,
+                });
+                setImage(admins.image);
+                setEditId(id);
+            } else {
+                console.error('No admin found for the given ID');
+            }
+        } catch (err) {
+            console.error('admin fetching error', err);
+        }
+    };
+
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+    };
+
+    ///handle update
+    const handleUpdate = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('email', values.email);
+        formData.append('role', values.role);
+        formData.append('name', values.name);
+        formData.append('phone', values.phone); // Convert number to string
+
+        if (image) {
+            formData.append('image', image);
+        }
+
+        try {
+            await adminUpdate(editId, formData as any);
+            setIsPopupOpen(false);
+            loadData();
+            alert('Update successful');
+        } catch (err) {
+            console.error('Error updating staff:', err);
+            alert('Update failed');
+        }
+    };
+    //handle delete
+    const handleDelete = async (id: string) => {
+        const confirmation = window.confirm('Are you sure you want delete this product?');
+        if (confirmation) {
+            try {
+                await deleteAdmin(editId);
+                alert('Success');
+                loadData();
+            } catch (err) {
+                console.error('Error deleting staff:', err);
+                alert('Failed');
+            }
+        }
+    };
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -870,108 +977,127 @@ const Index = () => {
                         </div>
                     </div>
                 </div>
-
+                {/* LMS STAFF DETAILS START */}
                 <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
                     <div className="panel h-full w-full">
                         <div className="flex items-center justify-between mb-5">
-                            <h5 className="font-semibold text-lg dark:text-white-light">Recent Orders</h5>
+                            <h5 className="font-semibold text-lg dark:text-white-light">LMs ADMINS</h5>
                         </div>
                         <div className="table-responsive">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th className="ltr:rounded-l-md rtl:rounded-r-md">Customer</th>
-                                        <th>Product</th>
-                                        <th>Invoice</th>
-                                        <th>Price</th>
-                                        <th className="ltr:rounded-r-md rtl:rounded-l-md">Status</th>
+                                        <th className="ltr:rounded-l-md rtl:rounded-r-md">Admin</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th className="ltr:rounded-r-md rtl:rounded-l-md">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
-                                        <td className="min-w-[150px] text-black dark:text-white">
-                                            <div className="flex items-center">
-                                                <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src="/assets/images/profile-6.jpeg" alt="avatar" />
-                                                <span className="whitespace-nowrap">Luke Ivory</span>
-                                            </div>
-                                        </td>
-                                        <td className="text-primary">Headphone</td>
-                                        <td>
-                                            <Link to="/apps/invoice/preview">#46894</Link>
-                                        </td>
-                                        <td>$56.07</td>
-                                        <td>
-                                            <span className="badge bg-success shadow-md dark:group-hover:bg-transparent">Paid</span>
-                                        </td>
-                                    </tr>
-                                    <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
-                                        <td className="text-black dark:text-white">
-                                            <div className="flex items-center">
-                                                <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src="/assets/images/profile-7.jpeg" alt="avatar" />
-                                                <span className="whitespace-nowrap">Andy King</span>
-                                            </div>
-                                        </td>
-                                        <td className="text-info">Nike Sport</td>
-                                        <td>
-                                            <Link to="/apps/invoice/preview">#76894</Link>
-                                        </td>
-                                        <td>$126.04</td>
-                                        <td>
-                                            <span className="badge bg-secondary shadow-md dark:group-hover:bg-transparent">Shipped</span>
-                                        </td>
-                                    </tr>
-                                    <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
-                                        <td className="text-black dark:text-white">
-                                            <div className="flex items-center">
-                                                <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src="/assets/images/profile-8.jpeg" alt="avatar" />
-                                                <span className="whitespace-nowrap">Laurie Fox</span>
-                                            </div>
-                                        </td>
-                                        <td className="text-warning">Sunglasses</td>
-                                        <td>
-                                            <Link to="/apps/invoice/preview">#66894</Link>
-                                        </td>
-                                        <td>$56.07</td>
-                                        <td>
-                                            <span className="badge bg-success shadow-md dark:group-hover:bg-transparent">Paid</span>
-                                        </td>
-                                    </tr>
-                                    <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
-                                        <td className="text-black dark:text-white">
-                                            <div className="flex items-center">
-                                                <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src="/assets/images/profile-9.jpeg" alt="avatar" />
-                                                <span className="whitespace-nowrap">Ryan Collins</span>
-                                            </div>
-                                        </td>
-                                        <td className="text-danger">Sport</td>
-                                        <td>
-                                            <Link to="/apps/invoice/preview">#75844</Link>
-                                        </td>
-                                        <td>$110.00</td>
-                                        <td>
-                                            <span className="badge bg-secondary shadow-md dark:group-hover:bg-transparent">Shipped</span>
-                                        </td>
-                                    </tr>
-                                    <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
-                                        <td className="text-black dark:text-white">
-                                            <div className="flex items-center">
-                                                <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src="/assets/images/profile-10.jpeg" alt="avatar" />
-                                                <span className="whitespace-nowrap">Irene Collins</span>
-                                            </div>
-                                        </td>
-                                        <td className="text-secondary">Speakers</td>
-                                        <td>
-                                            <Link to="/apps/invoice/preview">#46894</Link>
-                                        </td>
-                                        <td>$56.07</td>
-                                        <td>
-                                            <span className="badge bg-success shadow-md dark:group-hover:bg-transparent">Paid</span>
-                                        </td>
-                                    </tr>
+                                    {admin.map((data: any) => (
+                                        <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
+                                            <td className="min-w-[150px] text-black dark:text-white">
+                                                <div className="flex items-center">
+                                                    <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
+                                                    <span className="whitespace-nowrap">{data.name}</span>
+                                                </div>
+                                            </td>
+                                            <td className="text-primary">{data.phone}</td>
+                                            <td>
+                                                <Link to="/apps/invoice/preview">{data.email}</Link>
+                                            </td>
+                                            <td>{data.role}</td>
+                                            <td>
+                                                <span className="badge bg-success shadow-md dark:group-hover:bg-transparent" onClick={() => handleEditClick(data._id)}>
+                                                    Edit
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    {isPopupOpen && (
+                        <div className="popup-overlay flex items-center justify-center fixed inset-0 bg-black bg-opacity-50 z-50">
+                            <div className="popup-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-full sm:max-w-lg w-full mx-4 sm:mx-0">
+                                <h2 className="text-xl font-semibold mb-4">Edit Admin Details</h2>
+                                <form>
+                                    <div className="mb-4">
+                                        <label className="block mb-1">Name:</label>
+                                        <input
+                                            type="text"
+                                            value={values.name}
+                                            onChange={handleChange}
+                                            name="name"
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block mb-1">Email:</label>
+                                        <input
+                                            type="email"
+                                            value={values.email}
+                                            onChange={handleChange}
+                                            name="email"
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block mb-1">Phone:</label>
+                                        <input
+                                            type="text"
+                                            value={values.phone}
+                                            onChange={handleChange}
+                                            name="phone"
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block mb-1">Role:</label>
+                                        <input
+                                            type="text"
+                                            value={values.role}
+                                            onChange={handleChange}
+                                            name="role"
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block mb-1">Photo:</label>
+                                        <input
+                                            type="file"
+                                            onChange={handleImage}
+                                            accept="image/*"
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={handleClosePopup}
+                                            className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                        >
+                                            Close
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            style={{marginRight: '10px'}}
+                                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            onClick={handleUpdate}
+                                        >
+                                            Save
+                                        </button>
+                                        <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400" onClick={handleDelete}>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                    {/* LMS ADMINS DETAILS END */}
 
                     <div className="panel h-full w-full">
                         <div className="flex items-center justify-between mb-5">

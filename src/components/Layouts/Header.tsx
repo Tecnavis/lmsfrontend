@@ -33,7 +33,7 @@ import IconMenuDatatables from '../Icon/Menu/IconMenuDatatables';
 import IconMenuForms from '../Icon/Menu/IconMenuForms';
 import IconMenuPages from '../Icon/Menu/IconMenuPages';
 import IconMenuMore from '../Icon/Menu/IconMenuMore';
-
+import { BASE_URL } from '../../pages/Helper/handle-api';
 const Header = () => {
     const location = useLocation();
     useEffect(() => {
@@ -138,6 +138,7 @@ const Header = () => {
     const [flag, setFlag] = useState(themeConfig.locale);
 
     const { t } = useTranslation();
+    const admins =JSON.parse(localStorage.getItem('Admins') || '{}');
 
     return (
         <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
@@ -420,19 +421,19 @@ const Header = () => {
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                                 btnClassName="relative group block"
-                                button={<img className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="/assets/images/user-profile.jpeg" alt="userProfile" />}
+                                button={<img className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src={`${BASE_URL}/images/${admins.image}`} alt="userProfile" />}
                             >
                                 <ul className="text-dark dark:text-white-dark !py-0 w-[230px] font-semibold dark:text-white-light/90">
                                     <li>
                                         <div className="flex items-center px-4 py-4">
-                                            <img className="rounded-md w-10 h-10 object-cover" src="/assets/images/user-profile.jpeg" alt="userProfile" />
+                                            <img className="rounded-md w-10 h-10 object-cover" src={`${BASE_URL}/images/${admins.image}`} alt="userProfile" />
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
-                                                    John Doe
+                                                    {admins.name}
                                                     <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
-                                                    johndoe@gmail.com
+                                                    {admins.email}
                                                 </button>
                                             </div>
                                         </div>
