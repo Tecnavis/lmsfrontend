@@ -75,45 +75,10 @@ const Students = () => {
         setCurrentPage(page);
     };
 
-    const saveUser = async () => {
-        if (!params.name) {
-            showMessage('Name is required.', 'error');
-            return;
-        }
-        if (!params.email) {
-            showMessage('Email is required.', 'error');
-            return;
-        }
-        if (!params.phone) {
-            showMessage('Phone is required.', 'error');
-            return;
-        }
-        if (!params.role) {
-            showMessage('Occupation is required.', 'error');
-            return;
-        }
+  
 
-        try {
-            if (params.id) {
-                // Update user
-                await axios.put(`${backendUrl}/students/${params.id}`, params);
-            } else {
-                // Add user
-                await axios.post(`${backendUrl}/students`, params);
-            }
-
-            showMessage('User has been saved successfully.');
-            setAddContactModal(false);
-            fetchStudents(); // Refresh the list after saving
-        } catch (error) {
-            console.error('Error saving user:', error);
-            showMessage('Error saving user.', 'error');
-        }
-    };
-
-    const editUser = (user: any = null) => {
-        setParams(user ? { ...user } : { id: null, name: '', email: '', phone: '', role: '', location: '' });
-        setAddContactModal(true);
+    const editUser = (id) => {
+        navigate(`/pages/EditAdmissionForm/${id}`)
     };
 
     const deleteUser = async (user: any) => {
@@ -217,7 +182,7 @@ const Students = () => {
                                                 <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(item._id)}>
                                                     Edit
                                                 </button>
-                                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
+                                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item)}>
                                                     Delete
                                                 </button>
                                             </div>
@@ -339,7 +304,7 @@ const Students = () => {
                                 >
                                     Cancel
                                 </button>
-                                <button type="button" className="btn btn-primary" onClick={saveUser}>
+                                <button type="button" className="btn btn-primary" >
                                     Save
                                 </button>
                             </div>

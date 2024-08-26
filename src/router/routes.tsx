@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import PayFeeform from '../pages/Pages/PayFeeForm';
 import Ledger from '../pages/Pages/Ledger';
 import AdmissionForm from '../pages/Pages/AdmissionForm';
+import EditAdmissionForm from '../pages/Pages/EditAdmissionForm';
 
 // const Admissionform = lazy(() => import('../pages/Admissionform'));
 // const Ledger = lazy(() => import('../pages/Ledger'));
@@ -416,6 +417,11 @@ const routes = [
     {
         path: '/pages/AdmissionForm',
         element: <AdmissionForm />,
+        layout: 'blank',
+    },
+    {
+        path: '/pages/EditAdmissionForm/:id',
+        element: <EditAdmissionForm />,
         layout: 'blank',
     },
     {
