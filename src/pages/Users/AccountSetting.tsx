@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { useDispatch } from 'react-redux';
@@ -10,16 +10,66 @@ import IconLinkedin from '../../components/Icon/IconLinkedin';
 import IconTwitter from '../../components/Icon/IconTwitter';
 import IconFacebook from '../../components/Icon/IconFacebook';
 import IconGithub from '../../components/Icon/IconGithub';
+import { useForm } from '../Helper/useForm';
+import IconCalendar from '../../components/Icon/IconCalendar';
+import IconBook from '../../components/Icon/IconBook';
+import IconCreditCard from '../../components/Icon/IconCreditCard';
+import IconPlusCircle from '../../components/Icon/IconPlusCircle';
+import IconUserPlus from '../../components/Icon/IconUser';
+import IconFile from '../../components/Icon/IconFile';
+import axios from 'axios';
+import { BASE_URL } from '../Helper/handle-api';
 
 const AccountSetting = () => {
     const dispatch = useDispatch();
+    const { id } = useParams<{ id: string }>(); // Get the student ID from URL params
+    const [tabs, setTabs] = useState<string>('home');
     useEffect(() => {
         dispatch(setPageTitle('Account Setting'));
-    });
-    const [tabs, setTabs] = useState<string>('home');
+        if (id) {
+            fetchStudentDetails(id);
+        }
+    }, [dispatch, id]);
+
     const toggleTabs = (name: string) => {
         setTabs(name);
     };
+//edit by id
+    const fetchStudentDetails = async (studentId: string) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/students/${studentId}`);
+            if (response.data) {
+                setValues(response.data);
+            }
+        } catch (err) {
+            console.error("An error occurred while fetching student details", err);
+        }
+    };
+
+const [values, handleChange, setValues] = useForm({
+    name: '',
+    admissionDate: '',
+    invoiceNumber: '',
+    image: '',
+    email: '',
+    fullAddress: '',
+    state: '',
+    pinCode: '',
+    bloodGroup: '',
+    guardianName: '',
+    guardianRelation: '',
+    dateOfBirth: '',
+    gender: '',
+    maritalStatus: '',
+    academicQualification: '',
+    mobileNumber: '',
+    parentsMobileNumber: '',
+    courseName: '',
+    joinDate: '',
+    courseFee: '',
+    guardianId: '',
+    studentId: '',
+})
 
     return (
         <div>
@@ -88,86 +138,144 @@ const AccountSetting = () => {
                                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label htmlFor="name">Full Name</label>
-                                        <input id="name" type="text" placeholder="Jimmy Turner" className="form-input" />
+                                        <input id="name" type="text" placeholder="Enter your name" className="form-input" onChange={handleChange} value={values.name} name='name' />
                                     </div>
                                     <div>
-                                        <label htmlFor="profession">Profession</label>
-                                        <input id="profession" type="text" placeholder="Web Developer" className="form-input" />
+                                        <label htmlFor="dob">Date of Birth</label>
+                                        <input id="profession" type="date" placeholder="Date of Birth" className="form-input" name='dateOfBirth' onChange={handleChange} value={values.dateOfBirth} />
                                     </div>
                                     <div>
-                                        <label htmlFor="country">Country</label>
-                                        <select defaultValue="United States" id="country" className="form-select text-white-dark">
-                                            <option value="All Countries">All Countries</option>
-                                            <option value="United States">United States</option>
-                                            <option value="India">India</option>
-                                            <option value="Japan">Japan</option>
-                                            <option value="China">China</option>
-                                            <option value="Brazil">Brazil</option>
-                                            <option value="Norway">Norway</option>
-                                            <option value="Canada">Canada</option>
-                                        </select>
+                                        <label htmlFor="Phone">Phone</label>
+                                        <input id="country" type="number" placeholder="Phone" className="form-input" name='mobileNumber' onChange={handleChange} value={values.mobileNumber} />
                                     </div>
                                     <div>
                                         <label htmlFor="address">Address</label>
-                                        <input id="address" type="text" placeholder="New York" className="form-input" />
+                                        <input id="address" type="text" placeholder="Full Address" className="form-input" name='fullAddress' onChange={handleChange} value={values.fullAddress} />
                                     </div>
                                     <div>
-                                        <label htmlFor="location">Location</label>
-                                        <input id="location" type="text" placeholder="Location" className="form-input" />
+                                        <label htmlFor="state">State</label>
+                                        <input id="location" type="text" placeholder="State" className="form-input" name='state' onChange={handleChange} value={values.state}/>
                                     </div>
                                     <div>
-                                        <label htmlFor="phone">Phone</label>
-                                        <input id="phone" type="text" placeholder="+1 (530) 555-12121" className="form-input" />
+                                        <label htmlFor="phone">Pin Code</label>
+                                        <input id="phone" type="text" placeholder="Pin Code" className="form-input" name='pinCode' onChange={handleChange} value={values.pinCode} />
                                     </div>
                                     <div>
                                         <label htmlFor="email">Email</label>
-                                        <input id="email" type="email" placeholder="Jimmy@gmail.com" className="form-input" />
+                                        <input id="email" type="email" placeholder="Enter Email" className="form-input" name='email' onChange={handleChange} value={values.email} />
                                     </div>
                                     <div>
-                                        <label htmlFor="web">Website</label>
-                                        <input id="web" type="text" placeholder="Enter URL" className="form-input" />
+                                        <label htmlFor="Gender">Gender</label>
+                                        <input id="web" type="text" placeholder="Enter Gender" className="form-input" name='gender' onChange={handleChange} value={values.gender}/>
                                     </div>
                                     <div>
+                                        <label htmlFor="Blood Group">Blood Group</label>
+                                        <input id="web" type="text" placeholder="Enter Blood Group" className="form-input" name='bloodGroup' onChange={handleChange} value={values.bloodGroup}/>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="Marital Status">Marital Status</label>
+                                        <input id="web" type="text" placeholder="Enter Marital Status" className="form-input" name='maritalStatus' onChange={handleChange} value={values.maritalStatus}/>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="Academic Qualification">Academic Qualification</label>
+                                        <input id="web" type="text" placeholder="Enter Academic Qualification" className="form-input" name='academicQualification' onChange={handleChange} value={values.academicQualification}/>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="Photo">Photo </label>
+                                        <input id="web" type="file" placeholder="file " className="form-input" />
+                                    </div>
+                                    {/* <div>
                                         <label className="inline-flex cursor-pointer">
                                             <input type="checkbox" className="form-checkbox" />
                                             <span className="text-white-dark relative checked:bg-none">Make this my default address</span>
                                         </label>
+                                    </div> */}
+                                    {/* <div className="sm:col-span-2 mt-3">
+                                        <button type="button" className="btn btn-primary">
+                                            Save
+                                        </button>
+                                    </div> */}
+                                </div>
+                            </div>
+                            <br/>
+                        {/* </form> */}
+                        <div className="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 bg-white dark:bg-black">
+                            <h6 className="text-lg font-bold mb-5">Course Details</h6>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconCalendar className="w-5 h-5" />
                                     </div>
-                                    <div className="sm:col-span-2 mt-3">
+                                    <input type="date" placeholder="Admission Date" className="form-input" name='admissionDate' onChange={handleChange} value={values.admissionDate}/>
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconCalendar className="w-5 h-5" />
+                                    </div>
+                                    <input type="date" placeholder="Joining Date" className="form-input" name='joinDate' onChange={handleChange} value={values.joinDate}/>
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconBook className="w-5 h-5" />
+                                    </div>
+                                    <input type="text" placeholder="Course Name" className="form-input" name='courseName' onChange={handleChange} value={values.courseName} />
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconCreditCard />
+                                    </div>
+                                    <input type="text" placeholder="Course Fee" className="form-input" name='courseFee' onChange={handleChange} value={values.courseFee} />
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconPlusCircle className="w-5 h-5" />
+                                    </div>
+                                    <label>Student ID</label>
+                                    <input type="file" placeholder="Select File" className="form-input"  />
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconUserPlus />
+                                    </div>
+                                    <input type="text" placeholder="Invoice Number" className="form-input" name='invoiceNumber' onChange={handleChange} value={values.invoiceNumber} />
+                                </div>
+                            </div>
+                            </div><br/>
+
+                        <div className="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 bg-white dark:bg-black">
+                            <h6 className="text-lg font-bold mb-5">Additional Information</h6>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconUser className="w-5 h-5" />
+                                    </div>
+                                    <input type="text" placeholder="Guardian Name" className="form-input" name='guardianName' onChange={handleChange} value={values.guardianName}/>
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconPhone className="w-5 h-5" />
+                                    </div>
+                                    <input type="number" placeholder="Parent's Mobile Number" className="form-input" name='parentsMobileNumber' onChange={handleChange} value={values.parentsMobileNumber} />
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconUserPlus className="w-5 h-5" />
+                                    </div>
+                                    <input type="text" placeholder="Guardian Relation" className="form-input" name='guardianRelation' onChange={handleChange} value={values.guardianRelation}/>
+                                </div>
+                                <div className="flex">
+                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
+                                        <IconFile />
+                                    </div>
+                                    <label>Guardian ID</label>
+                                    <input type="file" placeholder="Guardian ID" className="form-input" />
+                                </div>
+                            </div>
+                                   <div className="sm:col-span-2 mt-3">
                                         <button type="button" className="btn btn-primary">
                                             Save
                                         </button>
                                     </div>
-                                </div>
-                            </div>
-                        </form>
-                        <form className="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 bg-white dark:bg-black">
-                            <h6 className="text-lg font-bold mb-5">Social</h6>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div className="flex">
-                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
-                                        <IconLinkedin className="w-5 h-5" />
-                                    </div>
-                                    <input type="text" placeholder="jimmy_turner" className="form-input" />
-                                </div>
-                                <div className="flex">
-                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
-                                        <IconTwitter className="w-5 h-5" />
-                                    </div>
-                                    <input type="text" placeholder="jimmy_turner" className="form-input" />
-                                </div>
-                                <div className="flex">
-                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
-                                        <IconFacebook className="w-5 h-5" />
-                                    </div>
-                                    <input type="text" placeholder="jimmy_turner" className="form-input" />
-                                </div>
-                                <div className="flex">
-                                    <div className="bg-[#eee] flex justify-center items-center rounded px-3 font-semibold dark:bg-[#1b2e4b] ltr:mr-2 rtl:ml-2">
-                                        <IconGithub />
-                                    </div>
-                                    <input type="text" placeholder="jimmy_turner" className="form-input" />
-                                </div>
                             </div>
                         </form>
                     </div>
