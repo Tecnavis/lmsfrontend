@@ -11,11 +11,15 @@ import IconMail from '../../components/Icon/IconMail';
 import IconPhoneCall from '../../components/Icon/IconPhoneCall';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconMessageDots from '../../components/Icon/IconMessageDots';
+import styles from './editadmissionform.module.css';
 import Flatpickr from 'react-flatpickr';
 import ReactLoading from 'react-loading';
+import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
 import 'flatpickr/dist/flatpickr.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
 
 const EditAdmissionForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -47,6 +51,7 @@ const EditAdmissionForm = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [preview, setPreview] = useState(null);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -123,9 +128,9 @@ const EditAdmissionForm = () => {
         setLoading(true);
         try {
             const formData = new FormData();
-    
+
             // Append each field to the formData
-          
+
             formData.append('admissionDate', data.admissionDate);
             formData.append('invoiceNumber', data.invoiceNumber);
             formData.append('image', data.image); // Assuming this is a File object
@@ -148,14 +153,14 @@ const EditAdmissionForm = () => {
             formData.append('courseFee', data.courseFee);
             formData.append('guardianId', data.guardianId);
             formData.append('studentId', data.studentId);
-    
-            console.log(formData,'this is the form data')
+
+            console.log(formData, 'this is the form data');
             await axios.put(`${backendUrl}/students/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
+
             showMessage('Admission updated successfully!', 'success');
             navigate('/apps/sutdents');
         } catch (error) {
@@ -165,9 +170,14 @@ const EditAdmissionForm = () => {
             setLoading(false);
         }
     };
-    
-    
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setData({ ...data, image: file });
+            setPreview(URL.createObjectURL(file));
+        }
+    };
     return (
         <div>
             <div className="absolute inset-0">
@@ -187,6 +197,15 @@ const EditAdmissionForm = () => {
                                 <p className="text-base text-center font-bold leading-normal text-white-dark">Please fill in your details to apply for admission.</p>
                             </div>
                             <form className="space-y-5" onSubmit={handleSubmit}>
+                                <div className={styles.dpContainer}>
+                                    <Stack direction="row" spacing={2}>
+                                        <Avatar
+                                            alt="Remy Sharp"
+                                            src={preview || (data.image ? `${backendUrl}/images/${data.image}` : defaultImage)}
+                                            sx={{ width: 200, height: 200 }}
+                                        />
+                                    </Stack>
+                                </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label htmlFor="admissionDate">Admission Date</label>
@@ -195,7 +214,6 @@ const EditAdmissionForm = () => {
                                             options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                             className="form-input"
                                             onChange={(date) => handleDateChange('admissionDate', date)}
-                                
                                         />
                                     </div>
                                     <div>
@@ -224,13 +242,7 @@ const EditAdmissionForm = () => {
                                 </div>
                                 <div>
                                     <label htmlFor="studentPhoto">Upload Student Photo</label>
-                                    <input
-                                        id="studentPhoto"
-                                        name="image"
-                                        type="file"
-                                        onChange={(e) => setData({ ...data, image: e.target.files[0] })}
-                                        className="form-input"
-                                    />
+                                    <input id="studentPhoto" name="image" type="file" onChange={handleImageChange} className="form-input" accept=".jpg,.jpeg,.png" />
                                 </div>
                                 <div className="relative text-white-dark">
                                     <input
@@ -331,17 +343,13 @@ const EditAdmissionForm = () => {
                                     </span>
                                 </div>
                                 <div className="relative text-white-dark">
-                                
-                                     <Flatpickr
-                                           value={data.dateOfBirth}
-                                            options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
-                                          className="form-input "
-                                            onChange={(date) => handleDateChange('admissionDate', date)}
-                                
-                                        />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
-                                  
-                                    </span>
+                                    <Flatpickr
+                                        value={data.dateOfBirth}
+                                        options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
+                                        className="form-input "
+                                        onChange={(date) => handleDateChange('admissionDate', date)}
+                                    />
+                                    <span className="absolute start-4 top-1/2 -translate-y-1/2"></span>
                                 </div>
                                 <div className="relative text-white-dark">
                                     <input
@@ -389,7 +397,7 @@ const EditAdmissionForm = () => {
                                     <input
                                         id="mobileNumber"
                                         name="mobileNumber"
-                                        type="text"
+                                        type="number"
                                         value={data.mobileNumber}
                                         onChange={handleChange}
                                         placeholder="Mobile Number"
@@ -403,7 +411,7 @@ const EditAdmissionForm = () => {
                                     <input
                                         id="parentsMobileNumber"
                                         name="parentsMobileNumber"
-                                        type="text"
+                                        type="number"
                                         value={data.parentsMobileNumber}
                                         onChange={handleChange}
                                         placeholder="Parents Mobile Number"
