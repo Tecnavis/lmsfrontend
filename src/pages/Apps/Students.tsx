@@ -181,6 +181,7 @@ const viewUser = (id: string) => {
                             <IconLayoutGrid />
                         </button>
                     </div>
+                        {/* <button className="btn btn-primary">Upload</button> */}
                     <div className="relative">
                         <input type="text" placeholder="Search Contacts" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value={searchName} onChange={handleSearch} />
                         <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
