@@ -108,7 +108,7 @@ const QuillEditor = lazy(() => import('../pages/Forms/QuillEditor'));
 const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
-
+const Students1 = lazy(() => import('../pages/Apps/students1'));
 const routes = [
     // dashboard
     {
@@ -149,6 +149,10 @@ const routes = [
     {
         path: '/apps/sutdents',
         element: <Students />,
+    },
+    {
+        path: '/apps/sutdents1',
+        element: <Students1 />,
     },
     // {
     //     path: '/apps/mailbox',

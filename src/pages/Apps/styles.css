@@ -1,0 +1,51 @@
+.container {
+    width: 100%;
+    padding: 20px;
+    overflow-x: auto;
+  }
+  
+  .responsive-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .responsive-table th, .responsive-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .responsive-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .student-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+  /* Responsive Styles */
+  @media screen and (max-width: 768px) {
+    .responsive-table th, .responsive-table td {
+      padding: 12px 6px;
+      font-size: 14px;
+    }
+  
+    .responsive-table th {
+      font-size: 16px;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .responsive-table th, .responsive-table td {
+      padding: 8px 4px;
+      font-size: 12px;
+    }
+  
+    .responsive-table th {
+      font-size: 14px;
+    }
+  }
+  
