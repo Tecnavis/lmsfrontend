@@ -8,7 +8,7 @@ import { IRootState } from '../../store';
 import { useState, useEffect } from 'react';
 import IconCaretsDown from '../Icon/IconCaretsDown';
 import IconCaretDown from '../Icon/IconCaretDown';
-import logo from './logo.png'
+import logo from './logo.png';
 import IconMenuDashboard from '../Icon/Menu/IconMenuDashboard';
 import IconMinus from '../Icon/IconMinus';
 import IconMenuChat from '../Icon/Menu/IconMenuChat';
@@ -131,7 +131,7 @@ const Sidebar = () => {
 
                             <li className="nav-item">
                                 <ul>
-                                <li className="nav-item">
+                                    <li className="nav-item">
                                         <NavLink to="/finance" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuDashboard className="group-hover:!text-primary shrink-0" />
@@ -187,7 +187,7 @@ const Sidebar = () => {
                                             </div>
                                         </NavLink>
                                     </li> */}
-                                          <li className="nav-item">
+                                    <li className="nav-item">
                                         <NavLink to="/apps/contacts" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuUsers className="group-hover:!text-primary shrink-0" />
@@ -195,11 +195,19 @@ const Sidebar = () => {
                                             </div>
                                         </NavLink>
                                     </li>
-                                          <li className="nav-item">
+                                    <li className="nav-item">
                                         <NavLink to="/apps/sutdents" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuUsers className="group-hover:!text-primary shrink-0" />
                                                 <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Students')}</span>
+                                            </div>
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink to="/apps/sutdents1" className="group">
+                                            <div className="flex items-center">
+                                                <IconMenuUsers className="group-hover:!text-primary shrink-0" />
+                                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Allstudents')}</span>
                                             </div>
                                         </NavLink>
                                     </li>
@@ -219,7 +227,6 @@ const Sidebar = () => {
                                             </div>
                                         </NavLink>
                                     </li> */}
-
 
                                     {/* <li className="menu nav-item">
                                         <button type="button" className={`${currentMenu === 'invoice' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('invoice')}>
