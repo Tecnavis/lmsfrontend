@@ -66,7 +66,7 @@ const RegisterBoxed: React.FC = () => {
         try {
             const response = await createAdmin(formData as any);
             console.log(response.data);
-            navigate('/');
+            navigate('/auth/boxed-signin');
         } catch (err) {
             console.error(err);
         }

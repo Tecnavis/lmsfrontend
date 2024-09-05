@@ -237,7 +237,7 @@ const viewUser = (id: string) => {
 
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
                                                     Deleted
-                                          
+                                          </button>
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(item._id)}>
                                                     View Student
                                                 </button>
