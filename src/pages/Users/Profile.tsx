@@ -20,6 +20,10 @@ import IconClock from '../../components/Icon/IconClock';
 import IconHorizontalDots from '../../components/Icon/IconHorizontalDots';
 import axios from 'axios';
 import { BASE_URL } from '../Helper/handle-api';
+import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
+import IconPencil from '../../components/Icon/IconPencil';
+import IconUser from '../../components/Icon/IconUser';
+import IconPaperclip from '../../components/Icon/IconPaperclip';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -63,19 +67,20 @@ const Profile = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-5">
                     <div className="panel">
                         <div className="flex items-center justify-between mb-5">
+                       
                             <h5 className="font-semibold text-lg dark:text-white-light">Profile</h5>
-                            <Link to={`/users/user-account-settings/${students._id}`} className="ltr:ml-auto rtl:mr-auto btn btn-primary p-2 rounded-full">
+                            <Link to={`/pages/EditAdmissionForm/${students._id}`} className="ltr:ml-auto rtl:mr-auto btn btn-primary p-2 rounded-full">
                                 <IconPencilPaper />
                             </Link>
                         </div>
                         <div className="mb-5">
                             <div className="flex flex-col justify-center items-center">
-                                <img src={`${BASE_URL}/images/${students.image}`} alt="img" className="w-24 h-24 rounded-full object-cover  mb-5" />
+                                <img src={students.image ? `${BASE_URL}/images/${students.image}` : defaultImage} alt="img" className="w-24 h-24 rounded-full object-cover  mb-5" />
                                 <p className="font-semibold text-primary text-xl">{students.name}</p>
                             </div>
                             <ul className="mt-5 flex flex-col max-w-[160px] m-auto space-y-4 font-semibold text-white-dark">
                                 <li className="flex items-center gap-2">
-                                    <IconCoffee className="shrink-0" />
+                                    <IconUser className="shrink-0" />
                                     {students.courseName}
                                 </li>
                                 <li className="flex items-center gap-2">
@@ -90,7 +95,7 @@ const Profile = () => {
                                 <li>
                                     <button className="flex items-center gap-2">
                                         <IconMail className="w-5 h-5 shrink-0" />
-                                        <span className="text-primary truncate">{students.email ||"info@gmail.com"}</span>
+                                        <span className="text-primary truncate">{students.email}</span>
                                     </button>
                                 </li>
                                 <li className="flex items-center gap-2">
@@ -100,7 +105,7 @@ const Profile = () => {
                                     </span>
                                 </li>
                             </ul>
-                            <ul className="mt-7 flex items-center justify-center gap-2">
+                            {/* <ul className="mt-7 flex items-center justify-center gap-2">
                                 <li>
                                     <button className="btn btn-info flex items-center justify-center rounded-full w-10 h-10 p-0">
                                         <IconTwitter className="w-5 h-5" />
@@ -116,103 +121,135 @@ const Profile = () => {
                                         <IconGithub />
                                     </button>
                                 </li>
-                            </ul>
+                            </ul> */}
                         </div>
                     </div>
                     <div className="panel lg:col-span-2 xl:col-span-3">
                         <div className="mb-5">
-                            <h5 className="font-semibold text-lg dark:text-white-light">Task</h5>
+                            <h5 className="font-semibold text-lg dark:text-white-light">Other info</h5>
                         </div>
                         <div className="mb-5">
                             <div className="table-responsive text-[#515365] dark:text-white-light font-semibold">
                                 <table className="whitespace-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>Projects</th>
-                                            <th>Progress</th>
-                                            <th>Task Done</th>
-                                            <th className="text-center">Time</th>
-                                        </tr>
-                                    </thead>
+                                   
                                     <tbody className="dark:text-white-dark">
                                         <tr>
-                                            <td>Figma Design</td>
+                                            <td>Roll NO :</td>
                                             <td>
-                                                <div className="h-1.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex w-full">
-                                                    <div className="bg-danger rounded-full w-[29.56%]"></div>
-                                                </div>
+                                              {students.invoiceNumber}
                                             </td>
-                                            <td className="text-danger">29.56%</td>
-                                            <td className="text-center">2 mins ago</td>
+                                        
                                         </tr>
                                         <tr>
-                                            <td>Vue Migration</td>
+                                            <td>State ;</td>
                                             <td>
-                                                <div className="h-1.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex w-full">
-                                                    <div className="bg-info rounded-full w-1/2"></div>
-                                                </div>
+                                              {students.state? students.state.toUpperCase() : 'N/A'}
                                             </td>
-                                            <td className="text-success">50%</td>
-                                            <td className="text-center">4 hrs ago</td>
+                                        
                                         </tr>
                                         <tr>
-                                            <td>Flutter App</td>
-                                            <td>
-                                                <div className="h-1.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex w-full">
-                                                    <div className="bg-warning rounded-full  w-[39%]"></div>
-                                                </div>
-                                            </td>
-                                            <td className="text-danger">39%</td>
-                                            <td className="text-center">a min ago</td>
+                                            <td>Blood :</td>
+                                         <td>  {students.bloodGroup ? students.bloodGroup.toUpperCase() : 'N/A'}</td>
                                         </tr>
                                         <tr>
-                                            <td>API Integration</td>
-                                            <td>
-                                                <div className="h-1.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex w-full">
-                                                    <div className="bg-success rounded-full  w-[78.03%]"></div>
-                                                </div>
-                                            </td>
-                                            <td className="text-success">78.03%</td>
-                                            <td className="text-center">2 weeks ago</td>
-                                        </tr>
+    <td>Guardian Name :</td>
+    <td>
+        {students.guardianName ? students.guardianName.toUpperCase() : 'N/A'}
+    </td>
+</tr>
 
                                         <tr>
-                                            <td>Blog Update</td>
+                                            <td>Guardian Realationship :</td>
                                             <td>
-                                                <div className="h-1.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex w-full">
-                                                    <div className="bg-secondary  rounded-full  w-full"></div>
-                                                </div>
+                                         {students.guardianRelation}
                                             </td>
-                                            <td className="text-success">100%</td>
-                                            <td className="text-center">18 hrs ago</td>
+                                           
                                         </tr>
                                         <tr>
-                                            <td>Landing Page</td>
+                                            <td>Date of birth :</td>
                                             <td>
-                                                <div className="h-1.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex w-full">
-                                                    <div className="bg-danger rounded-full  w-[19.15%]"></div>
-                                                </div>
+                                               {students.dateOfBirth}
                                             </td>
-                                            <td className="text-danger">19.15%</td>
-                                            <td className="text-center">5 days ago</td>
+                                           
                                         </tr>
                                         <tr>
-                                            <td>Shopify Dev</td>
+                                            <td>Age :</td>
                                             <td>
-                                                <div className="h-1.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex w-full">
-                                                    <div className="bg-primary rounded-full w-[60.55%]"></div>
-                                                </div>
+                                              {students.age}
                                             </td>
-                                            <td className="text-success">60.55%</td>
-                                            <td className="text-center">8 days ago</td>
+                                        
                                         </tr>
+                                        <tr>
+                                            <td>Gender :</td>
+                                            <td>
+                                              {students.gender}
+                                            </td>
+                                        
+                                        </tr>
+                                        <tr>
+                                            <td>Marital status :</td>
+                                            <td>
+                                              {students.maritalStatus}
+                                            </td>
+                                        
+                                        </tr>
+                                        <tr>
+                                            <td>Academic qualification :</td>
+                                            <td>
+                                              {students.academicQualification}
+                                            </td>
+                                        
+                                        </tr>
+                                        <tr>
+                                            <td>Parents mobile number :</td>
+                                            <td>
+                                              {students.parentsMobileNumber}
+                                            </td>
+                                        
+                                        </tr>
+                                        <tr>
+                                            <td>Course name :</td>
+                                            <td>
+                                              {students.courseName}
+                                            </td>
+                                        
+                                        </tr>
+                                        <tr>
+                                            <td>Course fee :</td>
+                                            <td>
+                                              {students.courseFee}
+                                            </td>
+                                        
+                                        </tr>
+                                        {students.studentId && (
+  <tr>
+    <td>Student ID :</td>
+    <td>
+      <a href={`${BASE_URL}/images/${students.studentId}`} download>
+        <IconPaperclip />
+      </a>
+    </td>
+  </tr>
+)}
+
+                                        {students.guardianId && (
+  <tr>
+    <td>Guardian ID :</td>
+    <td>
+      <a href={`${BASE_URL}/images/${students.guardianId}`} download>
+        <IconPaperclip />
+      </a>
+    </td>
+  </tr>
+)}
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="panel">
                         <div className="mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Summary</h5>
@@ -412,7 +449,7 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
