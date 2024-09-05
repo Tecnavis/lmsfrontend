@@ -76,18 +76,62 @@ const Students = () => {
         setCurrentPage(page);
     };
 
+
+    const saveUser = async () => {
+        if (!params.name) {
+            showMessage('Name is required.', 'error');
+            return;
+        }
+        if (!params.email) {
+            showMessage('Email is required.', 'error');
+            return;
+        }
+        if (!params.phone) {
+            showMessage('Phone is required.', 'error');
+            return;
+        }
+        if (!params.role) {
+            showMessage('Occupation is required.', 'error');
+            return;
+        }
+
+        try {
+            if (params.id) {
+                // Update user
+                await axios.put(`${backendUrl}/students/${params.id}`, params);
+            } else {
+                // Add user
+                await axios.post(`${backendUrl}/students`, params);
+            }
+
+            showMessage('User has been saved successfully.');
+            setAddContactModal(false);
+            fetchStudents(); 
+        } catch (error) {
+            console.error('Error saving user:', error);
+            showMessage('Error saving user.', 'error');
+        }
+    };
+
   
 
     const editUser = (id) => {
         navigate(`/pages/EditAdmissionForm/${id}`)
     };
 
-    const deleteUser = async (user: any) => {
+    const deleteUser = async (userOrId: any) => {
+        let userId;
+        if (typeof userOrId === 'object') {
+            userId = userOrId._id;
+        } else {
+            userId = userOrId;
+        }
+    
         try {
             // Show confirmation dialog
             const result = await Swal.fire({
                 title: 'Are you sure?',
-                text: `You are about to delete ${user.name}. This action cannot be undone.`,
+                text: `You are about to delete this contact. This action cannot be undone.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -98,8 +142,8 @@ const Students = () => {
     
             if (result.isConfirmed) {
                 // Proceed with deletion if confirmed
-                await axios.delete(`${backendUrl}/students/${user._id}`);
-                setStudents(students.filter((d: any) => d._id !== user._id));
+                await axios.delete(`${backendUrl}/students/${userId}`);
+                setStudents(students.filter((d: any) => d._id !== userId));
                 showMessage('User has been deleted successfully.');
             } else {
                 showMessage('Deletion canceled.', 'info');
@@ -109,6 +153,8 @@ const Students = () => {
             showMessage('Error deleting user.', 'error');
         }
     };
+    
+  
     
     const showMessage = (msg = '', type = 'success') => {
         const toast = Swal.mixin({
@@ -183,13 +229,15 @@ const viewUser = (id: string) => {
                                         <td className="whitespace-nowrap">{item.fullAddress}</td>
                                         <td className="whitespace-nowrap">{item.mobileNumber}</td>
                                         <td>
+                                            
                                             <div className="flex gap-4 items-center justify-center">
                                                 <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(item._id)}>
                                                     Edit
                                                 </button>
-                                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item)}>
-                                                    Delete
-                                                </button>
+
+                                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
+                                                    Deleted
+                                          
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(item._id)}>
                                                     View
                                                 </button>
