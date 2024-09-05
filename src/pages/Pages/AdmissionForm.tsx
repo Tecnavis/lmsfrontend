@@ -89,6 +89,9 @@ const AdmissionForm = () => {
         let errors = {};
     
         if (!data.name) {
+            errors.admissionDate = 'Admission date is required';
+        }
+        if (!data.name) {
             errors.name = 'Name is required';
         }
         if (!data.mobileNumber) {
@@ -211,6 +214,7 @@ const AdmissionForm = () => {
                                             className="form-input"
                                             onChange={(date) => handleDateChange('admissionDate', date)}
                                         />
+                                             {error.admissionDate && <p className="text-red-500 text-xs mt-1">{error.admissionDate}</p>}
                                     </div>
                                     <div>
                                         <label htmlFor="joiningDate">Joining Date</label>
@@ -244,7 +248,6 @@ const AdmissionForm = () => {
                                         accept="image/png, image/jpeg"
                                         capture="environment"
                                         className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                                        required
                                         onChange={(e) => setData({ ...data, image: e.target.files[0] })}
                                     />
                                 </div>
@@ -380,7 +383,7 @@ const AdmissionForm = () => {
                                         id="studentSignature"
                                         type="file"
                                         className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                                        required
+                                        
                                         accept="image/png, image/jpeg"
                                         capture="environment"
                                         onChange={(e) => setData({ ...data, studentId: e.target.files[0] })}
@@ -392,7 +395,7 @@ const AdmissionForm = () => {
                                         id="guardianSignature"
                                         type="file"
                                         className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                                        required
+                                      
                                         accept="image/png, image/jpeg"
                                         capture="environment"
                                         onChange={(e) => setData({ ...data, guardianId: e.target.files[0] })}

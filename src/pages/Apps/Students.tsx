@@ -15,6 +15,7 @@ import IconTwitter from '../../components/Icon/IconTwitter';
 import IconX from '../../components/Icon/IconX';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg'
 
 const Students = () => {
     const dispatch = useDispatch();
@@ -75,6 +76,7 @@ const Students = () => {
         setCurrentPage(page);
     };
 
+
     const saveUser = async () => {
         if (!params.name) {
             showMessage('Name is required.', 'error');
@@ -111,9 +113,10 @@ const Students = () => {
         }
     };
 
-    const editUser = (user: any = null) => {
-        setParams(user ? { ...user } : { id: null, name: '', email: '', phone: '', role: '', location: '' });
-        setAddContactModal(true);
+  
+
+    const editUser = (id) => {
+        navigate(`/pages/EditAdmissionForm/${id}`)
     };
 
     const deleteUser = async (userOrId: any) => {
@@ -218,7 +221,7 @@ const viewUser = (id: string) => {
                                     <tr key={item._id}>
                                         <td>
                                             <div className="flex items-center w-max">
-                                                <img src={`${backendUrl}/images/${item.image}`} className="h-8 w-8 rounded-full object-cover ltr:mr-2 rtl:ml-2" alt="avatar" />
+                                                <img src={item.image ? `${backendUrl}/images/${item.image}` : defaultImage} className="h-8 w-8 rounded-full object-cover ltr:mr-2 rtl:ml-2" alt="avatar" />
                                                 <div>{item.name}</div>
                                             </div>
                                         </td>
@@ -231,9 +234,10 @@ const viewUser = (id: string) => {
                                                 <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(item._id)}>
                                                     Edit
                                                 </button>
+
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
                                                     Deleted
-                                                </button>
+                                          
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(item._id)}>
                                                     View
                                                 </button>
@@ -268,10 +272,10 @@ const viewUser = (id: string) => {
                             <p className="text-gray-600 dark:text-gray-400 mb-2">{contact.mobileNumber}</p>
                             <p className="text-gray-600 dark:text-gray-400 mb-4">{contact.fullAddress}</p>
                             <div className="flex gap-4 justify-center">
-                                <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(contact)}>
+                                <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(contact._id)}>
                                     Edit
                                 </button>
-                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(contact)}>
+                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(contact._id)}>
                                     Delete
                                 </button>
                             </div>
@@ -356,7 +360,7 @@ const viewUser = (id: string) => {
                                 >
                                     Cancel
                                 </button>
-                                <button type="button" className="btn btn-primary" onClick={saveUser}>
+                                <button type="button" className="btn btn-primary" >
                                     Save
                                 </button>
                             </div>
