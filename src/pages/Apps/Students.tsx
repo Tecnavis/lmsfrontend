@@ -231,13 +231,13 @@ const viewUser = (id: string) => {
                                         <td>
                                             
                                             <div className="flex gap-4 items-center justify-center">
-                                                <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(item._id)}>
+                                                {/* <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(item._id)}>
                                                     Edit
                                                 </button>
 
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
                                                     Deleted
-                                          </button>
+                                          </button> */}
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(item._id)}>
                                                     View Student
                                                 </button>
@@ -278,6 +278,9 @@ const viewUser = (id: string) => {
                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(contact._id)}>
                                     Delete
                                 </button>
+                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(contact._id)}>
+                                                    View Student
+                                                </button>
                             </div>
                         </div>
                     ))}
