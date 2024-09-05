@@ -249,7 +249,7 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="panel">
                         <div className="mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Summary</h5>
@@ -449,7 +449,7 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                </div> */}
+                </div>
             </div>
         </div>
     );
