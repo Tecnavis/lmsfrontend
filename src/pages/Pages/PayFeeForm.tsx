@@ -67,6 +67,9 @@ const PayFeeform = () => {
 
     // Fetch the list of students
     const fetchStudents = async () => {
+
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         try {
             const response = await axios.get(`${backendUrl}/students`);
             const studentsData = response.data.students;
@@ -102,6 +105,9 @@ const PayFeeform = () => {
     // Handle form submission
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
     
         try {
             if (!selectedStudentId) {

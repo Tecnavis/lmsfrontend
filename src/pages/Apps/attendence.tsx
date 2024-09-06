@@ -73,6 +73,9 @@ const AttendanceTable: React.FC = () => {
     };
 
     const loadData = async () => {
+
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = token;
         try {
             setLoading(true);
             const response = await fetchStudents();
