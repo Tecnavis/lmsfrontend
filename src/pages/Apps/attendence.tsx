@@ -6,7 +6,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'; // Import calendar s
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import axios from 'axios';
-import { fetchStudents, BASE_URL } from '../Helper/handle-api';
+import { fetchStudents, BASE_URL, getAttendanceRecords } from '../Helper/handle-api';
 
 interface AttendanceRecord {
     date: string;
@@ -32,13 +32,45 @@ const localizer = momentLocalizer(moment);
 const AttendanceTable: React.FC = () => {
     const [allStudents, setAllStudents] = useState<Student[]>([]);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+    const [selectedStudentAttendance, setSelectedStudentAttendance] = useState<AttendanceRecord[]>([]);
     const [currentDate, setCurrentDate] = useState<string>(moment().format('YYYY-MM-DD'));
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         loadData();
-    }, [currentDate]); // Refetch data when the currentDate changes
+    }, [currentDate]);
+
+    // Refetch data when the currentDate changes
+    useEffect(() => {
+        let isMounted = true; // Flag to check if the component is still mounted
+        if (selectedStudent?._id) {
+            loadSpecificStudentAttendance(selectedStudent._id, isMounted);
+        }
+
+        return () => {
+            isMounted = false; // Clean up flag on unmount
+        };
+    }, [selectedStudent?._id]);
+
+    const loadSpecificStudentAttendance = async (studentId: number, isMounted: boolean) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/attendance/student/${studentId}`);
+            setSelectedStudentAttendance(response.data);
+            console.log(selectedStudentAttendance, 'selectedStudentAttendance');
+            if (isMounted && response.data) {
+                setSelectedStudent((prevStudent: any) => {
+                    if (prevStudent?.attendanceHistory !== response.data) {
+                        return { ...prevStudent, attendanceHistory: response.data };
+                    }
+                    return prevStudent;
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching attendance records:', error);
+            setError('Failed to load attendance records');
+        }
+    };
 
     const loadData = async () => {
         try {
@@ -47,7 +79,7 @@ const AttendanceTable: React.FC = () => {
             if (response) {
                 const students = response.students || [];
                 setAllStudents(
-                    students.map((student: Student) => ({
+                    students.map((student: any) => ({
                         ...student,
                         attendanceHistory: student.attendanceHistory || [],
                     }))
@@ -68,21 +100,19 @@ const AttendanceTable: React.FC = () => {
             const updatedStudent = allStudents.find((student) => student._id === id);
             if (!updatedStudent) return;
 
-            const attendanceIndex = updatedStudent.attendanceHistory?.findIndex((record) => record.date === currentDate);
+            const attendanceHistory = updatedStudent.attendanceHistory || []; // Ensure attendanceHistory is defined
+
+            const attendanceIndex = attendanceHistory.findIndex((record) => record.date === currentDate);
             let newStatus: 'Present' | 'Absent' = 'Present';
             if (attendanceIndex !== undefined && attendanceIndex !== -1) {
-                newStatus = updatedStudent.attendanceHistory[attendanceIndex].status === 'Present' ? 'Absent' : 'Present';
+                newStatus = attendanceHistory[attendanceIndex].status === 'Present' ? 'Absent' : 'Present';
             }
 
             const updatedAttendanceHistory =
                 attendanceIndex !== undefined && attendanceIndex !== -1
-                    ? [
-                          ...updatedStudent.attendanceHistory!.slice(0, attendanceIndex),
-                          { ...updatedStudent.attendanceHistory![attendanceIndex], status: newStatus },
-                          ...updatedStudent.attendanceHistory!.slice(attendanceIndex + 1),
-                      ]
+                    ? [...attendanceHistory.slice(0, attendanceIndex), { ...attendanceHistory[attendanceIndex], status: newStatus }, ...attendanceHistory.slice(attendanceIndex + 1)]
                     : [
-                          ...(updatedStudent.attendanceHistory || []),
+                          ...attendanceHistory,
                           {
                               date: currentDate,
                               status: newStatus,
@@ -108,6 +138,13 @@ const AttendanceTable: React.FC = () => {
                             : student
                     )
                 );
+                // Update selectedStudent if it was previously selected
+                if (selectedStudent && selectedStudent._id === id) {
+                    setSelectedStudent({
+                        ...selectedStudent,
+                        attendanceHistory: updatedAttendanceHistory,
+                    });
+                }
             } else {
                 console.error('Failed to save attendance');
             }
@@ -174,7 +211,6 @@ const AttendanceTable: React.FC = () => {
                             <TableCell>Name</TableCell>
                             <TableCell>Course</TableCell>
                             <TableCell align="center">Present</TableCell>
-                            <TableCell align="center">Status</TableCell>
                             <TableCell align="center">View</TableCell>
                         </TableRow>
                     </TableHead>
@@ -187,7 +223,6 @@ const AttendanceTable: React.FC = () => {
                                 <TableCell align="center">
                                     <Checkbox checked={student.present} onChange={() => handleAttendanceChange(student._id)} color="primary" />
                                 </TableCell>
-                                <TableCell align="center">status</TableCell>
                                 <TableCell align="center">
                                     <Button variant="contained" color="primary" onClick={() => handleViewClick(student)}>
                                         View

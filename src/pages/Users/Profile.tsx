@@ -46,7 +46,9 @@ const Profile = () => {
             try {
                 const response = await axios.get(`${BASE_URL}/students/${id}`);
                 const data = response.data;
-                setCourse(data.courseName); // Ensure courseName is set as an object
+                setCourse(data.courseName);
+                setStudents(data);
+                // Ensure courseName is set as an object
             } catch (error) {
                 console.error('Error fetching student details:', error);
             }
@@ -235,9 +237,9 @@ const Profile = () => {
                                             <td>{students.parentsMobileNumber}</td>
                                         </tr>
                                         <tr>
-                <td>Course name :</td>
-                <td>{course ? course.name : 'Loading...'}</td>
-            </tr>
+                                            <td>Course name :</td>
+                                            <td>{course ? course.name : 'Loading...'}</td>
+                                        </tr>
 
                                         <tr>
                                             <td>Course fee :</td>

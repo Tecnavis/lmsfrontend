@@ -32,6 +32,13 @@ interface AdminFormData {
     phone: number;
     image: File;
 }
+interface Attendance {
+  _id: string;
+  students: Student;
+  date: string;
+  status: string;
+  __v: number;
+}
 // Fetch admin
 export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
     try {
@@ -203,3 +210,15 @@ export const createCourse = async (formData: Course): Promise<any> => {
         throw err;
     }
 };
+
+//Get attendance records for a specific student
+export const getAttendanceRecords = async (studentId: string): Promise<Attendance[] | undefined> => {
+    try {
+        const response = await axios.get<Attendance[]>(`${BASE_URL}/attendance/student/${studentId}`);
+        console.log(response.data, 'data');
+        return response.data;
+    } catch (err) {
+        console.error('Error fetching attendance records:', err);
+        return undefined;
+    }
+}

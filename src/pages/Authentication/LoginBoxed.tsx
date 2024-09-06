@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import { useEffect, useState } from 'react';
@@ -11,15 +11,7 @@ import IconTwitter from '../../components/Icon/IconTwitter';
 import IconGoogle from '../../components/Icon/IconGoogle';
 import {adminLogin} from '../../pages/Helper/handle-api';
 import { useForm } from '../../pages/Helper/useForm';
-
-// import { BASE_URL } from '../Helper/handle-api';
-import axios from 'axios';
-
-
 const LoginBoxed = () => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-const token = localStorage.getItem("tokens");
-    const navigate = useNavigate()
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Login Boxed'));
@@ -29,37 +21,7 @@ const token = localStorage.getItem("tokens");
         email: '',
         password: '',
     });
-    
-  const [message, setMessage] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        try {
-            const data = { email: values.email, password: values.password } 
-            const response = await axios.post(`${backendUrl}/admin/login`, data);
-            console.log(response.data.token);
-            console.log(response.data,'this is the response data');
-            
-            if (response && response.status === 200) {
-                const token = response.data.token;
-                const user = response.data.Admins;
-    
-           
-                    localStorage.setItem("tokens", token);
-                    localStorage.setItem("admins", JSON.stringify(user));
-                    navigate('/', { replace: true });// Redirect admin to /home
-            }
-        } catch (err) {
-            console.log(err);
-            if (err.response && err.response.status === 400) {
-                setMessage('Invalid credentials...');
-            }
-        }
-    };
-    
-
-if(token){
     return (
         <div>
             <div className="absolute inset-0">
@@ -78,7 +40,7 @@ if(token){
                             <div className="mb-10">
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
                             </div>
-                            <form className="space-y-5 dark:text-white"  onSubmit={handleSubmit}>
+                            <form className="space-y-5 dark:text-white"  onSubmit={e => adminLogin(e, values)}>
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
@@ -96,7 +58,6 @@ if(token){
                                             <IconLockDots fill={true} />
                                         </span>
                                     </div>
-                                    {message &&<span style={{color:"red", fontSize:'12px'}}>{message}</span>}
                                 </div>
                                 <div>
                                    
@@ -104,14 +65,13 @@ if(token){
                                 <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
                                     Sign in
                                 </button>
-
                             </form>
-                            {/* <div className="relative my-7 text-center md:mb-9">
+                            <div className="relative my-7 text-center md:mb-9">
                                 <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
                                 <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>
-                            </div> */}
+                            </div>
                             <div className="mb-10 md:mb-[60px]">
-                                {/* <ul className="flex justify-center gap-3.5 text-white">
+                                <ul className="flex justify-center gap-3.5 text-white">
                                     <li>
                                         <Link
                                             to="#"
@@ -148,22 +108,20 @@ if(token){
                                             <IconGoogle />
                                         </Link>
                                     </li>
-                                </ul> */}
+                                </ul>
                             </div>
-                            {/* <div className="text-center dark:text-white">
+                            <div className="text-center dark:text-white">
                                 Don't have an account ?&nbsp;
                                 <Link to="/auth/boxed-signup" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                     SIGN UP
                                 </Link>
-                            </div> */}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    );} else {
-    navigate('/')    
-    }
+    );
 };
 
 export default LoginBoxed;

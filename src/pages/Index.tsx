@@ -28,10 +28,10 @@ import axios from 'axios';
 
 const Index = () => {
     
-  const token = localStorage.getItem("tokens");
+  const token = localStorage.getItem("token");
 
     useEffect(() => {
-        const token = localStorage.getItem("tokens");
+        const token = localStorage.getItem("token");
         if (token) {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           console.log(token);
@@ -1383,8 +1383,8 @@ const Index = () => {
                 </div>
             </div>
         </div>
-    );} else {
-        navigate('/auth/boxed-signin')
+    );}else{
+        navigate('/auth/boxed-signin');
     }
 };
 

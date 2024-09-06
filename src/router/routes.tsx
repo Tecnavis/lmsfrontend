@@ -110,6 +110,7 @@ const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const Students1 = lazy(() => import('../pages/Apps/students1'));
 const Attendance = lazy(() => import('../pages/Apps/attendence'));
+const Monthly = lazy(() => import('../pages/Apps/monthlyattendence'));
 const routes = [
     // dashboard
     {
@@ -158,6 +159,10 @@ const routes = [
     {
         path: '/apps/attendance',
         element: <Attendance />,
+    },
+    {
+        path: '/apps/monthlyattendence',
+        element: <Monthly />,
     },
     // {
     //     path: '/apps/mailbox',
