@@ -15,11 +15,11 @@ import IconTwitter from '../../components/Icon/IconTwitter';
 import IconX from '../../components/Icon/IconX';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg'
+import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
 
 const Students = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     useEffect(() => {
         dispatch(setPageTitle('Contacts'));
     }, [dispatch]);
@@ -52,7 +52,7 @@ const Students = () => {
                         page: currentPage,
                         limit: 10,
                         name: searchName,
-                    }
+                    },
                 });
                 setStudents(data.students);
                 setTotal(data.total);
@@ -75,7 +75,6 @@ const Students = () => {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
-
 
     const saveUser = async () => {
         if (!params.name) {
@@ -106,17 +105,15 @@ const Students = () => {
 
             showMessage('User has been saved successfully.');
             setAddContactModal(false);
-            fetchStudents(); 
+            fetchStudents();
         } catch (error) {
             console.error('Error saving user:', error);
             showMessage('Error saving user.', 'error');
         }
     };
 
-  
-
     const editUser = (id) => {
-        navigate(`/pages/EditAdmissionForm/${id}`)
+        navigate(`/pages/EditAdmissionForm/${id}`);
     };
 
     const deleteUser = async (userOrId: any) => {
@@ -126,7 +123,7 @@ const Students = () => {
         } else {
             userId = userOrId;
         }
-    
+
         try {
             // Show confirmation dialog
             const result = await Swal.fire({
@@ -137,9 +134,9 @@ const Students = () => {
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
+                cancelButtonText: 'Cancel',
             });
-    
+
             if (result.isConfirmed) {
                 // Proceed with deletion if confirmed
                 await axios.delete(`${backendUrl}/students/${userId}`);
@@ -153,9 +150,7 @@ const Students = () => {
             showMessage('Error deleting user.', 'error');
         }
     };
-    
-  
-    
+
     const showMessage = (msg = '', type = 'success') => {
         const toast = Swal.mixin({
             toast: true,
@@ -170,10 +165,15 @@ const Students = () => {
             padding: '10px 20px',
         });
     };
-//view students details
-const viewUser = (id: string) => {
-    window.location.href = `/users/profile/${id}`
-}
+    //view students details
+    const viewUser = (id: string) => {
+        window.location.href = `/users/profile/${id}`;
+    };
+
+    //transaction history
+    const transactionDetails = (id: string) => {
+        window.location.href = `/users/transaction/${id}`;
+    };
     return (
         <div>
             <div className="flex items-center justify-between flex-wrap gap-4">
@@ -181,10 +181,10 @@ const viewUser = (id: string) => {
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
                         <Link to={'/Pages/Admissionform'}>
-                        <button type="button" className="btn btn-primary" >
-                            <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
-                            Add Contact
-                        </button>
+                            <button type="button" className="btn btn-primary">
+                                <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
+                                Add Contact
+                            </button>
                         </Link>
                         <button type="button" className={`btn btn-outline-primary p-2 ${value === 'list' && 'bg-primary text-white'}`} onClick={() => setValue('list')}>
                             <IconListCheck />
@@ -193,7 +193,7 @@ const viewUser = (id: string) => {
                             <IconLayoutGrid />
                         </button>
                     </div>
-                        {/* <button className="btn btn-primary">Upload</button> */}
+                    {/* <button className="btn btn-primary">Upload</button> */}
                     <div className="relative">
                         <input type="text" placeholder="Search Contacts" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value={searchName} onChange={handleSearch} />
                         <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
@@ -221,7 +221,11 @@ const viewUser = (id: string) => {
                                     <tr key={item._id}>
                                         <td>
                                             <div className="flex items-center w-max">
-                                                <img src={item.image ? `${backendUrl}/images/${item.image}` : defaultImage} className="h-8 w-8 rounded-full object-cover ltr:mr-2 rtl:ml-2" alt="avatar" />
+                                                <img
+                                                    src={item.image ? `${backendUrl}/images/${item.image}` : defaultImage}
+                                                    className="h-8 w-8 rounded-full object-cover ltr:mr-2 rtl:ml-2"
+                                                    alt="avatar"
+                                                />
                                                 <div>{item.name}</div>
                                             </div>
                                         </td>
@@ -229,17 +233,16 @@ const viewUser = (id: string) => {
                                         <td className="whitespace-nowrap">{item.fullAddress}</td>
                                         <td className="whitespace-nowrap">{item.mobileNumber}</td>
                                         <td>
-                                            
                                             <div className="flex gap-4 items-center justify-center">
-                                                {/* <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(item._id)}>
-                                                    Edit
+                                                <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => transactionDetails(item._id)}>
+                                                    Transaction
                                                 </button>
 
-                                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
+                                                {/* <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteUser(item._id)}>
                                                     Deleted
                                           </button> */}
                                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(item._id)}>
-                                                    View Student
+                                                    View
                                                 </button>
                                             </div>
                                         </td>
@@ -252,7 +255,9 @@ const viewUser = (id: string) => {
                         <button type="button" className="btn btn-outline-secondary" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1}>
                             Previous
                         </button>
-                        <span>Page {currentPage} of {totalPages}</span>
+                        <span>
+                            Page {currentPage} of {totalPages}
+                        </span>
                         <button type="button" className="btn btn-outline-secondary" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= totalPages}>
                             Next
                         </button>
@@ -279,8 +284,8 @@ const viewUser = (id: string) => {
                                     Delete
                                 </button>
                                 <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => viewUser(contact._id)}>
-                                                    View Student
-                                                </button>
+                                    View Student
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -356,14 +361,10 @@ const viewUser = (id: string) => {
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end gap-4">
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-secondary"
-                                    onClick={() => setAddContactModal(false)}
-                                >
+                                <button type="button" className="btn btn-outline-secondary" onClick={() => setAddContactModal(false)}>
                                     Cancel
                                 </button>
-                                <button type="button" className="btn btn-primary" >
+                                <button type="button" className="btn btn-primary">
                                     Save
                                 </button>
                             </div>
