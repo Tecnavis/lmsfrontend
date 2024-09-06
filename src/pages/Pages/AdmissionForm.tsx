@@ -46,6 +46,7 @@ const AdmissionForm = () => {
     });
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+    const [course, setCourse] = useState([])
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -61,6 +62,16 @@ const AdmissionForm = () => {
         }));
     };
 
+   const fetch = async()=>{
+    try {
+        const response = await axios.get(`${backendUrl}/course`)
+        const data = response.data
+        setCourse(data)
+    } catch (error) {
+        console.error(error)
+    }
+   }
+     
     const showMessage = (msg = '', type = 'success') => {
         const toast = Swal.mixin({
             toast: true,
@@ -78,8 +89,9 @@ const AdmissionForm = () => {
 
     const dispatch = useDispatch();
     useEffect(() => {
+        fetch();
         dispatch(setPageTitle('AdmissionForm'));
-    });
+    },[]);
 
     const navigate = useNavigate();
 
@@ -370,9 +382,24 @@ const AdmissionForm = () => {
                                     </span>
                                 </div>
                                 <div className="relative text-white-dark">
-                                    <input id="CourseName" type="text" name="courseName" placeholder="Course Name" onChange={handleChange} className="form-input ps-10 placeholder:text-white-dark" />
-                                    {error.courseName && <p className="text-red-500 text-xs mt-1">{error.courseName}</p>}
-                                </div>
+    <select
+        id="CourseName"
+        name="courseName"
+        onChange={handleChange}
+        className="form-input ps-10 placeholder:text-white-dark"
+    >
+        <option value="">Select Course</option>
+        {course.map((item, index) => (
+            <option key={index} value={item.name}>
+                {item.name}
+            </option>
+        ))}
+    </select>
+    {error.courseName && (
+        <p className="text-red-500 text-xs mt-1">{error.courseName}</p>
+    )}
+</div>
+
                                 <div className="relative text-white-dark">
                                     <input id="CourseFee" type="number" name="courseFee" onChange={handleChange} placeholder="Course Fee" className="form-input ps-10 placeholder:text-white-dark" />
                                     {error.courseFee && <p className="text-red-500 text-xs mt-1">{error.courseFee}</p>}

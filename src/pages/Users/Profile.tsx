@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import Dropdown from '../../components/Dropdown';
@@ -24,8 +24,11 @@ import defaultImage from '../../assets/css/Images/user-front-side-with-white-bac
 import IconPencil from '../../components/Icon/IconPencil';
 import IconUser from '../../components/Icon/IconUser';
 import IconPaperclip from '../../components/Icon/IconPaperclip';
+import Swal from 'sweetalert2';
+import IconTrash from '../../components/Icon/IconTrash';
 
 const Profile = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Profile'));
@@ -34,23 +37,74 @@ const Profile = () => {
 
     //fetch students
     const [students, setStudents] = useState<any>({});
+    const [course, setCourse] = useState<{ name?: string } | null>(null);
+
     const { id } = useParams();
-  
+
     useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(`${BASE_URL}/students/${id}`);
-          setStudents(response.data);
-        } catch (error) {
-          console.error("Error fetching student details:", error);
-        }
-      };
-      fetchData();
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/students/${id}`);
+                const data = response.data;
+                setCourse(data.courseName); // Ensure courseName is set as an object
+            } catch (error) {
+                console.error('Error fetching student details:', error);
+            }
+        };
+        fetchData();
     }, [id]);
-  
+
     // Format the date
     const formattedDate = students.dateOfBirth ? new Date(students.dateOfBirth).toISOString().split('T')[0] : '';
-  
+
+    const deleteUser = async (userOrId: any) => {
+        let userId;
+        if (typeof userOrId === 'object') {
+            userId = userOrId._id;
+        } else {
+            userId = userOrId;
+        }
+
+        try {
+            // Show confirmation dialog
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete this contact. This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+            });
+
+            if (result.isConfirmed) {
+                // Proceed with deletion if confirmed
+                await axios.delete(`${BASE_URL}/students/${userId}`);
+                showMessage('User has been deleted successfully.');
+                navigate('/apps/sutdents');
+            } else {
+                showMessage('Deletion canceled.', 'info');
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showMessage('Error deleting user.', 'error');
+        }
+    };
+    const showMessage = (msg = '', type = 'success') => {
+        const toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            customClass: { container: 'toast' },
+        });
+        toast.fire({
+            icon: type,
+            title: msg,
+            padding: '10px 20px',
+        });
+    };
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -67,11 +121,13 @@ const Profile = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-5">
                     <div className="panel">
                         <div className="flex items-center justify-between mb-5">
-                       
                             <h5 className="font-semibold text-lg dark:text-white-light">Profile</h5>
                             <Link to={`/pages/EditAdmissionForm/${students._id}`} className="ltr:ml-auto rtl:mr-auto btn btn-primary p-2 rounded-full">
                                 <IconPencilPaper />
                             </Link>
+                            <button onClick={() => deleteUser(students._id)} className="ltr:ml-auto rtl:mr-auto btn btn-danger p-2 rounded-full">
+                                <IconTrash />
+                            </button>
                         </div>
                         <div className="mb-5">
                             <div className="flex flex-col justify-center items-center">
@@ -89,7 +145,8 @@ const Profile = () => {
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <IconMapPin className="shrink-0" />
-                                    {students.fullAddress}<br/>
+                                    {students.fullAddress}
+                                    <br />
                                     {students.pinCode}
                                 </li>
                                 <li>
@@ -131,118 +188,82 @@ const Profile = () => {
                         <div className="mb-5">
                             <div className="table-responsive text-[#515365] dark:text-white-light font-semibold">
                                 <table className="whitespace-nowrap">
-                                   
                                     <tbody className="dark:text-white-dark">
                                         <tr>
                                             <td>Roll NO :</td>
-                                            <td>
-                                              {students.invoiceNumber}
-                                            </td>
-                                        
+                                            <td>{students.invoiceNumber}</td>
                                         </tr>
                                         <tr>
                                             <td>State ;</td>
-                                            <td>
-                                              {students.state? students.state.toUpperCase() : 'N/A'}
-                                            </td>
-                                        
+                                            <td>{students.state ? students.state.toUpperCase() : 'N/A'}</td>
                                         </tr>
                                         <tr>
                                             <td>Blood :</td>
-                                         <td>  {students.bloodGroup ? students.bloodGroup.toUpperCase() : 'N/A'}</td>
+                                            <td> {students.bloodGroup ? students.bloodGroup.toUpperCase() : 'N/A'}</td>
                                         </tr>
                                         <tr>
-    <td>Guardian Name :</td>
-    <td>
-        {students.guardianName ? students.guardianName.toUpperCase() : 'N/A'}
-    </td>
-</tr>
+                                            <td>Guardian Name :</td>
+                                            <td>{students.guardianName ? students.guardianName.toUpperCase() : 'N/A'}</td>
+                                        </tr>
 
                                         <tr>
                                             <td>Guardian Realationship :</td>
-                                            <td>
-                                         {students.guardianRelation}
-                                            </td>
-                                           
+                                            <td>{students.guardianRelation}</td>
                                         </tr>
                                         <tr>
                                             <td>Date of birth :</td>
-                                            <td>
-                                               {students.dateOfBirth}
-                                            </td>
-                                           
+                                            <td>{new Date(students.dateOfBirth).toLocaleDateString('en-GB')}</td>
                                         </tr>
                                         <tr>
                                             <td>Age :</td>
-                                            <td>
-                                              {students.age}
-                                            </td>
-                                        
+                                            <td>{students.age}</td>
                                         </tr>
                                         <tr>
                                             <td>Gender :</td>
-                                            <td>
-                                              {students.gender}
-                                            </td>
-                                        
+                                            <td>{students.gender}</td>
                                         </tr>
                                         <tr>
                                             <td>Marital status :</td>
-                                            <td>
-                                              {students.maritalStatus}
-                                            </td>
-                                        
+                                            <td>{students.maritalStatus}</td>
                                         </tr>
                                         <tr>
                                             <td>Academic qualification :</td>
-                                            <td>
-                                              {students.academicQualification}
-                                            </td>
-                                        
+                                            <td>{students.academicQualification}</td>
                                         </tr>
                                         <tr>
                                             <td>Parents mobile number :</td>
-                                            <td>
-                                              {students.parentsMobileNumber}
-                                            </td>
-                                        
+                                            <td>{students.parentsMobileNumber}</td>
                                         </tr>
                                         <tr>
-                                            <td>Course name :</td>
-                                            <td>
-                                              {students.courseName}
-                                            </td>
-                                        
-                                        </tr>
+                <td>Course name :</td>
+                <td>{course ? course.name : 'Loading...'}</td>
+            </tr>
+
                                         <tr>
                                             <td>Course fee :</td>
-                                            <td>
-                                              {students.courseFee}
-                                            </td>
-                                        
+                                            <td>{students.courseFee}</td>
                                         </tr>
                                         {students.studentId && (
-  <tr>
-    <td>Student ID :</td>
-    <td>
-      <a href={`${BASE_URL}/images/${students.studentId}`} download>
-        <IconPaperclip />
-      </a>
-    </td>
-  </tr>
-)}
+                                            <tr>
+                                                <td>Student ID :</td>
+                                                <td>
+                                                    <a href={`${BASE_URL}/images/${students.studentId}`} download>
+                                                        <IconPaperclip />
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        )}
 
                                         {students.guardianId && (
-  <tr>
-    <td>Guardian ID :</td>
-    <td>
-      <a href={`${BASE_URL}/images/${students.guardianId}`} download>
-        <IconPaperclip />
-      </a>
-    </td>
-  </tr>
-)}
-
+                                            <tr>
+                                                <td>Guardian ID :</td>
+                                                <td>
+                                                    <a href={`${BASE_URL}/images/${students.guardianId}`} download>
+                                                        <IconPaperclip />
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>

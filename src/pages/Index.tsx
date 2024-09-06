@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import React, { ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../store';
 import ReactApexChart from 'react-apexcharts';
@@ -24,8 +24,22 @@ import { fetchAdmin, BASE_URL, adminEdit, adminUpdate, deleteAdmin, fetchCourse,
 import { useForm } from './Helper/useForm';
 import IconEdit from '../components/Icon/IconEdit';
 import IconPlusCircle from '../components/Icon/IconPlusCircle';
+import axios from 'axios';
 
 const Index = () => {
+    
+  const token = localStorage.getItem("tokens");
+
+    useEffect(() => {
+        const token = localStorage.getItem("tokens");
+        if (token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          console.log(token);
+        } else {
+          console.log("Token not found in localStorage");
+        }
+      }, []);
+
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Sales Admin'));
@@ -419,6 +433,7 @@ const Index = () => {
     const [transaction, setTransaction] = useState<any>([]);
     const [payFee, setPayFee] = useState<any>('');
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
+    const navigate = useNavigate()
     const [values, handleChange, setValues] = useForm({
         email: '',
         password: '',
@@ -647,6 +662,7 @@ const Index = () => {
     };
     //admin details
     const Admins = JSON.parse(localStorage.getItem('Admins') || '[]');
+    if(token){
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -1367,7 +1383,9 @@ const Index = () => {
                 </div>
             </div>
         </div>
-    );
+    );} else {
+        navigate('/auth/boxed-signin')
+    }
 };
 
 export default Index;
