@@ -21,7 +21,8 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css'; // Import calendar styles
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { fetchStudents } from '../Helper/handle-api';
+import axios from 'axios';
+import { fetchStudents, BASE_URL } from '../Helper/handle-api';
 
 interface AttendanceRecord {
     date: string;
@@ -33,10 +34,14 @@ interface Student {
     name: string;
     courseName: string;
     present: boolean;
-    attendanceHistory?: AttendanceRecord[]; // Make attendanceHistory optional
+    attendanceHistory?: AttendanceRecord[];
 }
 
-
+interface AttendanceRequest {
+    students: number;
+    date: string;
+    status: 'Present' | 'Absent';
+}
 
 const localizer = momentLocalizer(moment);
 
@@ -49,19 +54,18 @@ const AttendanceTable: React.FC = () => {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [currentDate]); // Refetch data when the currentDate changes
 
     const loadData = async () => {
         try {
             setLoading(true);
             const response = await fetchStudents();
-            if (response) { // Check if response is not undefined
-                console.log('API Response:', response);
+            if (response) {
                 const students = response.students || [];
                 setAllStudents(
                     students.map((student: Student) => ({
                         ...student,
-                        attendanceHistory: student.attendanceHistory || [], // Ensure attendanceHistory is always an array
+                        attendanceHistory: student.attendanceHistory || [],
                     }))
                 );
             } else {
@@ -75,40 +79,56 @@ const AttendanceTable: React.FC = () => {
         }
     };
 
-    const handleAttendanceChange = (id: number) => {
-        setAllStudents((prevStudents) => {
-            return prevStudents.map((student) => {
-                if (student._id === id) {
-                    const attendanceIndex = student.attendanceHistory?.findIndex((record) => record.date === currentDate);
+    const handleAttendanceChange = async (id: number) => {
+        try {
+            const updatedStudent = allStudents.find(student => student._id === id);
+            if (!updatedStudent) return;
 
-                    if (attendanceIndex !== undefined && attendanceIndex !== -1) {
-                        const updatedAttendanceHistory = [...student.attendanceHistory];
-                        updatedAttendanceHistory[attendanceIndex].status = updatedAttendanceHistory[attendanceIndex].status === 'Present' ? 'Absent' : 'Present';
+            const attendanceIndex = updatedStudent.attendanceHistory?.findIndex(record => record.date === currentDate);
+            let newStatus: 'Present' | 'Absent' = 'Present';
+            if (attendanceIndex !== undefined && attendanceIndex !== -1) {
+                newStatus = updatedStudent.attendanceHistory[attendanceIndex].status === 'Present' ? 'Absent' : 'Present';
+            }
 
-                        return {
-                            ...student,
-                            present: updatedAttendanceHistory[attendanceIndex].status === 'Present',
-                            attendanceHistory: updatedAttendanceHistory,
-                        };
-                    } else {
-                        const updatedAttendanceHistory = [
-                            ...(student.attendanceHistory || []),
-                            {
-                                date: currentDate,
-                                status: 'Present',
-                            },
-                        ];
+            const updatedAttendanceHistory = attendanceIndex !== undefined && attendanceIndex !== -1
+                ? [
+                    ...updatedStudent.attendanceHistory!.slice(0, attendanceIndex),
+                    { ...updatedStudent.attendanceHistory![attendanceIndex], status: newStatus },
+                    ...updatedStudent.attendanceHistory!.slice(attendanceIndex + 1),
+                ]
+                : [
+                    ...(updatedStudent.attendanceHistory || []),
+                    {
+                        date: currentDate,
+                        status: newStatus,
+                    },
+                ];
 
-                        return {
-                            ...student,
-                            present: true,
-                            attendanceHistory: updatedAttendanceHistory,
-                        };
-                    }
-                }
-                return student;
-            });
-        });
+            const requestData: AttendanceRequest = {
+                students: id,
+                date: currentDate,
+                status: newStatus,
+            };
+
+            const response = await axios.post(`${BASE_URL}/attendance`, requestData);
+            if (response.status === 200) {
+                setAllStudents(prevStudents =>
+                    prevStudents.map(student =>
+                        student._id === id
+                            ? {
+                                ...student,
+                                present: newStatus === 'Present',
+                                attendanceHistory: updatedAttendanceHistory,
+                            }
+                            : student
+                    )
+                );
+            } else {
+                console.error('Failed to save attendance');
+            }
+        } catch (error) {
+            console.error('Error saving attendance:', error);
+        }
     };
 
     const handleViewClick = (student: Student) => {
@@ -148,7 +168,7 @@ const AttendanceTable: React.FC = () => {
     return (
         <Paper elevation={3} sx={{ padding: 3 }}>
             <Typography variant="h5" gutterBottom>
-                {/* Attendance Table */}
+                Attendance Table
             </Typography>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -175,7 +195,7 @@ const AttendanceTable: React.FC = () => {
                     <TableBody>
                         {filteredStudents.map((student, index) => (
                             <TableRow key={student._id}>
-                                <TableCell>{index + 1}</TableCell> {/* Serial number starts from 1 */}
+                                <TableCell>{index + 1}</TableCell>
                                 <TableCell>{student.name}</TableCell>
                                 <TableCell>{student.courseName}</TableCell>
                                 <TableCell align="center">
@@ -197,7 +217,13 @@ const AttendanceTable: React.FC = () => {
                 <DialogContent>
                     {selectedStudent ? (
                         <div style={{ height: '500px' }}>
-                            <Calendar localizer={localizer} events={getCalendarEvents(selectedStudent.attendanceHistory || [])} startAccessor="start" endAccessor="end" style={{ height: '100%' }} />
+                            <Calendar
+                                localizer={localizer}
+                                events={getCalendarEvents(selectedStudent.attendanceHistory || [])}
+                                startAccessor="start"
+                                endAccessor="end"
+                                style={{ height: '100%' }}
+                            />
                         </div>
                     ) : (
                         <Typography>No student selected</Typography>

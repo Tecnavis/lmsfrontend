@@ -9,6 +9,10 @@ interface Admin {
     id: string;
     name: string;
 }
+interface Student {
+    id: string;
+    name: string;
+}
 interface Course {
     id: string;
     name: string;
@@ -49,9 +53,9 @@ export const fetchCourse = async (): Promise<Course[] | undefined> => {
     }
 };
 //fetch students
-export const fetchStudents = async (): Promise<Admin[] | undefined> => {
+export const fetchStudents = async (): Promise<Student[] | undefined> => {
     try {
-        const response = await axios.get<Admin[]>(`${BASE_URL}/students`);
+        const response = await axios.get<Student[]>(`${BASE_URL}/students`);
         return response.data;
     } catch (err) {
         console.error('Student details listing failed', err);
