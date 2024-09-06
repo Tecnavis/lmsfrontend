@@ -45,6 +45,8 @@ const Students = () => {
 
     useEffect(() => {
         const fetchStudents = async () => {
+            const token = localStorage.getItem("token")
+           axios.defaults.headers.common["Authorization"] = token
             setLoading(true);
             try {
                 const { data } = await axios.get(`${backendUrl}/students`, {
@@ -117,6 +119,8 @@ const Students = () => {
     };
 
     const deleteUser = async (userOrId: any) => {
+        const token = localStorage.getItem("token")
+       axios.defaults.headers.common["Authorization"] = token
         let userId;
         if (typeof userOrId === 'object') {
             userId = userOrId._id;
@@ -174,16 +178,17 @@ const Students = () => {
     const transactionDetails = (id: string) => {
         window.location.href = `/users/transaction/${id}`;
     };
+   
     return (
         <div>
             <div className="flex items-center justify-between flex-wrap gap-4">
-                <h2 className="text-xl">Contacts</h2>
+                <h2 className="text-xl">Student History</h2>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
                         <Link to={'/Pages/Admissionform'}>
                             <button type="button" className="btn btn-primary">
                                 <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
-                                Add Contact
+                                Add Student
                             </button>
                         </Link>
                         <button type="button" className={`btn btn-outline-primary p-2 ${value === 'list' && 'bg-primary text-white'}`} onClick={() => setValue('list')}>
@@ -195,7 +200,7 @@ const Students = () => {
                     </div>
                     {/* <button className="btn btn-primary">Upload</button> */}
                     <div className="relative">
-                        <input type="text" placeholder="Search Contacts" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value={searchName} onChange={handleSearch} />
+                        <input type="text" placeholder="Search Student" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value={searchName} onChange={handleSearch} />
                         <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
                             <IconSearch className="mx-auto" />
                         </button>
@@ -211,8 +216,8 @@ const Students = () => {
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Location</th>
                                     <th>Phone</th>
+                                    <th>Course</th>
                                     <th className="!text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -230,8 +235,8 @@ const Students = () => {
                                             </div>
                                         </td>
                                         <td>{item.email}</td>
-                                        <td className="whitespace-nowrap">{item.fullAddress}</td>
                                         <td className="whitespace-nowrap">{item.mobileNumber}</td>
+                                        <td className="whitespace-nowrap">{item.courseName}</td>
                                         <td>
                                             <div className="flex gap-4 items-center justify-center">
                                                 <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => transactionDetails(item._id)}>

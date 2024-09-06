@@ -42,6 +42,8 @@ const Profile = () => {
     const { id } = useParams();
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${BASE_URL}/students/${id}`);
@@ -60,6 +62,8 @@ const Profile = () => {
     const formattedDate = students.dateOfBirth ? new Date(students.dateOfBirth).toISOString().split('T')[0] : '';
 
     const deleteUser = async (userOrId: any) => {
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         let userId;
         if (typeof userOrId === 'object') {
             userId = userOrId._id;
@@ -101,11 +105,11 @@ const Profile = () => {
             timer: 3000,
             customClass: { container: 'toast' },
         });
-        toast.fire({
-            icon: type,
-            title: msg,
-            padding: '10px 20px',
-        });
+        // toast.fire({
+        //     icon: type,
+        //     title: msg,
+        //     padding: '10px 20px',
+        // });
     };
     return (
         <div>

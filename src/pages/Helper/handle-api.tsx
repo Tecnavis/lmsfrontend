@@ -41,6 +41,8 @@ interface Attendance {
 }
 // Fetch admin
 export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.get<Admin[]>(`${BASE_URL}/admin`);
         return response.data;
@@ -51,6 +53,7 @@ export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
 };
 //fetch Course
 export const fetchCourse = async (): Promise<Course[] | undefined> => {
+
     try {
         const response = await axios.get<Course[]>(`${BASE_URL}/course`);
         return response.data;
@@ -81,6 +84,8 @@ export const fetchTransaction = async (): Promise<Admin[] | undefined> => {
 }
 // Edit admin by ID
 export const adminEdit = async (id: string): Promise<Admin | undefined> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.get<Admin>(`${BASE_URL}/admin/${id}`);
         return response.data;
@@ -102,6 +107,8 @@ export const courseEdit = async (id: string): Promise<Course | undefined> => {
 
 //update admin by ID
 export const adminUpdate = async (id: string, admin: Admin): Promise<Admin | undefined> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.put<Admin>(`${BASE_URL}/admin/${id}`, admin);
         return response.data;
@@ -158,6 +165,8 @@ export const adminLogin = async (e: FormEvent<HTMLFormElement>, values: LoginVal
 //handle signup
 
 export const createAdmin = async (formData: AdminFormData): Promise<any> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.post(`${BASE_URL}/admin`, formData, {
             headers: {
@@ -174,6 +183,8 @@ export const createAdmin = async (formData: AdminFormData): Promise<any> => {
 // delete admin
 
 export const deleteAdmin = async (id: string): Promise<void> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         await axios.delete(`${BASE_URL}/admin/${id}`);
     } catch (err) {
