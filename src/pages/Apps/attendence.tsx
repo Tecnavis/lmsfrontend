@@ -73,9 +73,8 @@ const AttendanceTable: React.FC = () => {
     };
 
     const loadData = async () => {
-
-      const token = localStorage.getItem('token');
-      axios.defaults.headers.common['Authorization'] = token;
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         try {
             setLoading(true);
             const response = await fetchStudents();
@@ -189,11 +188,15 @@ const AttendanceTable: React.FC = () => {
 
     if (loading) return <Typography>Loading...</Typography>;
     if (error) return <Typography color="error">{error}</Typography>;
-
+    const handleClick = () => {
+        window.location.href = '/apps/monthlyattendence';
+    };
     return (
         <Paper elevation={3} sx={{ padding: 3 }}>
-            <Typography variant="h5" gutterBottom>
-                Attendance Table
+            <Typography variant="h6" gutterBottom>
+                <Button variant="contained" color="primary" onClick={handleClick}>
+                    Monthly Attendance
+                </Button>
             </Typography>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
