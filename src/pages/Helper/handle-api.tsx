@@ -9,6 +9,10 @@ interface Admin {
     id: string;
     name: string;
 }
+interface Student {
+    id: string;
+    name: string;
+}
 interface Course {
     id: string;
     name: string;
@@ -28,8 +32,17 @@ interface AdminFormData {
     phone: number;
     image: File;
 }
+interface Attendance {
+  _id: string;
+  students: Student;
+  date: string;
+  status: string;
+  __v: number;
+}
 // Fetch admin
 export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.get<Admin[]>(`${BASE_URL}/admin`);
         return response.data;
@@ -40,6 +53,7 @@ export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
 };
 //fetch Course
 export const fetchCourse = async (): Promise<Course[] | undefined> => {
+
     try {
         const response = await axios.get<Course[]>(`${BASE_URL}/course`);
         return response.data;
@@ -49,9 +63,9 @@ export const fetchCourse = async (): Promise<Course[] | undefined> => {
     }
 };
 //fetch students
-export const fetchStudents = async (): Promise<Admin[] | undefined> => {
+export const fetchStudents = async (): Promise<Student[] | undefined> => {
     try {
-        const response = await axios.get<Admin[]>(`${BASE_URL}/students`);
+        const response = await axios.get<Student[]>(`${BASE_URL}/students`);
         return response.data;
     } catch (err) {
         console.error('Student details listing failed', err);
@@ -70,6 +84,8 @@ export const fetchTransaction = async (): Promise<Admin[] | undefined> => {
 }
 // Edit admin by ID
 export const adminEdit = async (id: string): Promise<Admin | undefined> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.get<Admin>(`${BASE_URL}/admin/${id}`);
         return response.data;
@@ -91,6 +107,8 @@ export const courseEdit = async (id: string): Promise<Course | undefined> => {
 
 //update admin by ID
 export const adminUpdate = async (id: string, admin: Admin): Promise<Admin | undefined> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.put<Admin>(`${BASE_URL}/admin/${id}`, admin);
         return response.data;
@@ -147,6 +165,8 @@ export const adminLogin = async (e: FormEvent<HTMLFormElement>, values: LoginVal
 //handle signup
 
 export const createAdmin = async (formData: AdminFormData): Promise<any> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         const response = await axios.post(`${BASE_URL}/admin`, formData, {
             headers: {
@@ -163,6 +183,8 @@ export const createAdmin = async (formData: AdminFormData): Promise<any> => {
 // delete admin
 
 export const deleteAdmin = async (id: string): Promise<void> => {
+  const token = localStorage.getItem("token")
+  axios.defaults.headers.common["Authorization"] = token
     try {
         await axios.delete(`${BASE_URL}/admin/${id}`);
     } catch (err) {
@@ -199,3 +221,15 @@ export const createCourse = async (formData: Course): Promise<any> => {
         throw err;
     }
 };
+
+//Get attendance records for a specific student
+export const getAttendanceRecords = async (studentId: string): Promise<Attendance[] | undefined> => {
+    try {
+        const response = await axios.get<Attendance[]>(`${BASE_URL}/attendance/student/${studentId}`);
+        console.log(response.data, 'data');
+        return response.data;
+    } catch (err) {
+        console.error('Error fetching attendance records:', err);
+        return undefined;
+    }
+}

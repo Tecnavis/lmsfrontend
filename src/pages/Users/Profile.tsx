@@ -42,11 +42,15 @@ const Profile = () => {
     const { id } = useParams();
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${BASE_URL}/students/${id}`);
                 const data = response.data;
-                setCourse(data.courseName); // Ensure courseName is set as an object
+                setCourse(data.courseName);
+                setStudents(data);
+                // Ensure courseName is set as an object
             } catch (error) {
                 console.error('Error fetching student details:', error);
             }
@@ -58,6 +62,8 @@ const Profile = () => {
     const formattedDate = students.dateOfBirth ? new Date(students.dateOfBirth).toISOString().split('T')[0] : '';
 
     const deleteUser = async (userOrId: any) => {
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         let userId;
         if (typeof userOrId === 'object') {
             userId = userOrId._id;
@@ -99,11 +105,11 @@ const Profile = () => {
             timer: 3000,
             customClass: { container: 'toast' },
         });
-        toast.fire({
-            icon: type,
-            title: msg,
-            padding: '10px 20px',
-        });
+        // toast.fire({
+        //     icon: type,
+        //     title: msg,
+        //     padding: '10px 20px',
+        // });
     };
     return (
         <div>
@@ -235,9 +241,9 @@ const Profile = () => {
                                             <td>{students.parentsMobileNumber}</td>
                                         </tr>
                                         <tr>
-                <td>Course name :</td>
-                <td>{course ? course.name : 'Loading...'}</td>
-            </tr>
+                                            <td>Course name :</td>
+                                            <td>{course ? course.name : 'Loading...'}</td>
+                                        </tr>
 
                                         <tr>
                                             <td>Course fee :</td>

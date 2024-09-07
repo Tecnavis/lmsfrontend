@@ -37,6 +37,9 @@ const StudentTable: React.FC = () => {
     }, []);
 
     const fetchStudents = async () => {
+
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         try {
             const response = await axios.get(`${backendUrl}/students`);
             // Extract the students array from the response object
