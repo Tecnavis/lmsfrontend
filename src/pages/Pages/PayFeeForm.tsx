@@ -111,7 +111,12 @@ const PayFeeform = () => {
     
         try {
             if (!selectedStudentId) {
-                alert("Please select a student.");
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please select a student',
+                    icon: 'error',
+                    confirmButtonText: 'Try Again'
+                })
                 return;
             }
     
@@ -131,7 +136,13 @@ const PayFeeform = () => {
             });
     
             console.log('Transaction Response:', transactionResponse.data);
-            alert('Payment successful');
+
+            Swal.fire({
+                title: 'Success!',
+                text: 'Payment successful',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            })
     
             // Update the student's balance and courseFee in the database 
             const studentUpdateResponse = await axios.patch(`${BASE_URL}/students/${selectedStudentId}`, {
@@ -139,9 +150,7 @@ const PayFeeform = () => {
                 courseFee: newBalance // Ensure courseFee is updated to the new balance
             });
     
-            console.log('Student Update Response:', studentUpdateResponse.data);
-            alert('Student balance and course fee updated successfully');
-    
+           
             // Navigate or reset form here if necessary
         } catch (error) {
             if (axios.isAxiosError(error)) {

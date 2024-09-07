@@ -17,7 +17,7 @@ import { useForm } from './Helper/useForm';
 import IconEdit from '../components/Icon/IconEdit';
 import IconPlusCircle from '../components/Icon/IconPlusCircle';
 import axios from 'axios';
-
+import Swal from 'sweetalert2';
 const Index = () => {
     const token = localStorage.getItem('token');
 
@@ -436,10 +436,22 @@ const Index = () => {
             await adminUpdate(editId, formData as any);
             setIsPopupOpen(false);
             loadData();
-            alert('Update successful');
+            Swal.fire({
+                title: 'Success!',
+                text: 'Update successful',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
         } catch (err) {
             console.error('Error updating staff:', err);
-            alert('Update failed');
+        
+            // SweetAlert for failure
+            Swal.fire({
+                title: 'Error!',
+                text: 'Update failed',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
         }
     };
 
@@ -455,10 +467,20 @@ const Index = () => {
             await courseUpdate(editId1, courseData as any);
             setIsPopupOpen1(false);
             loadCourse();
-            alert('Update successful');
+            Swal.fire({
+                title: 'Success!',
+                text: 'Update successful',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            })
         } catch (err) {
             console.error('Error updating course:', err);
-            alert('Update failed');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Update failed',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            })
         }
     };
 
@@ -468,11 +490,21 @@ const Index = () => {
         if (confirmation) {
             try {
                 await deleteAdmin(editId);
-                alert('Success');
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Delete successful',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
                 loadData();
             } catch (err) {
                 console.error('Error deleting staff:', err);
-                alert('Failed');
+               Swal.fire({
+                   title: 'Error!',
+                   text: 'Delete failed',
+                   icon: 'error',
+                   confirmButtonText: 'Try Again'
+               })
             }
         }
     };
@@ -483,11 +515,21 @@ const Index = () => {
         if (confirmation) {
             try {
                 await deleteCourse(editId1);
-                alert('Success');
+               Swal.fire({
+                   title: 'Success!',
+                   text: 'Delete successful',
+                   icon: 'success',
+                   confirmButtonText: 'OK'
+               })
                 loadCourse();
             } catch (err) {
                 console.error('Error deleting course:', err);
-                alert('Failed');
+               Swal.fire({
+                   title: 'Error!',
+                   text: 'Delete failed',
+                   icon: 'error',
+                   confirmButtonText: 'Try Again'
+               })
             }
         }
     };
@@ -505,10 +547,20 @@ const Index = () => {
             await createCourse(courseData); // Function to create the course in the backend
             setIsCreatePopupOpen(false); // Close the popup after successful creation
             loadCourse(); // Reload the courses
-            alert('Course created successfully');
+           Swal.fire({
+               title: 'Success!',
+               text: 'Course created successfully',
+               icon: 'success',
+               confirmButtonText: 'OK'
+           })
         } catch (err) {
             console.error('Error creating course:', err);
-            alert('Course creation failed');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Course creation failed',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            })
         }
     };
     //admin details
