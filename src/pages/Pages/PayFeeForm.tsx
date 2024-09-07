@@ -5,6 +5,8 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import axios from 'axios';
 import { useForm } from '../Helper/useForm';
 import Swal from 'sweetalert2';
+import { BASE_URL } from '../Helper/handle-api';
+
 const PayFeeform = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const dispatch = useDispatch();
@@ -12,6 +14,7 @@ const PayFeeform = () => {
     const [modeOfPayment, setModeOfPayment] = useState('UPI');
     const [students, setStudents] = useState<any[]>([]);
     const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
+    const [selectedStudentId, setSelectedStudentId] = useState<string>(''); // Store the selected student's ID
     const [values, handleChange, setValues] = useForm({
         name: '',
         receiptNumber: '', // Initially empty, will be set by generateReceiptNumber
@@ -31,6 +34,7 @@ const PayFeeform = () => {
         dispatch(setPageTitle('PayFeeform'));
         generateReceiptNumber();
     }, [dispatch]);
+
     // Handle payment mode change
     const handlePaymentModeChange = (mode: string) => {
         setModeOfPayment(mode);
@@ -40,7 +44,7 @@ const PayFeeform = () => {
         }));
     };
 
-    // Function to fetch last receipt number and generate a new one
+    // Generate the next receipt number
     const generateReceiptNumber = async () => {
         try {
             const response = await axios.get(`${backendUrl}/transaction/last-receipt-number`);
@@ -61,7 +65,11 @@ const PayFeeform = () => {
         }
     };
 
+    // Fetch the list of students
     const fetchStudents = async () => {
+
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         try {
             const response = await axios.get(`${backendUrl}/students`);
             const studentsData = response.data.students;
@@ -71,65 +79,81 @@ const PayFeeform = () => {
         }
     };
 
-    // Handle name input change for auto-complete
+    // Handle name input change and filter students
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         handleChange(e);
 
         // Filter students based on the input value
-        const filtered = students.filter((student) => student.name.toLowerCase().includes(value.toLowerCase()));
+        const filtered = students.filter((student) =>
+            student.name.toLowerCase().includes(value.toLowerCase())
+        );
         setFilteredStudents(filtered);
     };
 
-    // Handle selecting a name from the suggestions
+    // Handle selecting a student from the suggestion list
     const handleSelectName = (student: any) => {
         setValues((prevValues) => ({
             ...prevValues,
             name: student.name,
             balance: student.courseFee, // Set the balance to the selected student's courseFee
         }));
-        setFilteredStudents([]); // Clear suggestions after selection
+        setSelectedStudentId(student._id); // Save the selected student's ID
+        setFilteredStudents([]);
     };
-    //payment submit
-    const handleSubmit = async (e: React.FormEvent) => {
+
+    // Handle form submission
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
+    
         try {
-            // Calculate updated balance
-            const updatedBalance = values.balance - parseFloat(values.payAmount);
-
-            // Send payment details along with updated balance to the backend
-            await axios.post(`${backendUrl}/transaction`, {
-                ...values,
-                balance: updatedBalance, // Send updated balance
-                modeOfPayment,
+            if (!selectedStudentId) {
+                alert("Please select a student.");
+                return;
+            }
+    
+            // Calculate the new balance
+            const newBalance = values.balance - values.payAmount;
+    
+            // Post the transaction to the database
+            const transactionResponse = await axios.post(`${BASE_URL}/transaction`, {
+                receiptNumber: values.receiptNumber,
+                referenceNumber: values.referenceNumber,
+                date: values.date,
+                name: values.name,
+                balance: newBalance, // Updated balance
+                payAmount: values.payAmount,
+                modeOfPayment: modeOfPayment,
+                students: selectedStudentId, // Use selected student's ID
             });
-
-            // Update student balance
-            await axios.patch(`${backendUrl}/students/${values.name}`, {
-                balance: updatedBalance,
+    
+            console.log('Transaction Response:', transactionResponse.data);
+            alert('Payment successful');
+    
+            // Update the student's balance and courseFee in the database 
+            const studentUpdateResponse = await axios.patch(`${BASE_URL}/students/${selectedStudentId}`, {
+                balance: newBalance, 
+                courseFee: newBalance // Ensure courseFee is updated to the new balance
             });
-
-            // Show success alert
-            Swal.fire({
-                icon: 'success',
-                title: 'Payment Successful',
-                text: 'Your payment has been processed successfully.',
-                confirmButtonText: 'OK',
-            });
-
-            // Optionally, navigate to another page or reset form values here
+    
+            console.log('Student Update Response:', studentUpdateResponse.data);
+            alert('Student balance and course fee updated successfully');
+    
+            // Navigate or reset form here if necessary
         } catch (error) {
-            // Show error alert
-            Swal.fire({
-                icon: 'error',
-                title: 'Payment Failed',
-                text: 'There was an error processing your payment. Please try again.',
-                confirmButtonText: 'OK',
-            });
-            console.error('Error submitting form:', error);
+            if (axios.isAxiosError(error)) {
+                console.error('Error submitting form:', error.response?.data);
+            } else {
+                console.error('Unexpected error:', error);
+            }
         }
     };
+    
+    
+
 
     return (
         <div>
