@@ -58,8 +58,13 @@ const token = localStorage.getItem("tokens");
         }
     };
     
+    useEffect(() => {
+        if (token) {
+            navigate('/', { replace: true });
+        }
+    }, [token, navigate]);
+    
 
-if(token){
     return (
         <div>
             <div className="absolute inset-0">
@@ -161,9 +166,7 @@ if(token){
                 </div>
             </div>
         </div>
-    );} else {
-    navigate('/')    
-    }
+    );
 };
 
 export default LoginBoxed;
