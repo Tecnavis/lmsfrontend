@@ -1,6 +1,8 @@
 import React, { useState, useEffect, memo } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../Helper/handle-api';
+import { Button } from '@mantine/core';
+import HolidayForm from './holidayform';
 
 const getCurrentMonth = (): string => {
     const now = new Date();
@@ -17,21 +19,20 @@ const getDaysInMonth = (month: string): number => {
 const AttendanceTable: React.FC = () => {
     const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
     const [attendanceRecords, setAttendanceRecords] = useState<any[]>([]);
+    const [isFormOpen, setFormOpen] = useState(false);
+
+    // Function to fetch attendance records from the server
+    const fetchAttendanceRecords = async () => {
+        try {
+            const [year, month] = currentMonth.split('-');
+            const response = await axios.get(`${BASE_URL}/attendance/${month}/${year}`);
+            setAttendanceRecords(response.data.attendanceRecords);
+        } catch (error) {
+            console.error('Error fetching attendance records:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchAttendanceRecords = async () => {
-            try {
-                // Split the currentMonth to get year and month separately
-                const [year, month] = currentMonth.split('-');
-
-                // Call the API with the correct parameters (year and month)
-                const response = await axios.get(`${BASE_URL}/attendance/${month}/${year}`);
-                setAttendanceRecords(response.data.attendanceRecords);
-            } catch (error) {
-                console.error('Error fetching attendance records:', error);
-            }
-        };
-
         fetchAttendanceRecords();
     }, [currentMonth]);
 
@@ -49,9 +50,8 @@ const AttendanceTable: React.FC = () => {
 
     const daysInMonth = getDaysInMonth(currentMonth);
 
-    // Organize attendance records by student ID
     const recordsByStudent: { [key: string]: any[] } = {};
-    attendanceRecords.forEach(record => {
+    attendanceRecords.forEach((record) => {
         if (record.students) {
             const studentId = record.students._id;
             if (!recordsByStudent[studentId]) {
@@ -60,6 +60,15 @@ const AttendanceTable: React.FC = () => {
             recordsByStudent[studentId].push(record);
         }
     });
+
+    const handleButtonClick = () => {
+        setFormOpen(true);
+    };
+
+    const handleCloseForm = () => {
+        setFormOpen(false);
+        fetchAttendanceRecords(); // Re-fetch attendance after updating holidays
+    };
 
     return (
         <div style={{ padding: '20px' }}>
@@ -85,6 +94,7 @@ const AttendanceTable: React.FC = () => {
                     style={{
                         padding: '10px 20px',
                         border: 'none',
+                        marginRight: '10px',
                         borderRadius: '5px',
                         backgroundColor: '#007bff',
                         color: '#fff',
@@ -94,6 +104,21 @@ const AttendanceTable: React.FC = () => {
                 >
                     Next
                 </button>
+                <button
+                    style={{
+                        backgroundColor: 'red',
+                        padding: '10px 20px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        color: '#fff',
+                        transition: 'background-color 0.3s',
+                        fontSize: '16px',
+                    }}
+                    onClick={handleButtonClick}
+                >
+                    Holiday
+                </button>
+                <HolidayForm open={isFormOpen} onClose={handleCloseForm} fetchAttendanceRecords={fetchAttendanceRecords} />
             </div>
 
             <div style={{ overflowX: 'auto' }}>
@@ -113,15 +138,9 @@ const AttendanceTable: React.FC = () => {
                             const student = records[0]?.students || { name: 'Unknown Student' };
                             return (
                                 <tr key={index}>
-                                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                                        {student.name}
-                                    </td>
+                                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.name}</td>
                                     {[...Array(daysInMonth).keys()].map((day) => {
-                                        const attendance = records.find(
-                                            (a) =>
-                                                new Date(a.date).getDate() === day + 1 &&
-                                                new Date(a.date).toISOString().slice(0, 7) === currentMonth
-                                        );
+                                        const attendance = records.find((a) => new Date(a.date).getDate() === day + 1 && new Date(a.date).toISOString().slice(0, 7) === currentMonth);
                                         return (
                                             <td
                                                 key={day}

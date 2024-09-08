@@ -6,7 +6,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'; // Import calendar s
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import axios from 'axios';
-import { fetchStudents, BASE_URL, getAttendanceRecords } from '../Helper/handle-api';
+import { fetchStudents, BASE_URL } from '../Helper/handle-api';
+import HolidayForm from './holidayform';
 
 interface AttendanceRecord {
     date: string;
@@ -32,45 +33,21 @@ const localizer = momentLocalizer(moment);
 const AttendanceTable: React.FC = () => {
     const [allStudents, setAllStudents] = useState<Student[]>([]);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-    const [selectedStudentAttendance, setSelectedStudentAttendance] = useState<AttendanceRecord[]>([]);
     const [currentDate, setCurrentDate] = useState<string>(moment().format('YYYY-MM-DD'));
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedStudentAttendance, setSelectedStudentAttendance] = useState<AttendanceRecord[]>([]);
+    const [isFormOpen, setFormOpen] = useState(false);
 
     useEffect(() => {
         loadData();
     }, [currentDate]);
 
-    // Refetch data when the currentDate changes
     useEffect(() => {
-        let isMounted = true; // Flag to check if the component is still mounted
         if (selectedStudent?._id) {
-            loadSpecificStudentAttendance(selectedStudent._id, isMounted);
+            loadSpecificStudentAttendance(selectedStudent._id);
         }
-
-        return () => {
-            isMounted = false; // Clean up flag on unmount
-        };
     }, [selectedStudent?._id]);
-
-    const loadSpecificStudentAttendance = async (studentId: number, isMounted: boolean) => {
-        try {
-            const response = await axios.get(`${BASE_URL}/attendance/student/${studentId}`);
-            setSelectedStudentAttendance(response.data);
-            console.log(selectedStudentAttendance, 'selectedStudentAttendance');
-            if (isMounted && response.data) {
-                setSelectedStudent((prevStudent: any) => {
-                    if (prevStudent?.attendanceHistory !== response.data) {
-                        return { ...prevStudent, attendanceHistory: response.data };
-                    }
-                    return prevStudent;
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching attendance records:', error);
-            setError('Failed to load attendance records');
-        }
-    };
 
     const loadData = async () => {
         const token = localStorage.getItem('token');
@@ -97,13 +74,26 @@ const AttendanceTable: React.FC = () => {
         }
     };
 
+    const loadSpecificStudentAttendance = async (studentId: number) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/attendance/student/${studentId}`);
+            setSelectedStudentAttendance(response.data);
+            setSelectedStudent((prevStudent) => ({
+                ...prevStudent,
+                attendanceHistory: response.data,
+            }));
+        } catch (error) {
+            console.error('Error fetching attendance records:', error);
+            setError('Failed to load attendance records');
+        }
+    };
+
     const handleAttendanceChange = async (id: number) => {
         try {
             const updatedStudent = allStudents.find((student) => student._id === id);
             if (!updatedStudent) return;
 
-            const attendanceHistory = updatedStudent.attendanceHistory || []; // Ensure attendanceHistory is defined
-
+            const attendanceHistory = updatedStudent.attendanceHistory || [];
             const attendanceIndex = attendanceHistory.findIndex((record) => record.date === currentDate);
             let newStatus: 'Present' | 'Absent' = 'Present';
             if (attendanceIndex !== undefined && attendanceIndex !== -1) {
@@ -140,7 +130,6 @@ const AttendanceTable: React.FC = () => {
                             : student
                     )
                 );
-                // Update selectedStudent if it was previously selected
                 if (selectedStudent && selectedStudent._id === id) {
                     setSelectedStudent({
                         ...selectedStudent,
@@ -172,14 +161,21 @@ const AttendanceTable: React.FC = () => {
     };
 
     const getCalendarEvents = (attendanceHistory: AttendanceRecord[]) => {
-        return attendanceHistory.map((record) => ({
-            title: record.status === 'Present' ? 'Present' : 'Absent',
-            start: new Date(record.date),
-            end: new Date(record.date),
-            allDay: true,
-            style: { backgroundColor: record.status === 'Present' ? '#4caf50' : '#f44336' },
-        }));
-    };
+      return attendanceHistory.map((record) => ({
+          title: record.status === 'Present' ? 'Present' : record.status === 'Absent' ? 'Absent' : 'Holiday',
+          start: new Date(record.date),
+          end: new Date(record.date),
+          allDay: true,
+          style: {
+              backgroundColor: record.status === 'Present' 
+                  ? '#4caf50' 
+                  : record.status === 'Absent' 
+                  ? '#f44336' 
+                  : '#ff9800', // Set holiday color
+          },
+      }));
+  };
+  
 
     const filteredStudents = allStudents.map((student) => ({
         ...student,
@@ -188,17 +184,30 @@ const AttendanceTable: React.FC = () => {
 
     if (loading) return <Typography>Loading...</Typography>;
     if (error) return <Typography color="error">{error}</Typography>;
+
     const handleClick = () => {
         window.location.href = '/apps/monthlyattendence';
     };
+
+    const handleButtonClick = () => {
+        setFormOpen(true);
+    };
+
+    const handleCloseForm = () => {
+        setFormOpen(false);
+    };
+
     return (
         <Paper elevation={3} sx={{ padding: 3 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom style={{ display: 'flex' }}>
                 <Button variant="contained" color="primary" onClick={handleClick}>
                     Monthly Attendance
                 </Button>
+                <Button variant="contained" color="primary" style={{ marginLeft: 'auto' }} onClick={handleButtonClick}>
+                    Holiday
+                </Button>
+                <HolidayForm open={isFormOpen} onClose={handleCloseForm} />
             </Typography>
-
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <IconButton onClick={handlePreviousDay}>
                     <ArrowBackIcon />
@@ -227,10 +236,10 @@ const AttendanceTable: React.FC = () => {
                                 <TableCell>{student.name}</TableCell>
                                 <TableCell>{student.courseName}</TableCell>
                                 <TableCell align="center">
-                                    <Checkbox checked={student.present} onChange={() => handleAttendanceChange(student._id)} color="primary" />
+                                    <Checkbox checked={student.present} onChange={() => handleAttendanceChange(student._id)} />
                                 </TableCell>
                                 <TableCell align="center">
-                                    <Button variant="contained" color="primary" onClick={() => handleViewClick(student)}>
+                                    <Button variant="contained" onClick={() => handleViewClick(student)}>
                                         View
                                     </Button>
                                 </TableCell>
@@ -240,16 +249,16 @@ const AttendanceTable: React.FC = () => {
                 </Table>
             </TableContainer>
 
-            <Dialog open={!!selectedStudent} onClose={handleClose} maxWidth="md" fullWidth>
-                <DialogTitle>Attendance Details - {selectedStudent?.name}</DialogTitle>
+            <Dialog open={Boolean(selectedStudent)} onClose={handleClose}>
+                <DialogTitle>{selectedStudent?.name}</DialogTitle>
                 <DialogContent>
-                    {selectedStudent ? (
-                        <div style={{ height: '500px' }}>
-                            <Calendar localizer={localizer} events={getCalendarEvents(selectedStudent.attendanceHistory || [])} startAccessor="start" endAccessor="end" style={{ height: '100%' }} />
-                        </div>
-                    ) : (
-                        <Typography>No student selected</Typography>
-                    )}
+                    <Calendar
+                        localizer={localizer}
+                        events={getCalendarEvents(selectedStudent?.attendanceHistory || [])}
+                        startAccessor="start"
+                        endAccessor="end"
+                        style={{ height: 500, width: '100%' }}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
