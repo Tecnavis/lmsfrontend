@@ -233,7 +233,6 @@ const ExpenceHistory: React.FC = () => {
               value={formData.referenceNumber}
               onChange={handleFormChange}
               fullWidth
-              required
             />
             <TextField
               margin="dense"
