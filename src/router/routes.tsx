@@ -113,7 +113,8 @@ const Students1 = lazy(() => import('../pages/Apps/students1'));
 const Attendance = lazy(() => import('../pages/Apps/attendence'));
 const Monthly = lazy(() => import('../pages/Apps/monthlyattendence'));
 const Transaction = lazy(() => import('../pages/Apps/transaction'));
-
+const  Expence = lazy(() => import('../pages/Apps/expence'));
+const Expencehistory = lazy(() => import('../pages/Apps/expencehistory'));
 const routes = [
     // dashboard
     {
@@ -191,6 +192,14 @@ const routes = [
     {
         path: '/apps/calendar',
         element: <Calendar />,
+    },
+    {
+        path: '/apps/expence',
+        element: <Expence />,
+    },
+    {
+        path: '/apps/expencehistory',
+        element: <Expencehistory />,
     },
     // preview page
     {

@@ -42,7 +42,6 @@ const Students = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-console.log(students,'this is the students')
     useEffect(() => {
         const fetchStudents = async () => {
             const token = localStorage.getItem("token")

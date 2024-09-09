@@ -211,6 +211,7 @@ const Sidebar = () => {
                                             </div>
                                         </NavLink>
                                     </li>
+                                    
                                     <li className="nav-item">
                                         <NavLink to="/apps/attendance" className="group">
                                             <div className="flex items-center">
@@ -265,6 +266,22 @@ const Sidebar = () => {
                                             </ul>
                                         </AnimateHeight>
                                     </li> */}
+                                    <li className="nav-item">
+                                        <NavLink to="/apps/sutdents1" className="group">
+                                            <div className="flex items-center">
+                                                <IconMenuUsers className="group-hover:!text-primary shrink-0" />
+                                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Students History')}</span>
+                                            </div>
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink to="/apps/expencehistory" className="group">
+                                            <div className="flex items-center">
+                                                <IconMenuUsers className="group-hover:!text-primary shrink-0" />
+                                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Expense History')}</span>
+                                            </div>
+                                        </NavLink>
+                                    </li>
 
                                     <li className="nav-item">
                                         <NavLink to="/apps/calendar" className="group">
