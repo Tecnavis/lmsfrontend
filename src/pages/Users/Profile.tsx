@@ -26,6 +26,7 @@ import IconUser from '../../components/Icon/IconUser';
 import IconPaperclip from '../../components/Icon/IconPaperclip';
 import Swal from 'sweetalert2';
 import IconTrash from '../../components/Icon/IconTrash';
+import { FaMoneyBillWave, FaMobileAlt } from 'react-icons/fa'; // Import the icons
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -38,8 +39,28 @@ const Profile = () => {
     //fetch students
     const [students, setStudents] = useState<any>({});
     const [course, setCourse] = useState<{ name?: string } | null>(null);
+    const [transactions, setTransactions] = useState([])
+    const [adminName, setAdminName] = useState('');
+
+    useEffect(() => {
+        const admins = localStorage.getItem('Admins');
+        if (admins) {
+            const parsedAdmins = JSON.parse(admins);
+            setAdminName(parsedAdmins.name);
+        }
+    }, []);  // The empty dependency array ensures this runs only once on mount.
 
     const { id } = useParams();
+
+    const fetchTransaction = async()=>{
+        try {
+            const response = await axios.get(`${BASE_URL}/transaction/student/${id}`)
+            const data = response.data
+            setTransactions(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -56,6 +77,7 @@ const Profile = () => {
             }
         };
         fetchData();
+        fetchTransaction();
     }, [id]);
 
     // Format the date
@@ -85,8 +107,11 @@ const Profile = () => {
             });
 
             if (result.isConfirmed) {
+              
                 // Proceed with deletion if confirmed
-                await axios.delete(`${BASE_URL}/students/${userId}`);
+                await axios.delete(`${BASE_URL}/students/${userId}`, {
+                    params: { adminName }
+                });
                 showMessage('User has been deleted successfully.');
                 navigate('/apps/sutdents');
             } else {
@@ -105,12 +130,16 @@ const Profile = () => {
             timer: 3000,
             customClass: { container: 'toast' },
         });
-        // toast.fire({
-        //     icon: type,
-        //     title: msg,
-        //     padding: '10px 20px',
-        // });
+   
     };
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JS
+        const year = date.getFullYear();
+        
+        return `${day}/${month}/${year}`;
+      };
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -242,7 +271,7 @@ const Profile = () => {
                                         </tr>
                                         <tr>
                                             <td>Course name :</td>
-                                            <td>{course ? course.name : 'Loading...'}</td>
+                                            <td>{students.courseName}</td>
                                         </tr>
 
                                         <tr>
@@ -279,51 +308,36 @@ const Profile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="panel">
                         <div className="mb-5">
-                            <h5 className="font-semibold text-lg dark:text-white-light">Summary</h5>
+                            <h5 className="font-semibold text-lg dark:text-white-light">Payment Transactions</h5>
                         </div>
+                      
                         <div className="space-y-4">
-                            <div className="border border-[#ebedf2] rounded dark:bg-[#1b2e4b] dark:border-0">
-                                <div className="flex items-center justify-between p-4 py-2">
-                                    <div className="grid place-content-center w-9 h-9 rounded-md bg-secondary-light dark:bg-secondary text-secondary dark:text-secondary-light">
-                                        <IconShoppingBag />
-                                    </div>
-                                    <div className="ltr:ml-4 rtl:mr-4 flex items-start justify-between flex-auto font-semibold">
-                                        <h6 className="text-white-dark text-[13px] dark:text-white-dark">
-                                            Income
-                                            <span className="block text-base text-[#515365] dark:text-white-light">$92,600</span>
-                                        </h6>
-                                        <p className="ltr:ml-auto rtl:mr-auto text-secondary">90%</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="border border-[#ebedf2] rounded dark:bg-[#1b2e4b] dark:border-0">
-                                <div className="flex items-center justify-between p-4 py-2">
-                                    <div className="grid place-content-center w-9 h-9 rounded-md bg-info-light dark:bg-info text-info dark:text-info-light">
-                                        <IconTag />
-                                    </div>
-                                    <div className="ltr:ml-4 rtl:mr-4 flex items-start justify-between flex-auto font-semibold">
-                                        <h6 className="text-white-dark text-[13px] dark:text-white-dark">
-                                            Profit
-                                            <span className="block text-base text-[#515365] dark:text-white-light">$37,515</span>
-                                        </h6>
-                                        <p className="ltr:ml-auto rtl:mr-auto text-info">65%</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="border border-[#ebedf2] rounded dark:bg-[#1b2e4b] dark:border-0">
-                                <div className="flex items-center justify-between p-4 py-2">
-                                    <div className="grid place-content-center w-9 h-9 rounded-md bg-warning-light dark:bg-warning text-warning dark:text-warning-light">
-                                        <IconCreditCard />
-                                    </div>
-                                    <div className="ltr:ml-4 rtl:mr-4 flex items-start justify-between flex-auto font-semibold">
-                                        <h6 className="text-white-dark text-[13px] dark:text-white-dark">
-                                            Expenses
-                                            <span className="block text-base text-[#515365] dark:text-white-light">$55,085</span>
-                                        </h6>
-                                        <p className="ltr:ml-auto rtl:mr-auto text-warning">80%</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div 
+  className="border border-[#ebedf2] rounded dark:bg-[#1b2e4b] dark:border-0" 
+  style={{ maxHeight: '200px', overflowY: 'auto' }} // Adjust maxHeight as needed
+>
+  {transactions.slice().reverse().map((items, index) => (
+    <div key={index} className="flex items-center justify-between p-4 py-2">
+      <div className="grid place-content-center w-9 h-9 rounded-md bg-secondary-light dark:bg-secondary text-secondary dark:text-secondary-light">
+        {items.modeOfPayment === 'UPI' || items.modeOfPayment === 'UPI Payment' ? (
+          <FaMobileAlt />  // Icon for UPI
+        ) : items.modeOfPayment === 'Cash' || items.modeOfPayment === 'Cash Payment' ? (
+          <FaMoneyBillWave />  // Icon for Cash
+        ) : (
+          <span>No Icon</span>  // Default fallback if no match
+        )}
+      </div>
+      <div className="ltr:ml-4 rtl:mr-4 flex items-start justify-between flex-auto font-semibold">
+        <h6 className="text-white-dark text-[13px] dark:text-white-dark">
+          {formatDate(items.date)}
+          <span className="block text-base text-[#515365] dark:text-white-light">₹{items.payAmount}</span>
+        </h6>
+        <p className="ltr:ml-auto rtl:mr-auto text-secondary">{items.balance}</p>
+      </div>
+    </div>
+  ))}
+</div>
+
                         </div>
                     </div>
                     <div className="panel">
@@ -348,134 +362,7 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="panel">
-                        <div className="flex items-center justify-between mb-5">
-                            <h5 className="font-semibold text-lg dark:text-white-light">Payment History</h5>
-                        </div>
-                        <div>
-                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b]">
-                                <div className="flex items-center justify-between py-2">
-                                    <h6 className="text-[#515365] font-semibold dark:text-white-dark">
-                                        March
-                                        <span className="block text-white-dark dark:text-white-light">Pro Membership</span>
-                                    </h6>
-                                    <div className="flex items-start justify-between ltr:ml-auto rtl:mr-auto">
-                                        <p className="font-semibold">90%</p>
-                                        <div className="dropdown ltr:ml-4 rtl:mr-4">
-                                            <Dropdown
-                                                offset={[0, 5]}
-                                                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                                btnClassName="hover:text-primary"
-                                                button={<IconHorizontalDots className="opacity-80 hover:opacity-100" />}
-                                            >
-                                                <ul className="!min-w-[150px]">
-                                                    <li>
-                                                        <button type="button">View Invoice</button>
-                                                    </li>
-                                                    <li>
-                                                        <button type="button">Download Invoice</button>
-                                                    </li>
-                                                </ul>
-                                            </Dropdown>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b]">
-                                <div className="flex items-center justify-between py-2">
-                                    <h6 className="text-[#515365] font-semibold dark:text-white-dark">
-                                        February
-                                        <span className="block text-white-dark dark:text-white-light">Pro Membership</span>
-                                    </h6>
-                                    <div className="flex items-start justify-between ltr:ml-auto rtl:mr-auto">
-                                        <p className="font-semibold">90%</p>
-                                        <div className="dropdown ltr:ml-4 rtl:mr-4">
-                                            <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={<IconHorizontalDots className="opacity-80 hover:opacity-100" />}>
-                                                <ul className="!min-w-[150px]">
-                                                    <li>
-                                                        <button type="button">View Invoice</button>
-                                                    </li>
-                                                    <li>
-                                                        <button type="button">Download Invoice</button>
-                                                    </li>
-                                                </ul>
-                                            </Dropdown>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex items-center justify-between py-2">
-                                    <h6 className="text-[#515365] font-semibold dark:text-white-dark">
-                                        January
-                                        <span className="block text-white-dark dark:text-white-light">Pro Membership</span>
-                                    </h6>
-                                    <div className="flex items-start justify-between ltr:ml-auto rtl:mr-auto">
-                                        <p className="font-semibold">90%</p>
-                                        <div className="dropdown ltr:ml-4 rtl:mr-4">
-                                            <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={<IconHorizontalDots className="opacity-80 hover:opacity-100" />}>
-                                                <ul className="!min-w-[150px]">
-                                                    <li>
-                                                        <button type="button">View Invoice</button>
-                                                    </li>
-                                                    <li>
-                                                        <button type="button">Download Invoice</button>
-                                                    </li>
-                                                </ul>
-                                            </Dropdown>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="panel">
-                        <div className="flex items-center justify-between mb-5">
-                            <h5 className="font-semibold text-lg dark:text-white-light">Card Details</h5>
-                        </div>
-                        <div>
-                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b]">
-                                <div className="flex items-center justify-between py-2">
-                                    <div className="flex-none">
-                                        <img src="/assets/images/card-americanexpress.svg" alt="img" />
-                                    </div>
-                                    <div className="flex items-center justify-between flex-auto ltr:ml-4 rtl:mr-4">
-                                        <h6 className="text-[#515365] font-semibold dark:text-white-dark">
-                                            American Express
-                                            <span className="block text-white-dark dark:text-white-light">Expires on 12/2025</span>
-                                        </h6>
-                                        <span className="badge bg-success ltr:ml-auto rtl:mr-auto">Primary</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b]">
-                                <div className="flex items-center justify-between py-2">
-                                    <div className="flex-none">
-                                        <img src="/assets/images/card-mastercard.svg" alt="img" />
-                                    </div>
-                                    <div className="flex items-center justify-between flex-auto ltr:ml-4 rtl:mr-4">
-                                        <h6 className="text-[#515365] font-semibold dark:text-white-dark">
-                                            Mastercard
-                                            <span className="block text-white-dark dark:text-white-light">Expires on 03/2025</span>
-                                        </h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex items-center justify-between py-2">
-                                    <div className="flex-none">
-                                        <img src="/assets/images/card-visa.svg" alt="img" />
-                                    </div>
-                                    <div className="flex items-center justify-between flex-auto ltr:ml-4 rtl:mr-4">
-                                        <h6 className="text-[#515365] font-semibold dark:text-white-dark">
-                                            Visa
-                                            <span className="block text-white-dark dark:text-white-light">Expires on 10/2025</span>
-                                        </h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
         </div>

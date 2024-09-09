@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { FormEvent } from 'react';
+import Swal from 'sweetalert2';
 
 export const BASE_URL = 'http://localhost:8080';
 
@@ -39,6 +40,21 @@ interface Attendance {
   status: string;
   __v: number;
 }
+
+const showMessage = (msg = '', type = 'success') => {
+    const toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 3000,
+        customClass: { container: 'toast' },
+    });
+    toast.fire({
+        icon: type,
+        title: msg,
+        padding: '10px 20px',
+    });
+};
 // Fetch admin
 export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
   const token = localStorage.getItem("token")
@@ -151,7 +167,8 @@ export const adminLogin = async (e: FormEvent<HTMLFormElement>, values: LoginVal
             console.log('Token and user data stored in Local storage');
             window.location.href = '/';
         }
-        alert('Login successful');
+        showMessage('Login successful!');
+
     } catch (err) {
         alert('Login failed');
         if (axios.isAxiosError(err) && err.response && err.response.status === 400) {

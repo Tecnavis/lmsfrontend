@@ -25,6 +25,14 @@ const EditAdmissionForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const { id } = useParams();
     const [student, setStudent] = useState({});
+    const [adminName, setAdminName] = useState('');
+    useEffect(() => {
+        const admins = localStorage.getItem('Admins');
+        if (admins) {
+            const parsedAdmins = JSON.parse(admins);
+            setAdminName(parsedAdmins.name);
+        }
+    }, []);  // The empty dependency array ensures this runs only once on mount.
     const [data, setData] = useState({
         admissionDate: '',
         invoiceNumber: '',
@@ -153,8 +161,8 @@ const EditAdmissionForm = () => {
             formData.append('courseFee', data.courseFee);
             formData.append('guardianId', data.guardianId);
             formData.append('studentId', data.studentId);
+            formData.append('adminName',adminName);
 
-            console.log(formData, 'this is the form data');
             await axios.put(`${backendUrl}/students/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',

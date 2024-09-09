@@ -15,6 +15,7 @@ const Todolist = lazy(() => import('../pages/Apps/Todolist'));
 const Mailbox = lazy(() => import('../pages/Apps/Mailbox'));
 const Notes = lazy(() => import('../pages/Apps/Notes'));
 const Contacts = lazy(() => import('../pages/Apps/Contacts'));
+const Payfee = lazy(() => import('../pages/Apps/Payfee'));
 const Students = lazy(() => import('../pages/Apps/Students'));
 const Chat = lazy(() => import('../pages/Apps/Chat'));
 const Scrumboard = lazy(() => import('../pages/Apps/Scrumboard'));
@@ -147,10 +148,10 @@ const routes = [
         path: '/apps/notes',
         element: <Notes />,
     },
-    {
-        path: '/apps/contacts',
-        element: <Contacts />,
-    },
+    // {
+    //     path: '/apps/contacts',
+    //     element: <Contacts />,
+    // },
     {
         path: '/apps/sutdents',
         element: <Students />,
@@ -212,6 +213,10 @@ const routes = [
     {
         path: '/apps/invoice/edit',
         element: <Edit />,
+    },
+    {
+        path: '/apps/invoice/payfee',
+        element: <Payfee />,
     },
     // components page
     {

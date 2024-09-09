@@ -32,7 +32,6 @@ const Index = () => {
     useEffect(() => {
         dispatch(setPageTitle('Sales Admin'));
     });
-   
 
     //Fetch admins
 
@@ -48,6 +47,7 @@ const Index = () => {
     const [transaction, setTransaction] = useState<any>([]);
     const [payFee, setPayFee] = useState<any>('');
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
+    const [logs, setLogs] = useState<any>([]);
     const navigate = useNavigate();
     const [values, handleChange, setValues] = useForm({
         email: '',
@@ -66,6 +66,7 @@ const Index = () => {
         loadData();
         loadCourse();
         loadTransaction();
+        fetchLogs();
     }, []);
     //fetch admins
     const loadData = async () => {
@@ -110,6 +111,19 @@ const Index = () => {
             setTotalAmount(Total);
         } catch (error) {
             console.error('Error fetching transaction details:', error);
+        }
+    };
+
+    //fetch Logs
+
+    const fetchLogs = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/log`);
+            const data = response.data;
+            setLogs(data);
+            console.log(data, 'this is the data of logs');
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -354,87 +368,54 @@ const Index = () => {
                             <h5 className="font-semibold text-lg dark:text-white-light mb-5">Recent Activities</h5>
                             <PerfectScrollbar className="relative h-[290px] ltr:pr-3 rtl:pl-3 ltr:-mr-3 rtl:-ml-3 mb-4">
                                 <div className="text-sm cursor-pointer">
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-primary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Updated Server Logs</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">Just Now</div>
+                                   {logs.slice().reverse().map((item, index) => {
+  // Format the timestamp
+  const timestamp = new Date(item.time); // Assuming `item.timestamp` contains a valid date string or timestamp
+  const timeString = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                                        <span className="badge badge-outline-primary absolute ltr:right-0 rtl:left-0 text-xs bg-primary-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Pending
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-success w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Send Mail to HR and Admin</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">2 min ago</div>
+  // Define badge classes based on status
+  let badgeClasses = 'badge absolute ltr:right-0 rtl:left-0 text-xs opacity-0 group-hover:opacity-100';
+  switch (item.status) {
+    case 'Created':
+      badgeClasses += ' bg-green-100 text-green-800 border border-green-300';
+      break;
+    case 'Updated':
+      badgeClasses += ' bg-blue-100 text-blue-800 border border-blue-300';
+      break;
+    case 'Deleted':
+      badgeClasses += ' bg-red-100 text-red-800 border border-red-300';
+      break;
+    default:
+      badgeClasses += ' bg-gray-100 text-gray-800 border border-gray-300';
+      break;
+  }
 
-                                        <span className="badge badge-outline-success absolute ltr:right-0 rtl:left-0 text-xs bg-success-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Completed
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-primary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Updated Server Logs</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">Just Now</div>
+  return (
+    <div key={index} className="flex items-center py-1.5 relative group">
+      {/* Status indicator with dynamic color */}
+      <div
+        className={`w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1 
+          ${item.status === 'Created' ? 'bg-green-500' : 
+            item.status === 'Updated' ? 'bg-blue-500' : 
+            item.status === 'Deleted' ? 'bg-red-500' : 'bg-gray-500'}`}
+      ></div>
 
-                                        <span className="badge badge-outline-primary absolute ltr:right-0 rtl:left-0 text-xs bg-primary-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Pending
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-success w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Send Mail to HR and Admin</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">2 min ago</div>
+      {/* Log message */}
+      <div className="flex-1">{item.log}</div>
 
-                                        <span className="badge badge-outline-success absolute ltr:right-0 rtl:left-0 text-xs bg-success-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Completed
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-danger w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Backup Files EOD</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">14:00</div>
+      {/* Timestamp */}
+      <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">
+        {timeString}
+      </div>
 
-                                        <span className="badge badge-outline-danger absolute ltr:right-0 rtl:left-0 text-xs bg-danger-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Pending
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-black w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Collect documents from Sara</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">16:00</div>
+      {/* Badge with dynamic style */}
+      <span className={badgeClasses}>
+        {item.status}
+      </span>
+    </div>
+  );
+})}
 
-                                        <span className="badge badge-outline-dark absolute ltr:right-0 rtl:left-0 text-xs bg-dark-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Completed
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-warning w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Conference call with Marketing Manager.</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">17:00</div>
-
-                                        <span className="badge badge-outline-warning absolute ltr:right-0 rtl:left-0 text-xs bg-warning-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            In progress
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-info w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Rebooted Server</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">17:00</div>
-
-                                        <span className="badge badge-outline-info absolute ltr:right-0 rtl:left-0 text-xs bg-info-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Completed
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center py-1.5 relative group">
-                                        <div className="bg-secondary w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1.5"></div>
-                                        <div className="flex-1">Send contract details to Freelancer</div>
-                                        <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">18:00</div>
-
-                                        <span className="badge badge-outline-secondary absolute ltr:right-0 rtl:left-0 text-xs bg-secondary-light dark:bg-black opacity-0 group-hover:opacity-100">
-                                            Pending
-                                        </span>
-                                    </div>
                                 </div>
                             </PerfectScrollbar>
                             <div className="border-t border-white-light dark:border-white/10">
