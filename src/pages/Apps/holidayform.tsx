@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Box, Button, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { BASE_URL } from '../Helper/handle-api';
+import Swal from 'sweetalert2';
 
 interface HolidayFormProps {
   open: boolean;
@@ -22,7 +23,8 @@ const HolidayForm: React.FC<HolidayFormProps> = ({ open, onClose, fetchAttendanc
       });
 
       if (response.status === 200) {
-        alert('Holidays updated successfully');
+        // alert('Holidays updated successfully');
+        Swal.fire('Holidays updated successfully');
         onClose(); // Close the modal
         fetchAttendanceRecords(); // Fetch updated attendance records
       } else {
