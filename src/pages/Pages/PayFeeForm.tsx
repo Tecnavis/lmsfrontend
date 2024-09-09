@@ -11,19 +11,31 @@ const PayFeeform = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [modeOfPayment, setModeOfPayment] = useState('UPI');
+    const [modeOfPayment, setModeOfPayment] = useState([]);
     const [students, setStudents] = useState<any[]>([]);
+    const [adminName, setAdminName] = useState('');
+    const [date, setDate] = useState('');
     const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
     const [selectedStudentId, setSelectedStudentId] = useState<string>(''); // Store the selected student's ID
     const [values, handleChange, setValues] = useForm({
         name: '',
         receiptNumber: '', // Initially empty, will be set by generateReceiptNumber
         referenceNumber: '',
-        date: '',
         balance: '',
         payAmount: '',
         modeOfPayment: '',
     });
+
+    useEffect(() => {
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        setDate(today);
+    }, []);
+
+    // Handle input change
+    const handleChangeDate = (e) => {
+        setDate(e.target.value);
+    };
 
     const handleGoBack = () => {
         navigate(-1); // This navigates to the previous page in history
@@ -33,6 +45,13 @@ const PayFeeform = () => {
         fetchStudents();
     }, []);
 
+    useEffect(() => {
+        const admins = localStorage.getItem('Admins');
+        if (admins) {
+            const parsedAdmins = JSON.parse(admins);
+            setAdminName(parsedAdmins.name);
+        }
+    }, []); // The empty dependency array ensures this runs only once on mount.
     useEffect(() => {
         dispatch(setPageTitle('PayFeeform'));
         generateReceiptNumber();
@@ -115,43 +134,57 @@ const PayFeeform = () => {
                     title: 'Error!',
                     text: 'Please select a student',
                     icon: 'error',
-                    confirmButtonText: 'Try Again'
-                })
+                    confirmButtonText: 'Try Again',
+                });
                 return;
             }
-
+            if (modeOfPayment.length === 0) { // Validate that modeOfPayment array is not empty
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please select at least one mode of payment',
+                    icon: 'error',
+                    confirmButtonText: 'Try Again',
+                });
+                return;
+            }
             // Calculate the new balance
             const newBalance = values.balance - values.payAmount;
-
+           
             // Post the transaction to the database
-            const transactionResponse = await axios.post(`${BASE_URL}/transaction`, {
+            await axios.post(`${BASE_URL}/transaction`, {
                 receiptNumber: values.receiptNumber,
                 referenceNumber: values.referenceNumber,
-                date: values.date,
+                date: date,
                 name: values.name,
                 balance: newBalance, // Updated balance
                 payAmount: values.payAmount,
                 modeOfPayment: modeOfPayment,
                 students: selectedStudentId, // Use selected student's ID
+                adminName: adminName,
             });
-
-            console.log('Transaction Response:', transactionResponse.data);
 
             Swal.fire({
                 title: 'Success!',
-                text: 'Payment successful',
+                text: 'Payment successfull',
                 icon: 'success',
-                confirmButtonText: 'OK'
-            })
-    
-            // Update the student's balance and courseFee in the database 
-            const studentUpdateResponse = await axios.patch(`${BASE_URL}/students/${selectedStudentId}`, {
+                confirmButtonText: 'OK',
+            });
+
+            // Update the student's balance and courseFee in the database
+            await axios.patch(`${BASE_URL}/students/${selectedStudentId}`, {
                 balance: newBalance,
                 courseFee: newBalance, // Ensure courseFee is updated to the new balance
             });
 
-            console.log('Student Update Response:', studentUpdateResponse.data);
-            alert('Student balance and course fee updated successfully');
+            setValues({
+                name: '',
+                receiptNumber: '', // Reset to empty string or initial value
+                referenceNumber: '',
+                balance: '',
+                payAmount: '',
+                modeOfPayment: '',
+            });
+            setModeOfPayment([])
 
             // Navigate or reset form here if necessary
         } catch (error) {
@@ -200,7 +233,7 @@ const PayFeeform = () => {
                                     />
                                 </div>
                                 <div className="relative text-white-dark">
-                                    <input id="Date" className="form-input ps-10 placeholder:text-white-dark" placeholder="Date" type="date" name="date" value={values.date} onChange={handleChange} />
+                                    <input id="Date" className="form-input ps-10 placeholder:text-white-dark" placeholder="Date" type="date" name="date" value={date} onChange={handleChangeDate} />
                                 </div>
                                 <div className="relative text-white-dark">
                                     <input
@@ -246,44 +279,43 @@ const PayFeeform = () => {
                                         onChange={handleChange}
                                     />
                                 </div>
+
                                 <div className="relative text-white-dark">
-                                    <div className="inline-flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            id="upi"
-                                            name="paymentMode"
-                                            value="UPI"
-                                            className="form-checkbox outline-success rounded-full"
-                                            checked={modeOfPayment === 'UPI'}
-                                            onChange={() => handlePaymentModeChange('UPI')}
-                                        />
-                                        <label htmlFor="upi" className="ml-2">
-                                            UPI
-                                        </label>
-                                    </div>
-                                    <div className="inline-flex items-center mt-2">
-                                        <input
-                                            type="checkbox"
-                                            id="Cash"
-                                            name="paymentMode"
-                                            value="Cash"
-                                            className="form-checkbox outline-danger rounded-full"
-                                            checked={modeOfPayment === 'Cash'}
-                                            onChange={() => handlePaymentModeChange('Cash')}
-                                        />
-                                        <label htmlFor="Cash" className="ml-2">
-                                            Cash
-                                        </label>
-                                    </div>
-                                </div>
+    <div className="inline-flex items-center">
+        <input
+            type="checkbox"
+            id="upi"
+            name="paymentMode"
+            value="UPI"
+            className="form-checkbox outline-success rounded-full"
+            checked={modeOfPayment.includes('UPI')}
+            onChange={() => handlePaymentModeChange('UPI')}
+        />
+        <label htmlFor="upi" className="ml-2">
+            UPI
+        </label>
+    </div>
+    <div style={{marginLeft:'30px'}} className="inline-flex items-center mt-2">
+        <input
+            type="checkbox"
+            id="Cash"
+            name="paymentMode"
+            value="Cash"
+            className="form-checkbox outline-success rounded-full"
+            checked={modeOfPayment.includes('Cash')}
+            onChange={() => handlePaymentModeChange('Cash')}
+        />
+        <label htmlFor="Cash" className="ml-2">
+            Cash
+        </label>
+    </div>
+</div>
+
 
                                 <div className="relative">
-                             
-
-                                    <button  type="submit" className="btn btn-primary w-full" onClick={handleSubmit}>
-                                        Submit
+                                    <button type="submit" className="btn btn-primary w-full" onClick={handleSubmit}>
+                                      Submit
                                     </button>
-                                    {/* Add the Go Back button */}
                                 </div>
                             </form>
                         </div>

@@ -40,6 +40,15 @@ const Profile = () => {
     const [students, setStudents] = useState<any>({});
     const [course, setCourse] = useState<{ name?: string } | null>(null);
     const [transactions, setTransactions] = useState([])
+    const [adminName, setAdminName] = useState('');
+
+    useEffect(() => {
+        const admins = localStorage.getItem('Admins');
+        if (admins) {
+            const parsedAdmins = JSON.parse(admins);
+            setAdminName(parsedAdmins.name);
+        }
+    }, []);  // The empty dependency array ensures this runs only once on mount.
 
     const { id } = useParams();
 
@@ -98,8 +107,11 @@ const Profile = () => {
             });
 
             if (result.isConfirmed) {
+              
                 // Proceed with deletion if confirmed
-                await axios.delete(`${BASE_URL}/students/${userId}`);
+                await axios.delete(`${BASE_URL}/students/${userId}`, {
+                    params: { adminName }
+                });
                 showMessage('User has been deleted successfully.');
                 navigate('/apps/sutdents');
             } else {
