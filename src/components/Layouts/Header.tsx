@@ -98,8 +98,8 @@ const Header = () => {
     ]);
 
     const handleLogOut = () => {
-        localStorage.removeItem('tokens');
-        localStorage.removeItem('admins');
+        localStorage.removeItem('token');
+        localStorage.removeItem('Admins');
         navigate('/auth/boxed-signin', { replace: true });
       }
 

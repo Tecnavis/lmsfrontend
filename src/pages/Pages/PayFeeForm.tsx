@@ -25,6 +25,9 @@ const PayFeeform = () => {
         modeOfPayment: '',
     });
 
+    const handleGoBack = () => {
+        navigate(-1); // This navigates to the previous page in history
+    };
     // Fetch students details
     useEffect(() => {
         fetchStudents();
@@ -67,7 +70,6 @@ const PayFeeform = () => {
 
     // Fetch the list of students
     const fetchStudents = async () => {
-
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
         try {
@@ -85,9 +87,7 @@ const PayFeeform = () => {
         handleChange(e);
 
         // Filter students based on the input value
-        const filtered = students.filter((student) =>
-            student.name.toLowerCase().includes(value.toLowerCase())
-        );
+        const filtered = students.filter((student) => student.name.toLowerCase().includes(value.toLowerCase()));
         setFilteredStudents(filtered);
     };
 
@@ -108,16 +108,16 @@ const PayFeeform = () => {
 
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
-    
+
         try {
             if (!selectedStudentId) {
-                alert("Please select a student.");
+                alert('Please select a student.');
                 return;
             }
-    
+
             // Calculate the new balance
             const newBalance = values.balance - values.payAmount;
-    
+
             // Post the transaction to the database
             const transactionResponse = await axios.post(`${BASE_URL}/transaction`, {
                 receiptNumber: values.receiptNumber,
@@ -129,19 +129,19 @@ const PayFeeform = () => {
                 modeOfPayment: modeOfPayment,
                 students: selectedStudentId, // Use selected student's ID
             });
-    
+
             console.log('Transaction Response:', transactionResponse.data);
             alert('Payment successful');
-    
-            // Update the student's balance and courseFee in the database 
+
+            // Update the student's balance and courseFee in the database
             const studentUpdateResponse = await axios.patch(`${BASE_URL}/students/${selectedStudentId}`, {
-                balance: newBalance, 
-                courseFee: newBalance // Ensure courseFee is updated to the new balance
+                balance: newBalance,
+                courseFee: newBalance, // Ensure courseFee is updated to the new balance
             });
-    
+
             console.log('Student Update Response:', studentUpdateResponse.data);
             alert('Student balance and course fee updated successfully');
-    
+
             // Navigate or reset form here if necessary
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -151,9 +151,6 @@ const PayFeeform = () => {
             }
         }
     };
-    
-    
-
 
     return (
         <div>
@@ -270,9 +267,12 @@ const PayFeeform = () => {
                                 </div>
 
                                 <div className="relative">
-                                    <button type="submit" className="btn btn-primary w-full" onClick={handleSubmit}>
+                             
+
+                                    <button  type="submit" className="btn btn-primary w-full" onClick={handleSubmit}>
                                         Submit
                                     </button>
+                                    {/* Add the Go Back button */}
                                 </div>
                             </form>
                         </div>

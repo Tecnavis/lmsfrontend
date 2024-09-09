@@ -132,7 +132,7 @@ const Sidebar = () => {
                             <li className="nav-item">
                                 <ul>
                                     <li className="nav-item">
-                                        <NavLink to="/finance" className="group">
+                                        <NavLink to="/" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuDashboard className="group-hover:!text-primary shrink-0" />
                                                 <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('dashboard')}</span>
@@ -148,7 +148,7 @@ const Sidebar = () => {
                                         </NavLink>
                                     </li> */}
                                     <li className="nav-item">
-                                        <NavLink to="/Pages/PayFeeform" className="group">
+                                        <NavLink to="/apps/invoice/payfee" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuTodo className="group-hover:!text-primary shrink-0" />
                                                 <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Pay Fee')}</span>
@@ -187,14 +187,14 @@ const Sidebar = () => {
                                             </div>
                                         </NavLink>
                                     </li> */}
-                                    <li className="nav-item">
+                                    {/* <li className="nav-item">
                                         <NavLink to="/apps/contacts" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuUsers className="group-hover:!text-primary shrink-0" />
                                                 <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Contacts')}</span>
                                             </div>
                                         </NavLink>
-                                    </li>
+                                    </li> */}
                                     <li className="nav-item">
                                         <NavLink to="/apps/sutdents" className="group">
                                             <div className="flex items-center">
@@ -207,7 +207,7 @@ const Sidebar = () => {
                                         <NavLink to="/apps/sutdents1" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuUsers className="group-hover:!text-primary shrink-0" />
-                                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Allstudents')}</span>
+                                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('All Students')}</span>
                                             </div>
                                         </NavLink>
                                     </li>
