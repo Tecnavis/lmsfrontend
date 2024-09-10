@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 interface HolidayFormProps {
   open: boolean;
   onClose: () => void;
-  fetchAttendanceRecords: () => void; // Add this prop
+  fetchAttendanceRecords: () => void;
 }
 
 const HolidayForm: React.FC<HolidayFormProps> = ({ open, onClose, fetchAttendanceRecords }) => {

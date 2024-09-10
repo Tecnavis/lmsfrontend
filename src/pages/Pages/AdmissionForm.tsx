@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
 import { IRootState } from '../../store';
 import IconUser from '../../components/Icon/IconUser';
@@ -13,22 +13,61 @@ import 'flatpickr/dist/flatpickr.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
+interface CourseType {
+    name: string;
+}
+
+interface FormData {
+    admissionDate: string;
+    invoiceNumber: string;
+    image: string | File | null;
+    name: string;
+    fullAddress: string;
+    state: string;
+    pinCode: string;
+    bloodGroup: string;
+    guardianName: string;
+    guardianRelation: string;
+    dateOfBirth: string;
+    gender: string;
+    maritalStatus: string;
+    academicQualification: string;
+    mobileNumber: string;
+    parentsMobileNumber: string;
+    email: string;
+    courseName: string;
+    joinDate: string;
+    courseFee: string;
+    guardianId: File | string;
+    studentId: File | string;
+}
+
+interface ErrorState {
+    admissionDate?: string;
+    name?: string;
+    mobileNumber?: string;
+    dateOfBirth?: string;
+    courseName?: string;
+    courseFee?: string;
+}
+
 const AdmissionForm = () => {
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [course, setCourse] = useState([]);
-    const [adminName, setAdminName] = useState('');
+    const [error, setError] = useState<ErrorState>({});
+    const [loading, setLoading] = useState<boolean>(false);
+    const [course, setCourse] = useState<CourseType[]>([]);
+    const [adminName, setAdminName] = useState<string>('');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const token = localStorage.getItem('token');
+
     useEffect(() => {
         const admins = localStorage.getItem('Admins');
         if (admins) {
             const parsedAdmins = JSON.parse(admins);
             setAdminName(parsedAdmins.name);
         }
-    }, []);  // The empty dependency array ensures this runs only once on mount.
+    }, []);
 
-    const [data, setData] = useState({
+    const [data, setData] = useState<FormData>({
         admissionDate: '',
         invoiceNumber: '',
         image: '',
@@ -53,7 +92,7 @@ const AdmissionForm = () => {
         studentId: '',
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setData((prevData) => ({
             ...prevData,
@@ -61,7 +100,7 @@ const AdmissionForm = () => {
         }));
     };
 
-    const handleDateChange = (name, date) => {
+    const handleDateChange = (name: string, date: Date[]) => {
         setData((prevData) => ({
             ...prevData,
             [name]: date[0],
@@ -78,7 +117,7 @@ const AdmissionForm = () => {
         }
     };
 
-    const showMessage = (msg = '', type = 'success') => {
+    const showMessage = (msg = '', type: 'success' | 'error' = 'success') => {
         const toast = Swal.mixin({
             toast: true,
             position: 'top',
@@ -101,12 +140,12 @@ const AdmissionForm = () => {
 
     const navigate = useNavigate();
 
-    const submitForm = async (e) => {
+    const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-        let errors = {};
+        let errors: ErrorState = {};
 
-        if (!data.name) {
+        if (!data.admissionDate) {
             errors.admissionDate = 'Admission date is required';
         }
         if (!data.name) {
@@ -130,28 +169,9 @@ const AdmissionForm = () => {
 
         if (Object.keys(errors).length === 0) {
             const formdata = new FormData();
-            formdata.append('admissionDate', data.admissionDate);
-            formdata.append('invoiceNumber', data.invoiceNumber);
-            formdata.append('image', data.image);
-            formdata.append('name', data.name);
-            formdata.append('fullAddress', data.fullAddress);
-            formdata.append('state', data.state);
-            formdata.append('pinCode', data.pinCode);
-            formdata.append('bloodGroup', data.bloodGroup);
-            formdata.append('guardianName', data.guardianName);
-            formdata.append('guardianRelation', data.guardianRelation);
-            formdata.append('dateOfBirth', data.dateOfBirth);
-            formdata.append('gender', data.gender);
-            formdata.append('maritalStatus', data.maritalStatus);
-            formdata.append('academicQualification', data.academicQualification);
-            formdata.append('mobileNumber', data.mobileNumber);
-            formdata.append('parentsMobileNumber', data.parentsMobileNumber);
-            formdata.append('email', data.email);
-            formdata.append('courseName', data.courseName);
-            formdata.append('joinDate', data.joinDate);
-            formdata.append('courseFee', data.courseFee);
-            formdata.append('guardianId', data.guardianId);
-            formdata.append('studentId', data.studentId);
+            Object.entries(data).forEach(([key, value]) => {
+                formdata.append(key, value);
+            });
             formdata.append('adminName', adminName);
             try {
                 await axios.post(`${backendUrl}/students`, formdata, {
@@ -162,7 +182,7 @@ const AdmissionForm = () => {
                 window.location.reload();
                 showMessage('User has been saved successfully.');
             } catch (error) {
-                if (error.response && error.response.data && error.response.data.message) {
+                if (axios.isAxiosError(error) && error.response) {
                     console.log('Error Message:', error.response.data.message);
                     alert(error.response.data.message);
                 } else {
@@ -171,7 +191,6 @@ const AdmissionForm = () => {
             } finally {
                 setLoading(false);
             }
-            setLoading(false);
         }
     };
 
@@ -188,9 +207,9 @@ const AdmissionForm = () => {
     };
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    const [admissionDate, setAdmissionDate] = useState<any>(null);
-    const [joiningDate, setJoiningDate] = useState<any>(null);
-    const [dob, setDob] = useState<any>(null);
+    const [admissionDate, setAdmissionDate] = useState<Date | null>(null);
+    const [joiningDate, setJoiningDate] = useState<Date | null>(null);
+    const [dob, setDob] = useState<Date | null>(null);
     const [age, setAge] = useState<number | null>(null);
 
     useEffect(() => {
@@ -201,8 +220,11 @@ const AdmissionForm = () => {
             setAge(Math.abs(ageDate.getUTCFullYear() - 1970));
         }
     }, [dob]);
-    if (token) {
+
+    // if (token) {
         return (
+            <div style={{ width: '100%', overflowX: 'auto' }}>
+
             <div>
                 <div className="absolute inset-0">
                     <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
@@ -225,7 +247,7 @@ const AdmissionForm = () => {
                                         <div>
                                             <label htmlFor="admissionDate">Admission Date</label>
                                             <Flatpickr
-                                                value={admissionDate}
+                                                value={admissionDate ? admissionDate.toISOString() : ''}
                                                 options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                                 className="form-input"
                                                 onChange={(date) => handleDateChange('admissionDate', date)}
@@ -235,10 +257,10 @@ const AdmissionForm = () => {
                                         <div>
                                             <label htmlFor="joiningDate">Joining Date</label>
                                             <Flatpickr
-                                                value={joiningDate}
+                                                value={joiningDate ? joiningDate.toISOString() : ''}
                                                 options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                                 className="form-input"
-                                                onChange={(date) => handleDateChange('joinDate', date)}
+                                                onChange={(date) => handleDateChange('joiningDate', date)}
                                             />
                                         </div>
                                     </div>
@@ -264,7 +286,7 @@ const AdmissionForm = () => {
                                             accept="image/png, image/jpeg"
                                             capture="environment"
                                             className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                                            onChange={(e) => setData({ ...data, image: e.target.files[0] })}
+                                            onChange={(e) => setData({ ...data, image: e.target.files?.[0] ?? null })}
                                         />
                                     </div>
                                     <div className="relative text-white-dark">
@@ -316,7 +338,7 @@ const AdmissionForm = () => {
                                     <div>
                                         <label htmlFor="dob">Date of Birth</label>
                                         <Flatpickr
-                                            value={dob}
+                                            value={dob ? dob.toISOString() : ''}
                                             onChange={(date) => handleDateChange('dateOfBirth', date)}
                                             options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                             className="form-input"
@@ -427,7 +449,8 @@ const AdmissionForm = () => {
                                             className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
                                             accept="image/png, image/jpeg"
                                             capture="environment"
-                                            onChange={(e) => setData({ ...data, studentId: e.target.files[0] })}
+                                            // onChange={(e) => setData({ ...data, studentId: e.target.files[0] })}
+                                            onChange={(e) => setData({ ...data, studentId: (e.target.files as FileList)[0] })}
                                         />
                                     </div>
                                     <div>
@@ -438,7 +461,8 @@ const AdmissionForm = () => {
                                             className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
                                             accept="image/png, image/jpeg"
                                             capture="environment"
-                                            onChange={(e) => setData({ ...data, guardianId: e.target.files[0] })}
+                                            // onChange={(e) => setData({ ...data, guardianId: e.target.files[0] })}
+                                            onChange={(e) => setData({ ...data, studentId: (e.target.files as FileList)[0] })}
                                         />
                                     </div>
                                     {loading ? (
@@ -456,10 +480,11 @@ const AdmissionForm = () => {
                     </div>
                 </div>
             </div>
+            </div>
         );
-    } else {
-        navigate('/auth/boxed-signin');
-    }
+    // } else {
+    //     navigate('/auth/boxed-signin');
+    // }
 };
 
 export default AdmissionForm;

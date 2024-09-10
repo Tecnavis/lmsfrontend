@@ -11,7 +11,8 @@ const PayFeeform = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [modeOfPayment, setModeOfPayment] = useState([]);
+    // const [modeOfPayment, setModeOfPayment] = useState([]);
+    const [modeOfPayment, setModeOfPayment] = useState<string[]>([]);
     const [students, setStudents] = useState<any[]>([]);
     const [adminName, setAdminName] = useState('');
     const [date, setDate] = useState('');
@@ -33,7 +34,7 @@ const PayFeeform = () => {
     }, []);
 
     // Handle input change
-    const handleChangeDate = (e) => {
+    const handleChangeDate = (e:React.ChangeEvent<HTMLInputElement>) => {
         setDate(e.target.value);
     };
 
@@ -58,13 +59,15 @@ const PayFeeform = () => {
     }, [dispatch]);
 
     // Handle payment mode change
-    const handlePaymentModeChange = (mode: string) => {
+    const handlePaymentModeChange = (mode: string[]) => {
         setModeOfPayment(mode);
         setValues((prevValues) => ({
             ...prevValues,
             modeOfPayment: mode,
         }));
     };
+    
+    
 
     // Generate the next receipt number
     const generateReceiptNumber = async () => {
@@ -282,40 +285,39 @@ const PayFeeform = () => {
                                 </div>
 
                                 <div className="relative text-white-dark">
-    <div className="inline-flex items-center">
-        <input
-            type="checkbox"
-            id="upi"
-            name="paymentMode"
-            value="UPI"
-            className="form-checkbox outline-success rounded-full"
-            checked={modeOfPayment.includes('UPI')}
-            onChange={() => handlePaymentModeChange('UPI')}
-        />
-        <label htmlFor="upi" className="ml-2">
-            UPI
-        </label>
-    </div>
-    <div style={{marginLeft:'30px'}} className="inline-flex items-center mt-2">
-        <input
-            type="checkbox"
-            id="Cash"
-            name="paymentMode"
-            value="Cash"
-            className="form-checkbox outline-success rounded-full"
-            checked={modeOfPayment.includes('Cash')}
-            onChange={() => handlePaymentModeChange('Cash')}
-        />
-        <label htmlFor="Cash" className="ml-2">
-            Cash
-        </label>
-    </div>
-</div>
-
+                                    <div className="inline-flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="upi"
+                                            name="paymentMode"
+                                            value="UPI"
+                                            className="form-checkbox outline-success rounded-full"
+                                            checked={modeOfPayment.includes('UPI')}
+                                            onChange={() => handlePaymentModeChange('UPI' as any)}
+                                        />
+                                        <label htmlFor="upi" className="ml-2">
+                                            UPI
+                                        </label>
+                                    </div>
+                                    <div style={{ marginLeft: '30px' }} className="inline-flex items-center mt-2">
+                                        <input
+                                            type="checkbox"
+                                            id="Cash"
+                                            name="paymentMode"
+                                            value="Cash"
+                                            className="form-checkbox outline-success rounded-full"
+                                            checked={modeOfPayment.includes('Cash')}
+                                            onChange={() => handlePaymentModeChange('Cash'as any)}
+                                        />
+                                        <label htmlFor="Cash" className="ml-2">
+                                            Cash
+                                        </label>
+                                    </div>
+                                </div>
 
                                 <div className="relative">
                                     <button type="submit" className="btn btn-primary w-full" onClick={handleSubmit}>
-                                      Submit
+                                        Submit
                                     </button>
                                 </div>
                             </form>
