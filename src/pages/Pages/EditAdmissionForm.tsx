@@ -59,7 +59,9 @@ const EditAdmissionForm = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [preview, setPreview] = useState(null);
+    // const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState<string | null>(null); // Set it to accept string or null
+
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -68,8 +70,11 @@ const EditAdmissionForm = () => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    const [admissionDate, setAdmissionDate] = useState(null);
-    const [joiningDate, setJoiningDate] = useState(null);
+    // const [admissionDate, setAdmissionDate] = useState(null);
+    // const [joiningDate, setJoiningDate] = useState(null);
+    const [admissionDate, setAdmissionDate] = useState<Date | null>(null);
+const [joiningDate, setJoiningDate] = useState<Date | null>(null);
+
     const [dob, setDob] = useState(null);
     const [rollNumber, setRollNumber] = useState('LE/IFD/00000');
     const [age, setAge] = useState<number | null>(null);
@@ -101,7 +106,7 @@ const EditAdmissionForm = () => {
         }
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e :any) => {
         const { name, value } = e.target;
         setData((prevData) => ({
             ...prevData,
@@ -109,29 +114,16 @@ const EditAdmissionForm = () => {
         }));
     };
 
-    const handleDateChange = (name, date) => {
+    const handleDateChange = (name: any, date: any) => {
         setData((prevData) => ({
             ...prevData,
             [name]: date[0],
         }));
     };
 
-    const showMessage = (msg = '', type = 'success') => {
-        const toast = Swal.mixin({
-            toast: true,
-            position: 'top',
-            showConfirmButton: false,
-            timer: 3000,
-            customClass: { container: 'toast' },
-        });
-        toast.fire({
-            icon: type,
-            title: msg,
-            padding: '10px 20px',
-        });
-    };
 
-    const handleSubmit = async (e) => {
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -169,17 +161,29 @@ const EditAdmissionForm = () => {
                 },
             });
 
-            showMessage('Admission updated successfully!', 'success');
+            // showMessage('Admission updated successfully!', 'success');
+            Swal.fire({
+                icon: 'success',
+                title: 'Admission updated successfully!',
+                showConfirmButton: false,
+                timer: 3000,
+            })
             navigate('/apps/sutdents');
         } catch (error) {
             console.error(error);
-            showMessage('Failed to update admission.', 'error');
+            // showMessage('Failed to update admission.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to update admission.',
+                showConfirmButton: false,
+                timer: 3000,
+            })
         } finally {
             setLoading(false);
         }
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = (e:any) => {
         const file = e.target.files[0];
         if (file) {
             setData({ ...data, image: file });
@@ -218,7 +222,7 @@ const EditAdmissionForm = () => {
                                     <div>
                                         <label htmlFor="admissionDate">Admission Date</label>
                                         <Flatpickr
-                                            value={admissionDate}
+                                           value={admissionDate || undefined} 
                                             options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                             className="form-input"
                                             onChange={(date) => handleDateChange('admissionDate', date)}
@@ -227,7 +231,7 @@ const EditAdmissionForm = () => {
                                     <div>
                                         <label htmlFor="joiningDate">Joining Date</label>
                                         <Flatpickr
-                                            value={joiningDate}
+                                            value={joiningDate || undefined}
                                             options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                             className="form-input"
                                             onChange={(date) => handleDateChange('joinDate', date)}
