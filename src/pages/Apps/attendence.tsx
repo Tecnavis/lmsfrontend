@@ -78,10 +78,19 @@ const AttendanceTable: React.FC = () => {
         try {
             const response = await axios.get(`${BASE_URL}/attendance/student/${studentId}`);
             setSelectedStudentAttendance(response.data);
-            setSelectedStudent((prevStudent) => ({
-                ...prevStudent,
-                attendanceHistory: response.data,
-            }));
+
+            setSelectedStudent((prevStudent) => {
+                if (!prevStudent) return null; // Handle the case where prevStudent is null
+
+                return {
+                    ...prevStudent,
+                    attendanceHistory: response.data,
+                    _id: prevStudent._id, // Ensure _id is retained from prevStudent
+                    name: prevStudent.name,
+                    courseName: prevStudent.courseName,
+                    present: prevStudent.present,
+                };
+            });
         } catch (error) {
             console.error('Error fetching attendance records:', error);
             setError('Failed to load attendance records');
@@ -161,21 +170,16 @@ const AttendanceTable: React.FC = () => {
     };
 
     const getCalendarEvents = (attendanceHistory: AttendanceRecord[]) => {
-      return attendanceHistory.map((record) => ({
-          title: record.status === 'Present' ? 'Present' : record.status === 'Absent' ? 'Absent' : 'Holiday',
-          start: new Date(record.date),
-          end: new Date(record.date),
-          allDay: true,
-          style: {
-              backgroundColor: record.status === 'Present' 
-                  ? '#4caf50' 
-                  : record.status === 'Absent' 
-                  ? '#f44336' 
-                  : '#ff9800', // Set holiday color
-          },
-      }));
-  };
-  
+        return attendanceHistory.map((record) => ({
+            title: record.status === 'Present' ? 'Present' : record.status === 'Absent' ? 'Absent' : 'Holiday',
+            start: new Date(record.date),
+            end: new Date(record.date),
+            allDay: true,
+            style: {
+                backgroundColor: record.status === 'Present' ? '#4caf50' : record.status === 'Absent' ? '#f44336' : '#ff9800', // Set holiday color
+            },
+        }));
+    };
 
     const filteredStudents = allStudents.map((student) => ({
         ...student,

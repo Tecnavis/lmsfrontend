@@ -7,12 +7,6 @@ import IconUserPlus from '../../components/Icon/IconUserPlus';
 import IconListCheck from '../../components/Icon/IconListCheck';
 import IconLayoutGrid from '../../components/Icon/IconLayoutGrid';
 import IconSearch from '../../components/Icon/IconSearch';
-import IconUser from '../../components/Icon/IconUser';
-import IconFacebook from '../../components/Icon/IconFacebook';
-import IconInstagram from '../../components/Icon/IconInstagram';
-import IconLinkedin from '../../components/Icon/IconLinkedin';
-import IconTwitter from '../../components/Icon/IconTwitter';
-import IconX from '../../components/Icon/IconX';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
@@ -77,50 +71,15 @@ const Students = () => {
         setCurrentPage(page);
     };
 
-    const saveUser = async () => {
-        if (!params.name) {
-            showMessage('Name is required.', 'error');
-            return;
-        }
-        if (!params.email) {
-            showMessage('Email is required.', 'error');
-            return;
-        }
-        if (!params.phone) {
-            showMessage('Phone is required.', 'error');
-            return;
-        }
-        if (!params.role) {
-            showMessage('Occupation is required.', 'error');
-            return;
-        }
-
-        try {
-            if (params.id) {
-                // Update user
-                await axios.put(`${backendUrl}/students/${params.id}`, params);
-            } else {
-                // Add user
-                await axios.post(`${backendUrl}/students`, params);
-            }
-
-            showMessage('User has been saved successfully.');
-            setAddContactModal(false);
-            fetchStudents();
-        } catch (error) {
-            console.error('Error saving user:', error);
-            showMessage('Error saving user.', 'error');
-        }
-    };
-
-    const editUser = (id) => {
+ 
+    const editUser = (id : any) => {
         navigate(`/pages/EditAdmissionForm/${id}`);
     };
 
     const deleteUser = async (userOrId: any) => {
         const token = localStorage.getItem("token")
        axios.defaults.headers.common["Authorization"] = token
-        let userId;
+        let userId ;
         if (typeof userOrId === 'object') {
             userId = userOrId._id;
         } else {
@@ -144,30 +103,36 @@ const Students = () => {
                 // Proceed with deletion if confirmed
                 await axios.delete(`${backendUrl}/students/${userId}`);
                 setStudents(students.filter((d: any) => d._id !== userId));
-                showMessage('User has been deleted successfully.');
+                // showMessage('User has been deleted successfully.');
+
+                Swal.fire('Success', 'User has been deleted successfully.', 'success');
+
             } else {
-                showMessage('Deletion canceled.', 'info');
+                // showMessage('Deletion canceled.', 'info');
+
+                Swal.fire('Canceled', 'Deletion canceled.', 'info');
             }
         } catch (error) {
             console.error('Error deleting user:', error);
-            showMessage('Error deleting user.', 'error');
+            // showMessage('Error deleting user.', 'error');
+            Swal.fire('Error', 'Error deleting user.', 'error');
         }
     };
 
-    const showMessage = (msg = '', type = 'success') => {
-        const toast = Swal.mixin({
-            toast: true,
-            position: 'top',
-            showConfirmButton: false,
-            timer: 3000,
-            customClass: { container: 'toast' },
-        });
-        toast.fire({
-            icon: type,
-            title: msg,
-            padding: '10px 20px',
-        });
-    };
+    // const showMessage = (msg = '', type = 'success') => {
+    //     const toast = Swal.mixin({
+    //         toast: true,
+    //         position: 'top',
+    //         showConfirmButton: false,
+    //         timer: 3000,
+    //         customClass: { container: 'toast' },
+    //     });
+    //     toast.fire({
+    //         icon: type,
+    //         title: msg,
+    //         padding: '10px 20px',
+    //     });
+    // };
     //view students details
     const viewUser = (id: string) => {
         window.location.href = `/users/profile/${id}`;
