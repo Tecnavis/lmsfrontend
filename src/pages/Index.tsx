@@ -508,26 +508,33 @@ const Index = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {admin.map((data: any) => (
-                                            <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
-                                                <td className="min-w-[150px] text-black dark:text-white">
-                                                    <div className="flex items-center">
-                                                        <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
-                                                        <span className="whitespace-nowrap">{data.name}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="text-primary">{data.phone}</td>
-                                                <td>
-                                                    <Link to="/apps/invoice/preview">{data.email}</Link>
-                                                </td>
-                                                <td>{data.role}</td>
-                                                <td>
-                                                    <span className="badge bg-success shadow-md dark:group-hover:bg-transparent" onClick={() => handleEditClick(data._id)}>
-                                                        Edit
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                    {admin && Array.isArray(admin) && admin.length > 0 ? (
+    admin.map((data: any) => (
+        <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group" key={data._id}>
+            <td className="min-w-[150px] text-black dark:text-white">
+                <div className="flex items-center">
+                    <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
+                    <span className="whitespace-nowrap">{data.name}</span>
+                </div>
+            </td>
+            <td className="text-primary">{data.phone}</td>
+            <td>
+                <Link to="/apps/invoice/preview">{data.email}</Link>
+            </td>
+            <td>{data.role}</td>
+            <td>
+                <span className="badge bg-success shadow-md dark:group-hover:bg-transparent" onClick={() => handleEditClick(data._id)}>
+                    Edit
+                </span>
+            </td>
+        </tr>
+    ))
+) : (
+    <tr>
+        <td colSpan={5}>No data available</td>
+    </tr>
+)}
+
                                     </tbody>
                                 </table>
                             </div>
