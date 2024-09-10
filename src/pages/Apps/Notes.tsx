@@ -11,7 +11,7 @@ import axios from 'axios';
 import { BASE_URL } from '../Helper/handle-api';
 import Swal from 'sweetalert2';
 interface INote {
-    id?: string;
+    _id: string;
     title: string;
     description: string;
     priority: 'Low' | 'Medium' | 'High';
@@ -19,6 +19,7 @@ interface INote {
     name: string;
     isFav?: boolean;
 }
+
 interface IStudent {
     id: string;
     name: string;
@@ -38,6 +39,7 @@ const Notes = () => {
         setIsNoteModalOpen(false);
     };
     const [noteData, setNoteData] = useState({
+        _id: '',
         title: '',
         description: '',
         priority: 'Low | Medium | High',

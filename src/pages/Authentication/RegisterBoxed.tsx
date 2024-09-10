@@ -15,14 +15,13 @@ import IconGoogle from '../../components/Icon/IconGoogle';
 import { createAdmin } from '../../pages/Helper/handle-api';
 import { useForm } from '../../pages/Helper/useForm';
 
-interface FormValues {
+interface FormValue {
     name: string;
     role: string;
     email: string;
     password: string;
-    phone: Number;
-}
-
+    phone: string;
+  }
 const RegisterBoxed: React.FC = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -32,7 +31,7 @@ const RegisterBoxed: React.FC = () => {
     }, [dispatch]);
 
     // Create admin
-    const [values, handleChange] = useForm<FormValues>({
+    const [values, handleChange] = useForm({
         name: '',
         role: '',
         email: '',

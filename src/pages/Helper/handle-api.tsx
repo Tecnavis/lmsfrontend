@@ -2,7 +2,8 @@ import axios from 'axios';
 import { FormEvent } from 'react';
 import Swal from 'sweetalert2';
 
-export const BASE_URL = 'http://localhost:8080';
+// export const BASE_URL = 'http://localhost:8080';
+export const BASE_URL = 'https://api.lms.tecnavis.com';
 
 // Type definition for Admin (replace with actual structure)
 
@@ -41,20 +42,20 @@ interface Attendance {
   __v: number;
 }
 
-const showMessage = (msg = '', type = 'success') => {
-    const toast = Swal.mixin({
-        toast: true,
-        position: 'top',
-        showConfirmButton: false,
-        timer: 3000,
-        customClass: { container: 'toast' },
-    });
-    toast.fire({
-        icon: type,
-        title: msg,
-        padding: '10px 20px',
-    });
-};
+// const showMessage = (msg = '', type = 'success') => {
+//     const toast = Swal.mixin({
+//         toast: true,
+//         position: 'top',
+//         showConfirmButton: false,
+//         timer: 3000,
+//         customClass: { container: 'toast' },
+//     });
+//     toast.fire({
+//         icon: type,
+//         title: msg,
+//         padding: '10px 20px',
+//     });
+// };
 // Fetch admin
 export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
   const token = localStorage.getItem("token")
@@ -79,13 +80,13 @@ export const fetchCourse = async (): Promise<Course[] | undefined> => {
     }
 };
 //fetch students
-export const fetchStudents = async (): Promise<Student[] | undefined> => {
+export const fetchStudents = async () => {
     try {
-        const response = await axios.get<Student[]>(`${BASE_URL}/students`);
+        const response = await axios.get(`${BASE_URL}/students`);
         return response.data;
     } catch (err) {
         console.error('Student details listing failed', err);
-        return undefined;
+        return [];
     }
 }
 //fetch transaction
@@ -167,7 +168,8 @@ export const adminLogin = async (e: FormEvent<HTMLFormElement>, values: LoginVal
             console.log('Token and user data stored in Local storage');
             window.location.href = '/';
         }
-        showMessage('Login successful!');
+        // showMessage('Login successful!');
+        Swal.fire('Login successful!');
 
     } catch (err) {
         alert('Login failed');
