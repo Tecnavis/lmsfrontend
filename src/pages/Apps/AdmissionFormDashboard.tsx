@@ -1,13 +1,11 @@
 import React from 'react';
 import AdmissionForm from '../Pages/AdmissionForm';
 
-
-const AdmissionFormDashboard: React.FC = () => {
-  
-
+// Renaming the local component to avoid naming conflict
+const AdmissionFormDashboard = () => {  
     return (
         <div style={{ width: '100%', overflowX: 'auto' }}>
-           <AdmissionForm/>
+           <AdmissionForm />
         </div>
     );
 };

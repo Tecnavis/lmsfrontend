@@ -221,8 +221,10 @@ const AdmissionForm = () => {
         }
     }, [dob]);
 
-    if (token) {
+    // if (token) {
         return (
+            <div style={{ width: '100%', overflowX: 'auto' }}>
+
             <div>
                 <div className="absolute inset-0">
                     <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
@@ -478,10 +480,11 @@ const AdmissionForm = () => {
                     </div>
                 </div>
             </div>
+            </div>
         );
-    } else {
-        navigate('/auth/boxed-signin');
-    }
+    // } else {
+    //     navigate('/auth/boxed-signin');
+    // }
 };
 
 export default AdmissionForm;

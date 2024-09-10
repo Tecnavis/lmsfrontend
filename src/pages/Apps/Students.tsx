@@ -79,7 +79,7 @@ const Students = () => {
     const deleteUser = async (userOrId: any) => {
         const token = localStorage.getItem("token")
        axios.defaults.headers.common["Authorization"] = token
-        let userId ;
+       let userId: string;
         if (typeof userOrId === 'object') {
             userId = userOrId._id;
         } else {
@@ -102,7 +102,7 @@ const Students = () => {
             if (result.isConfirmed) {
                 // Proceed with deletion if confirmed
                 await axios.delete(`${backendUrl}/students/${userId}`);
-                setStudents(students.filter((d: any) => d._id !== userId));
+                setStudents(students.filter((d) => d._id !== userId));
                 // showMessage('User has been deleted successfully.');
 
                 Swal.fire('Success', 'User has been deleted successfully.', 'success');

@@ -193,24 +193,27 @@ const AttendanceTable: React.FC = () => {
         window.location.href = '/apps/monthlyattendence';
     };
 
-    const handleButtonClick = () => {
-        setFormOpen(true);
-    };
+    // const handleButtonClick = () => {
+    //     setFormOpen(true);
+    // };
 
     const handleCloseForm = () => {
         setFormOpen(false);
     };
 
+
+    // const fetchAttendanceRecords = async () => {}
     return (
         <Paper elevation={3} sx={{ padding: 3 }}>
             <Typography variant="h6" gutterBottom style={{ display: 'flex' }}>
                 <Button variant="contained" color="primary" onClick={handleClick}>
                     Monthly Attendance
                 </Button>
-                <Button variant="contained" color="primary" style={{ marginLeft: 'auto' }} onClick={handleButtonClick}>
+                {/* <Button variant="contained" color="primary" style={{ marginLeft: 'auto' }} onClick={handleButtonClick}>
                     Holiday
-                </Button>
-                <HolidayForm open={isFormOpen} onClose={handleCloseForm} />
+                </Button> */}
+                {/* <HolidayForm open={isFormOpen} onClose={handleCloseForm} /> */}
+                
             </Typography>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <IconButton onClick={handlePreviousDay}>
