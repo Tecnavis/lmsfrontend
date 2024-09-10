@@ -184,7 +184,7 @@ const Students = () => {
                 <h2 className="text-xl">Student History</h2>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
-                        <Link to={'/Pages/Admissionform'}>
+                        <Link to={'/apps/admissionformdash'}>
                             <button type="button" className="btn btn-primary">
                                 <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
                                 Add Student
@@ -274,7 +274,7 @@ const Students = () => {
                     {students.map((contact: any) => (
                         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg">
                             <div className="flex items-center justify-center mb-4">
-                                <img src={`${backendUrl}/images/${contact.image}`} className="h-16 w-16 rounded-full object-cover" alt="avatar" />
+                                <img src={contact.image ? `${backendUrl}/images/${contact.image}` : defaultImage} className="h-16 w-16 rounded-full object-cover" alt="avatar" />
                             </div>
                             <h3 className="text-lg font-semibold mb-2">{contact.name}</h3>
                             <p className="text-gray-600 dark:text-gray-400 mb-2">{contact.email}</p>

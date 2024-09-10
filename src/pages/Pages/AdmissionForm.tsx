@@ -3,18 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
 import { IRootState } from '../../store';
-import Dropdown from '../../components/Dropdown';
-import i18next from 'i18next';
-import IconCaretDown from '../../components/Icon/IconCaretDown';
 import IconUser from '../../components/Icon/IconUser';
 import IconMail from '../../components/Icon/IconMail';
 import IconPhoneCall from '../../components/Icon/IconPhoneCall';
 import IconPencil from '../../components/Icon/IconPencil';
-import IconMessageDots from '../../components/Icon/IconMessageDots';
 import Flatpickr from 'react-flatpickr';
 import ReactLoading from 'react-loading';
 import 'flatpickr/dist/flatpickr.css';
-import { aS } from '@fullcalendar/core/internal-common';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -32,8 +27,6 @@ const AdmissionForm = () => {
             setAdminName(parsedAdmins.name);
         }
     }, []);  // The empty dependency array ensures this runs only once on mount.
-    
-
 
     const [data, setData] = useState({
         admissionDate: '',
@@ -198,7 +191,6 @@ const AdmissionForm = () => {
     const [admissionDate, setAdmissionDate] = useState<any>(null);
     const [joiningDate, setJoiningDate] = useState<any>(null);
     const [dob, setDob] = useState<any>(null);
-    const [rollNumber, setRollNumber] = useState('LE/IFD/00000');
     const [age, setAge] = useState<number | null>(null);
 
     useEffect(() => {
@@ -331,9 +323,6 @@ const AdmissionForm = () => {
                                         />
                                         {error.dateOfBirth && <p className="text-red-500 text-xs mt-1">{error.dateOfBirth}</p>}
                                     </div>
-                                    {/* <div className="relative text-white-dark">
-                                    <input id="Age" type="text" value={age || ''} placeholder="Age" className="form-input ps-10 placeholder:text-white-dark" readOnly />
-                                </div> */}
                                     <div className="inline-flex items-center">
                                         <label>Gender</label>
                                         <div className="inline-flex items-center ms-4">
