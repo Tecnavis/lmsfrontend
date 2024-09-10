@@ -363,59 +363,55 @@ const Index = () => {
                     <br />
                     {/* <WeeklyRevenue /> */}
                     {/* Recent Activities */}
-                    <div className="grid sm:grid-cols-2 gap-6 mb-6">
+                    <div className="grid ">
                         <div className="panel h-full  xl:col-span- pb-0">
                             <h5 className="font-semibold text-lg dark:text-white-light mb-5">Recent Activities</h5>
                             <PerfectScrollbar className="relative h-[290px] ltr:pr-3 rtl:pl-3 ltr:-mr-3 rtl:-ml-3 mb-4">
                                 <div className="text-sm cursor-pointer">
-                                   {logs.slice().reverse().map((item, index) => {
-  // Format the timestamp
-  const timestamp = new Date(item.time); // Assuming `item.timestamp` contains a valid date string or timestamp
-  const timeString = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                    {logs
+                                        .slice()
+                                        .reverse()
+                                        .map((item, index) => {
+                                            // Format the timestamp
+                                            const timestamp = new Date(item.time); // Assuming `item.timestamp` contains a valid date string or timestamp
+                                            const timeString = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  // Define badge classes based on status
-  let badgeClasses = 'badge absolute ltr:right-0 rtl:left-0 text-xs opacity-0 group-hover:opacity-100';
-  switch (item.status) {
-    case 'Created':
-      badgeClasses += ' bg-green-100 text-green-800 border border-green-300';
-      break;
-    case 'Updated':
-      badgeClasses += ' bg-blue-100 text-blue-800 border border-blue-300';
-      break;
-    case 'Deleted':
-      badgeClasses += ' bg-red-100 text-red-800 border border-red-300';
-      break;
-    default:
-      badgeClasses += ' bg-gray-100 text-gray-800 border border-gray-300';
-      break;
-  }
+                                            // Define badge classes based on status
+                                            let badgeClasses = 'badge absolute ltr:right-0 rtl:left-0 text-xs opacity-0 group-hover:opacity-100';
+                                            switch (item.status) {
+                                                case 'Created':
+                                                    badgeClasses += ' bg-green-100 text-green-800 border border-green-300';
+                                                    break;
+                                                case 'Updated':
+                                                    badgeClasses += ' bg-blue-100 text-blue-800 border border-blue-300';
+                                                    break;
+                                                case 'Deleted':
+                                                    badgeClasses += ' bg-red-100 text-red-800 border border-red-300';
+                                                    break;
+                                                default:
+                                                    badgeClasses += ' bg-gray-100 text-gray-800 border border-gray-300';
+                                                    break;
+                                            }
 
-  return (
-    <div key={index} className="flex items-center py-1.5 relative group">
-      {/* Status indicator with dynamic color */}
-      <div
-        className={`w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1 
-          ${item.status === 'Created' ? 'bg-green-500' : 
-            item.status === 'Updated' ? 'bg-blue-500' : 
-            item.status === 'Deleted' ? 'bg-red-500' : 'bg-gray-500'}`}
-      ></div>
+                                            return (
+                                                <div key={index} className="flex items-center py-1.5 relative group">
+                                                    {/* Status indicator with dynamic color */}
+                                                    <div
+                                                        className={`w-1.5 h-1.5 rounded-full ltr:mr-1 rtl:ml-1 
+          ${item.status === 'Created' ? 'bg-green-500' : item.status === 'Updated' ? 'bg-blue-500' : item.status === 'Deleted' ? 'bg-red-500' : 'bg-gray-500'}`}
+                                                    ></div>
 
-      {/* Log message */}
-      <div className="flex-1">{item.log}</div>
+                                                    {/* Log message */}
+                                                    <div className="flex-1">{item.log}</div>
 
-      {/* Timestamp */}
-      <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">
-        {timeString}
-      </div>
+                                                    {/* Timestamp */}
+                                                    <div className="ltr:ml-auto rtl:mr-auto text-xs text-white-dark dark:text-gray-500">{timeString}</div>
 
-      {/* Badge with dynamic style */}
-      <span className={badgeClasses}>
-        {item.status}
-      </span>
-    </div>
-  );
-})}
-
+                                                    {/* Badge with dynamic style */}
+                                                    <span className={badgeClasses}>{item.status}</span>
+                                                </div>
+                                            );
+                                        })}
                                 </div>
                             </PerfectScrollbar>
                             <div className="border-t border-white-light dark:border-white/10">
@@ -426,7 +422,7 @@ const Index = () => {
                             </div>
                         </div>
                         {/* ACCOUNT DETAILS  START */}
-                        <div className="panel h-full p-0 border-0 overflow-hidden">
+                        {/* <div className="panel h-full p-0 border-0 overflow-hidden">
                             <div className="p-6 bg-gradient-to-r from-[#4361ee] to-[#160f6b] min-h-[190px]">
                                 <div className="flex justify-between items-center mb-6">
                                     <div className="bg-black/50 rounded-full p-1 ltr:pr-3 rtl:pl-3 flex items-center text-white font-semibold">
@@ -490,8 +486,9 @@ const Index = () => {
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
+                    <br />
                     {/* ACCOUNT DETAILS END */}
                     {/* LMS STAFF DETAILS START */}
                     <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
