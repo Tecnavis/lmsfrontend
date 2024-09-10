@@ -185,6 +185,7 @@ const PayFeeform = () => {
                 modeOfPayment: '',
             });
             setModeOfPayment([])
+            generateReceiptNumber();
 
             // Navigate or reset form here if necessary
         } catch (error) {

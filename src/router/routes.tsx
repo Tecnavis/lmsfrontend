@@ -3,6 +3,7 @@ import PayFeeform from '../pages/Pages/PayFeeForm';
 import Ledger from '../pages/Pages/Ledger';
 import AdmissionForm from '../pages/Pages/AdmissionForm';
 import EditAdmissionForm from '../pages/Pages/EditAdmissionForm';
+import AdmissionFormDashboard from '../pages/Apps/AdmissionFormDashboard';
 
 // const Admissionform = lazy(() => import('../pages/Admissionform'));
 // const Ledger = lazy(() => import('../pages/Ledger'));
@@ -155,6 +156,10 @@ const routes = [
     {
         path: '/apps/sutdents',
         element: <Students />,
+    },
+    {
+        path: '/apps/admissionformdash',
+        element: <AdmissionFormDashboard />,
     },
     {
         path: '/apps/sutdents1',
