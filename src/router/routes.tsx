@@ -2,6 +2,8 @@ import { lazy } from 'react';
 import PayFeeform from '../pages/Pages/PayFeeForm';
 import Ledger from '../pages/Pages/Ledger';
 import AdmissionForm from '../pages/Pages/AdmissionForm';
+import EditAdmissionForm from '../pages/Pages/EditAdmissionForm';
+import AdmissionFormDashboard from '../pages/Apps/AdmissionFormDashboard';
 
 // const Admissionform = lazy(() => import('../pages/Admissionform'));
 // const Ledger = lazy(() => import('../pages/Ledger'));
@@ -14,6 +16,7 @@ const Todolist = lazy(() => import('../pages/Apps/Todolist'));
 const Mailbox = lazy(() => import('../pages/Apps/Mailbox'));
 const Notes = lazy(() => import('../pages/Apps/Notes'));
 const Contacts = lazy(() => import('../pages/Apps/Contacts'));
+const Payfee = lazy(() => import('../pages/Apps/Payfee'));
 const Students = lazy(() => import('../pages/Apps/Students'));
 const Chat = lazy(() => import('../pages/Apps/Chat'));
 const Scrumboard = lazy(() => import('../pages/Apps/Scrumboard'));
@@ -107,7 +110,12 @@ const QuillEditor = lazy(() => import('../pages/Forms/QuillEditor'));
 const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
-
+const Students1 = lazy(() => import('../pages/Apps/students1'));
+const Attendance = lazy(() => import('../pages/Apps/attendence'));
+const Monthly = lazy(() => import('../pages/Apps/monthlyattendence'));
+const Transaction = lazy(() => import('../pages/Apps/transaction'));
+const  Expence = lazy(() => import('../pages/Apps/expence'));
+const Expencehistory = lazy(() => import('../pages/Apps/expencehistory'));
 const routes = [
     // dashboard
     {
@@ -141,13 +149,33 @@ const routes = [
         path: '/apps/notes',
         element: <Notes />,
     },
-    {
-        path: '/apps/contacts',
-        element: <Contacts />,
-    },
+    // {
+    //     path: '/apps/contacts',
+    //     element: <Contacts />,
+    // },
     {
         path: '/apps/sutdents',
         element: <Students />,
+    },
+    {
+        path: '/apps/admissionformdash',
+        element: <AdmissionFormDashboard />,
+    },
+    {
+        path: '/apps/sutdents1',
+        element: <Students1 />,
+    },
+    {
+        path: '/apps/attendance',
+        element: <Attendance />,
+    },
+    {
+        path: '/apps/monthlyattendence',
+        element: <Monthly />,
+    },
+    {
+        path: '/users/transaction/:id',
+        element: <Transaction />,
     },
     // {
     //     path: '/apps/mailbox',
@@ -170,6 +198,14 @@ const routes = [
         path: '/apps/calendar',
         element: <Calendar />,
     },
+    {
+        path: '/apps/expence',
+        element: <Expence />,
+    },
+    {
+        path: '/apps/expencehistory',
+        element: <Expencehistory />,
+    },
     // preview page
     {
         path: '/apps/invoice/preview',
@@ -182,6 +218,10 @@ const routes = [
     {
         path: '/apps/invoice/edit',
         element: <Edit />,
+    },
+    {
+        path: '/apps/invoice/payfee',
+        element: <Payfee />,
     },
     // components page
     {
@@ -416,6 +456,11 @@ const routes = [
     {
         path: '/pages/AdmissionForm',
         element: <AdmissionForm />,
+        layout: 'blank',
+    },
+    {
+        path: '/pages/EditAdmissionForm/:id',
+        element: <EditAdmissionForm />,
         layout: 'blank',
     },
     {
