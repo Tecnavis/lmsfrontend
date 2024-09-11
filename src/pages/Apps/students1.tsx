@@ -45,8 +45,6 @@ const StudentTable: React.FC = () => {
             // Extract the students array from the response object
             const studentsData = response.data.students; // Update this based on the actual response structure
             setStudents(Array.isArray(studentsData) ? studentsData : []);
-            console.log(studentsData, 'jjjjj');
-            console.log('students', students);
         } catch (error) {
             console.error('Error fetching students:', error);
         }

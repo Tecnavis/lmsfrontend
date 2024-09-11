@@ -1,16 +1,19 @@
 import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
+import IconEye from '../../components/Icon/IconEye'; // Import the eye icon
+import IconEyeSlash from '../../components/Icon/IconCircleCheck'; // Import the eye slash icon
 import { adminLogin } from '../../pages/Helper/handle-api';
 import { useForm } from '../../pages/Helper/useForm';
 
 const LoginBoxed = () => {
     interface LoginValues {
-    email: string;
-    password: string;
-}
+        email: string;
+        password: string;
+    }
+
     const dispatch = useDispatch();
 
     // Set page title on component mount
@@ -24,15 +27,20 @@ const LoginBoxed = () => {
         password: '',
     });
 
-    
+    // State to track if password is visible
+    const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+    // Toggle password visibility
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(prevState => !prevState);
+    };
 
     // Handle form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // Prevent the form from submitting the default way
         adminLogin(e, values as LoginValues); // Cast 'values' to 'LoginValues'
     };
-    
-    
+
     return (
         <div>
             <div className="absolute inset-0">
@@ -50,7 +58,7 @@ const LoginBoxed = () => {
                             <div className="mb-10">
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
                             </div>
-                            <form className="space-y-5 dark:text-white"  onSubmit={e => adminLogin(e, values as any)}>
+                            <form className="space-y-5 dark:text-white" onSubmit={handleSubmit}>
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
@@ -73,7 +81,7 @@ const LoginBoxed = () => {
                                     <div className="relative text-white-dark">
                                         <input
                                             id="Password"
-                                            type="password"
+                                            type={isPasswordVisible ? 'text' : 'password'} // Toggle password visibility
                                             placeholder="Enter Password"
                                             className="form-input ps-10 placeholder:text-white-dark"
                                             onChange={handleChange}
@@ -82,6 +90,12 @@ const LoginBoxed = () => {
                                         />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
+                                        </span>
+                                        <span 
+                                            className="absolute end-4 top-1/2 -translate-y-1/2 cursor-pointer" 
+                                            onClick={togglePasswordVisibility}
+                                        >
+                                            {isPasswordVisible ? <IconEyeSlash fill={true} /> : <IconEye fill={true} />}
                                         </span>
                                     </div>
                                 </div>

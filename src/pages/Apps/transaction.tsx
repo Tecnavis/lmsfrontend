@@ -14,7 +14,6 @@ const TransactionTable = () => {
             try {
                 const response = await axios.get(`${BASE_URL}/transaction/student/${id}`);
                 setTransactions(response.data);
-                console.log(response.data, 'iiiiii');
             } catch (error) {
                 console.error('Error fetching transactions:', error);
             }
