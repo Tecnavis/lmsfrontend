@@ -1,14 +1,17 @@
 import { lazy } from 'react';
 import PayFeeform from '../pages/Pages/PayFeeForm';
 import Ledger from '../pages/Pages/Ledger';
-import AdmissionForm from '../pages/Pages/AdmissionForm';
+// import AdmissionForm from '../pages/Pages/AdmissionForm';
 import EditAdmissionForm from '../pages/Pages/EditAdmissionForm';
 import AdmissionFormDashboard from '../pages/Apps/AdmissionFormDashboard';
 
 // const Admissionform = lazy(() => import('../pages/Admissionform'));
 // const Ledger = lazy(() => import('../pages/Ledger'));
 // const PayFeeForm = lazy(() => import('../pages/PayFeeForm'));
-const Index = lazy(() => import('../pages/Index'));
+const AdmissionForm = lazy(() => import('../pages/Pages/AdmissionForm') as Promise<{ default: React.ComponentType<any> }>);
+// const AdmissionForm = lazy(() => import('../pages/Pages/AdmissionForm'));
+// const Index = lazy(() => import('../pages/Index'));
+const Index = lazy(() => import('../pages/Index') as Promise<{ default: React.ComponentType<any> }>);
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
 const Crypto = lazy(() => import('../pages/Crypto'));
@@ -114,7 +117,7 @@ const Students1 = lazy(() => import('../pages/Apps/students1'));
 const Attendance = lazy(() => import('../pages/Apps/attendence'));
 const Monthly = lazy(() => import('../pages/Apps/monthlyattendence'));
 const Transaction = lazy(() => import('../pages/Apps/transaction'));
-const  Expence = lazy(() => import('../pages/Apps/expence'));
+const Expence = lazy(() => import('../pages/Apps/expence'));
 const Expencehistory = lazy(() => import('../pages/Apps/expencehistory'));
 const routes = [
     // dashboard
@@ -122,37 +125,14 @@ const routes = [
         path: '/',
         element: <Index />,
     },
-    // {
-    //     path: '/index',
-    //     element: <Index />,
-    // },
-    // analytics page
-    // {
-    //     path: '/analytics',
-    //     element: <Analytics />,
-    // },
-    // finance page
     {
         path: '/finance',
         element: <Finance />,
     },
-    // crypto page
-    // {
-    //     path: '/crypto',
-    //     element: <Crypto />,
-    // },
-    // {
-    //     path: '/apps/todolist',
-    //     element: <Todolist />,
-    // },
     {
         path: '/apps/notes',
         element: <Notes />,
     },
-    // {
-    //     path: '/apps/contacts',
-    //     element: <Contacts />,
-    // },
     {
         path: '/apps/sutdents',
         element: <Students />,
@@ -177,23 +157,6 @@ const routes = [
         path: '/users/transaction/:id',
         element: <Transaction />,
     },
-    // {
-    //     path: '/apps/mailbox',
-    //     element: <Mailbox />,
-    // },
-    // {
-    //     path: '/apps/invoice/list',
-    //     element: <List />,
-    // },
-    // Apps page
-    // {
-    //     path: '/apps/chat',
-    //     element: <Chat />,
-    // },
-    // {
-    //     path: '/apps/scrumboard',
-    //     element: <Scrumboard />,
-    // },
     {
         path: '/apps/calendar',
         element: <Calendar />,

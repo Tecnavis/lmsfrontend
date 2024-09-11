@@ -94,19 +94,18 @@ const AttendanceTable: React.FC = () => {
         try {
             const response = await axios.get(`${BASE_URL}/attendance/student/${studentId}`);
             setSelectedStudentAttendance(response.data);
-    
+
             setSelectedStudent((prevStudent) => {
-                if (prevStudent) {
-                    return {
-                        ...prevStudent,
-                        attendanceHistory: response.data,
-                    };
-                }
+                if (!prevStudent) return null; // Handle the case where prevStudent is null
+
                 return {
-                    _id: studentId, // You may need to adjust this based on your requirements
-                    name: '',       // Default or empty values
+                    ...prevStudent,
                     attendanceHistory: response.data,
-                } as Student; // Type assertion to ensure type compatibility
+                    _id: prevStudent._id, // Ensure _id is retained from prevStudent
+                    name: prevStudent.name,
+                    courseName: prevStudent.courseName,
+                    present: prevStudent.present,
+                };
             });
         } catch (error) {
             console.error('Error fetching attendance records:', error);
@@ -195,21 +194,16 @@ const AttendanceTable: React.FC = () => {
     };
 
     const getCalendarEvents = (attendanceHistory: AttendanceRecord[]) => {
-      return attendanceHistory.map((record) => ({
-          title: record.status === 'Present' ? 'Present' : record.status === 'Absent' ? 'Absent' : 'Holiday',
-          start: new Date(record.date),
-          end: new Date(record.date),
-          allDay: true,
-          style: {
-              backgroundColor: record.status === 'Present' 
-                  ? '#4caf50' 
-                  : record.status === 'Absent' 
-                  ? '#f44336' 
-                  : '#ff9800', // Set holiday color
-          },
-      }));
-  };
-  
+        return attendanceHistory.map((record) => ({
+            title: record.status === 'Present' ? 'Present' : record.status === 'Absent' ? 'Absent' : 'Holiday',
+            start: new Date(record.date),
+            end: new Date(record.date),
+            allDay: true,
+            style: {
+                backgroundColor: record.status === 'Present' ? '#4caf50' : record.status === 'Absent' ? '#f44336' : '#ff9800', // Set holiday color
+            },
+        }));
+    };
 
     const filteredStudents = allStudents.map((student) => ({
         ...student,
@@ -223,29 +217,27 @@ const AttendanceTable: React.FC = () => {
         window.location.href = '/apps/monthlyattendence';
     };
 
-    const handleButtonClick = () => {
-        setFormOpen(true);
-    };
+    // const handleButtonClick = () => {
+    //     setFormOpen(true);
+    // };
 
     const handleCloseForm = () => {
         setFormOpen(false);
     };
 
+
+    // const fetchAttendanceRecords = async () => {}
     return (
         <Paper elevation={3} sx={{ padding: 3 }}>
             <Typography variant="h6" gutterBottom style={{ display: 'flex' }}>
                 <Button variant="contained" color="primary" onClick={handleClick}>
                     Monthly Attendance
                 </Button>
-                <Button variant="contained" color="primary" style={{ marginLeft: 'auto' }} onClick={handleButtonClick}>
+                {/* <Button variant="contained" color="primary" style={{ marginLeft: 'auto' }} onClick={handleButtonClick}>
                     Holiday
-                </Button>
-                <HolidayForm
-  open={isFormOpen}
-  onClose={handleCloseForm}
-  fetchAttendanceRecords={fetchAttendanceRecords} // Add this line
-/>
-
+                </Button> */}
+                {/* <HolidayForm open={isFormOpen} onClose={handleCloseForm} /> */}
+                
             </Typography>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <IconButton onClick={handlePreviousDay}>

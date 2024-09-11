@@ -1,33 +1,28 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
-import Dropdown from '../../components/Dropdown';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { useEffect, useState } from 'react';
 import IconPencilPaper from '../../components/Icon/IconPencilPaper';
-import IconCoffee from '../../components/Icon/IconCoffee';
 import IconCalendar from '../../components/Icon/IconCalendar';
 import IconMapPin from '../../components/Icon/IconMapPin';
 import IconMail from '../../components/Icon/IconMail';
 import IconPhone from '../../components/Icon/IconPhone';
-import IconTwitter from '../../components/Icon/IconTwitter';
-import IconDribbble from '../../components/Icon/IconDribbble';
-import IconGithub from '../../components/Icon/IconGithub';
-import IconShoppingBag from '../../components/Icon/IconShoppingBag';
-import IconTag from '../../components/Icon/IconTag';
-import IconCreditCard from '../../components/Icon/IconCreditCard';
 import IconClock from '../../components/Icon/IconClock';
-import IconHorizontalDots from '../../components/Icon/IconHorizontalDots';
 import axios from 'axios';
 import { BASE_URL } from '../Helper/handle-api';
 import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
-import IconPencil from '../../components/Icon/IconPencil';
 import IconUser from '../../components/Icon/IconUser';
 import IconPaperclip from '../../components/Icon/IconPaperclip';
 import Swal from 'sweetalert2';
 import IconTrash from '../../components/Icon/IconTrash';
 import { FaMoneyBillWave, FaMobileAlt } from 'react-icons/fa'; // Import the icons
-
+interface Transaction {
+    modeOfPayment: string;
+    date: string | Date;
+    payAmount: number;
+    balance: number;
+}
 const Profile = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -39,7 +34,7 @@ const Profile = () => {
     //fetch students
     const [students, setStudents] = useState<any>({});
     const [course, setCourse] = useState<{ name?: string } | null>(null);
-    const [transactions, setTransactions] = useState([])
+    const [transactions, setTransactions] = useState([]);
     const [adminName, setAdminName] = useState('');
 
     useEffect(() => {
@@ -48,19 +43,19 @@ const Profile = () => {
             const parsedAdmins = JSON.parse(admins);
             setAdminName(parsedAdmins.name);
         }
-    }, []);  // The empty dependency array ensures this runs only once on mount.
+    }, []); // The empty dependency array ensures this runs only once on mount.
 
     const { id } = useParams();
 
-    const fetchTransaction = async()=>{
+    const fetchTransaction = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/transaction/student/${id}`)
-            const data = response.data
-            setTransactions(data)
+            const response = await axios.get(`${BASE_URL}/transaction/student/${id}`);
+            const data = response.data;
+            setTransactions(data);
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
-    }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -107,10 +102,9 @@ const Profile = () => {
             });
 
             if (result.isConfirmed) {
-              
                 // Proceed with deletion if confirmed
                 await axios.delete(`${BASE_URL}/students/${userId}`, {
-                    params: { adminName }
+                    params: { adminName },
                 });
                 showMessage('User has been deleted successfully.');
                 navigate('/apps/sutdents');
@@ -130,16 +124,15 @@ const Profile = () => {
             timer: 3000,
             customClass: { container: 'toast' },
         });
-   
     };
-    const formatDate = (dateString) => {
+    const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JS
         const year = date.getFullYear();
-        
+
         return `${day}/${month}/${year}`;
-      };
+    };
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -197,23 +190,6 @@ const Profile = () => {
                                     </span>
                                 </li>
                             </ul>
-                            {/* <ul className="mt-7 flex items-center justify-center gap-2">
-                                <li>
-                                    <button className="btn btn-info flex items-center justify-center rounded-full w-10 h-10 p-0">
-                                        <IconTwitter className="w-5 h-5" />
-                                    </button>
-                                </li>
-                                <li>
-                                    <button className="btn btn-danger flex items-center justify-center rounded-full w-10 h-10 p-0">
-                                        <IconDribbble />
-                                    </button>
-                                </li>
-                                <li>
-                                    <button className="btn btn-dark flex items-center justify-center rounded-full w-10 h-10 p-0">
-                                        <IconGithub />
-                                    </button>
-                                </li>
-                            </ul> */}
                         </div>
                     </div>
                     <div className="panel lg:col-span-2 xl:col-span-3">
@@ -310,34 +286,41 @@ const Profile = () => {
                         <div className="mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Payment Transactions</h5>
                         </div>
-                      
-                        <div className="space-y-4">
-                        <div 
-  className="border border-[#ebedf2] rounded dark:bg-[#1b2e4b] dark:border-0" 
-  style={{ maxHeight: '200px', overflowY: 'auto' }} // Adjust maxHeight as needed
->
-  {transactions.slice().reverse().map((items, index) => (
-    <div key={index} className="flex items-center justify-between p-4 py-2">
-      <div className="grid place-content-center w-9 h-9 rounded-md bg-secondary-light dark:bg-secondary text-secondary dark:text-secondary-light">
-        {items.modeOfPayment === 'UPI' || items.modeOfPayment === 'UPI Payment' ? (
-          <FaMobileAlt />  // Icon for UPI
-        ) : items.modeOfPayment === 'Cash' || items.modeOfPayment === 'Cash Payment' ? (
-          <FaMoneyBillWave />  // Icon for Cash
-        ) : (
-          <span>No Icon</span>  // Default fallback if no match
-        )}
-      </div>
-      <div className="ltr:ml-4 rtl:mr-4 flex items-start justify-between flex-auto font-semibold">
-        <h6 className="text-white-dark text-[13px] dark:text-white-dark">
-          {formatDate(items.date)}
-          <span className="block text-base text-[#515365] dark:text-white-light">₹{items.payAmount}</span>
-        </h6>
-        <p className="ltr:ml-auto rtl:mr-auto text-secondary">{items.balance}</p>
-      </div>
-    </div>
-  ))}
-</div>
 
+                        <div className="space-y-4">
+                            <div
+                                className="border border-[#ebedf2] rounded dark:bg-[#1b2e4b] dark:border-0"
+                                style={{ maxHeight: '200px', overflowY: 'auto' }} // Adjust maxHeight as needed
+                            >
+                                {transactions
+                                    .slice()
+                                    .reverse()
+                                    .map((item: Transaction, index: number) => (
+                                        <div key={index} className="flex items-center justify-between p-4 py-2">
+                                            <div className="grid place-content-center w-9 h-9 rounded-md bg-secondary-light dark:bg-secondary text-secondary dark:text-secondary-light">
+                                                {item.modeOfPayment === 'UPI' || item.modeOfPayment === 'UPI Payment' ? (
+                                                    <FaMobileAlt /> // Icon for UPI
+                                                ) : item.modeOfPayment === 'Cash' || item.modeOfPayment === 'Cash Payment' ? (
+                                                    <FaMoneyBillWave /> // Icon for Cash
+                                                ) : (
+                                                    <span>No Icon</span> // Default fallback if no match
+                                                )}
+                                            </div>
+                                            <div className="ltr:ml-4 rtl:mr-4 flex items-start justify-between flex-auto font-semibold">
+                                                {/* <h6 className="text-white-dark text-[13px] dark:text-white-dark">
+                                                    {formatDate(item.date)}
+                                                    <span className="block text-base text-[#515365] dark:text-white-light">₹{item.payAmount}</span>
+                                                </h6> */}
+                                                <h6 className="text-white-dark text-[13px] dark:text-white-dark">
+                                                    {formatDate(item.date instanceof Date ? item.date.toISOString() : item.date)}
+                                                    <span className="block text-base text-[#515365] dark:text-white-light">₹{item.payAmount}</span>
+                                                </h6>
+
+                                                <p className="ltr:ml-auto rtl:mr-auto text-secondary">{item.balance}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
                         </div>
                     </div>
                     <div className="panel">
@@ -362,7 +345,6 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                   
                 </div>
             </div>
         </div>

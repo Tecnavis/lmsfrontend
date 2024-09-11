@@ -50,7 +50,7 @@ const LoginBoxed = () => {
                             <div className="mb-10">
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
                             </div>
-                            <form className="space-y-5 dark:text-white" onSubmit={handleSubmit}>
+                            <form className="space-y-5 dark:text-white"  onSubmit={e => adminLogin(e, values as any)}>
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">

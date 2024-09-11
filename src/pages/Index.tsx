@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
-import React, { ChangeEvent, FormEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import MonthlyRevenue from './Users/monthlyrevenue';
-import WeeklyRevenue from './Users/weeklyrevenue';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { setPageTitle } from '../store/themeConfigSlice';
 import IconArrowLeft from '../components/Icon/IconArrowLeft';
-import IconCaretDown from '../components/Icon/IconCaretDown';
-import IconPlus from '../components/Icon/IconPlus';
 import { fetchAdmin, BASE_URL, adminEdit, adminUpdate, deleteAdmin, fetchCourse, courseEdit, courseUpdate, deleteCourse, createCourse, fetchTransaction } from './Helper/handle-api';
 import { useForm } from './Helper/useForm';
 import IconEdit from '../components/Icon/IconEdit';
@@ -371,7 +368,7 @@ const Index = () => {
                                     {logs
                                         .slice()
                                         .reverse()
-                                        .map((item, index) => {
+                                        .map((item: any, index: number) => {
                                             // Format the timestamp
                                             const timestamp = new Date(item.time); // Assuming `item.timestamp` contains a valid date string or timestamp
                                             const timeString = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -508,33 +505,32 @@ const Index = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    {admin && Array.isArray(admin) && admin.length > 0 ? (
-    admin.map((data: any) => (
-        <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group" key={data._id}>
-            <td className="min-w-[150px] text-black dark:text-white">
-                <div className="flex items-center">
-                    <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
-                    <span className="whitespace-nowrap">{data.name}</span>
-                </div>
-            </td>
-            <td className="text-primary">{data.phone}</td>
-            <td>
-                <Link to="/apps/invoice/preview">{data.email}</Link>
-            </td>
-            <td>{data.role}</td>
-            <td>
-                <span className="badge bg-success shadow-md dark:group-hover:bg-transparent" onClick={() => handleEditClick(data._id)}>
-                    Edit
-                </span>
-            </td>
-        </tr>
-    ))
-) : (
-    <tr>
-        <td colSpan={5}>No data available</td>
-    </tr>
-)}
-
+                                        {admin && Array.isArray(admin) && admin.length > 0 ? (
+                                            admin.map((data: any) => (
+                                                <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group" key={data._id}>
+                                                    <td className="min-w-[150px] text-black dark:text-white">
+                                                        <div className="flex items-center">
+                                                            <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
+                                                            <span className="whitespace-nowrap">{data.name}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="text-primary">{data.phone}</td>
+                                                    <td>
+                                                        <Link to="/apps/invoice/preview">{data.email}</Link>
+                                                    </td>
+                                                    <td>{data.role}</td>
+                                                    <td>
+                                                        <span className="badge bg-success shadow-md dark:group-hover:bg-transparent" onClick={() => handleEditClick(data._id)}>
+                                                            Edit
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={5}>No data available</td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
