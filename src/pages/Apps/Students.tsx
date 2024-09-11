@@ -37,31 +37,29 @@ const Students = () => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     useEffect(() => {
-        const fetchStudents = async () => {
-            const token = localStorage.getItem("token")
-           axios.defaults.headers.common["Authorization"] = token
-            setLoading(true);
-            try {
-                const { data } = await axios.get(`${backendUrl}/students`, {
-                    params: {
-                        page: currentPage,
-                        limit: 10,
-                        name: searchName,
-                    },
-                });
-                setStudents(data.students);
-                setTotal(data.total);
-                setTotalPages(data.totalPages);
-            } catch (error) {
-                console.error('Error fetching students:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchStudents();
     }, [currentPage, searchName, backendUrl]);
-
+    const fetchStudents = async () => {
+        const token = localStorage.getItem("token")
+       axios.defaults.headers.common["Authorization"] = token
+        setLoading(true);
+        try {
+            const { data } = await axios.get(`${backendUrl}/students`, {
+                params: {
+                    page: currentPage,
+                    limit: 10,
+                    name: searchName,
+                },
+            });
+            setStudents(data.students);
+            setTotal(data.total);
+            setTotalPages(data.totalPages);
+        } catch (error) {
+            console.error('Error fetching students:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchName(e.target.value);
         setCurrentPage(1); // Reset to first page on search
@@ -142,7 +140,24 @@ const Students = () => {
     const transactionDetails = (id: string) => {
         window.location.href = `/users/transaction/${id}`;
     };
-   
+   // activate student 
+   const activateStudent = async(id : any)=>{
+    try {
+        await axios.put(`${backendUrl}/students/activate/${id}`)
+        fetchStudents();
+    } catch (error) {
+        console.error(error)
+    }
+}
+// deactivate student 
+const deactivateStudent = async(id : any)=>{
+    try {
+        await axios.put(`${backendUrl}/students/deactivate/${id}`)
+        fetchStudents();
+    } catch (error) {
+        console.error(error)
+    }
+}
     return (
         <div>
             <div className="flex items-center justify-between flex-wrap gap-4">
@@ -203,6 +218,15 @@ const Students = () => {
                                         <td className="whitespace-nowrap">{item.courseName}</td>
                                         <td>
                                             <div className="flex gap-4 items-center justify-center">
+                                            {item.active ? (
+  <button type="button" className="btn btn-sm btn-outline-success" onClick={() => deactivateStudent(item._id)}>
+    Active
+  </button>
+) : (
+  <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => activateStudent(item._id)}>
+    Deactive
+  </button>
+)}
                                                 <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => transactionDetails(item._id)}>
                                                     Transaction
                                                 </button>
