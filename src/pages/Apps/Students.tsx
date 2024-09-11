@@ -1,18 +1,12 @@
 import { useState, Fragment, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconUserPlus from '../../components/Icon/IconUserPlus';
 import IconListCheck from '../../components/Icon/IconListCheck';
 import IconLayoutGrid from '../../components/Icon/IconLayoutGrid';
 import IconSearch from '../../components/Icon/IconSearch';
-import IconUser from '../../components/Icon/IconUser';
-import IconFacebook from '../../components/Icon/IconFacebook';
-import IconInstagram from '../../components/Icon/IconInstagram';
-import IconLinkedin from '../../components/Icon/IconLinkedin';
-import IconTwitter from '../../components/Icon/IconTwitter';
-import IconX from '../../components/Icon/IconX';
+import Swal, { SweetAlertIcon } from 'sweetalert2';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
@@ -77,45 +71,46 @@ const Students = () => {
         setCurrentPage(page);
     };
 
-    const saveUser = async () => {
-        if (!params.name) {
-            showMessage('Name is required.', 'error');
-            return;
-        }
-        if (!params.email) {
-            showMessage('Email is required.', 'error');
-            return;
-        }
-        if (!params.phone) {
-            showMessage('Phone is required.', 'error');
-            return;
-        }
-        if (!params.role) {
-            showMessage('Occupation is required.', 'error');
-            return;
-        }
+    // const saveUser = async () => {
+    //     if (!params.name) {
+    //         showMessage('Name is required.', 'error');
+    //         return;
+    //     }
+    //     if (!params.email) {
+    //         showMessage('Email is required.', 'error');
+    //         return;
+    //     }
+    //     if (!params.phone) {
+    //         showMessage('Phone is required.', 'error');
+    //         return;
+    //     }
+    //     if (!params.role) {
+    //         showMessage('Occupation is required.', 'error');
+    //         return;
+    //     }
 
-        try {
-            if (params.id) {
-                // Update user
-                await axios.put(`${backendUrl}/students/${params.id}`, params);
-            } else {
-                // Add user
-                await axios.post(`${backendUrl}/students`, params);
-            }
+    //     try {
+    //         if (params.id) {
+    //             // Update user
+    //             await axios.put(`${backendUrl}/students/${params.id}`, params);
+    //         } else {
+    //             // Add user
+    //             await axios.post(`${backendUrl}/students`, params);
+    //         }
 
-            showMessage('User has been saved successfully.');
-            setAddContactModal(false);
-            fetchStudents();
-        } catch (error) {
-            console.error('Error saving user:', error);
-            showMessage('Error saving user.', 'error');
-        }
-    };
+    //         showMessage('User has been saved successfully.');
+    //         setAddContactModal(false);
+    //         fetchStudents();
+    //     } catch (error) {
+    //         console.error('Error saving user:', error);
+    //         showMessage('Error saving user.', 'error');
+    //     }
+    // };
 
-    const editUser = (id) => {
+    const editUser = (id: string | number) => {
         navigate(`/pages/EditAdmissionForm/${id}`);
     };
+    
 
     const deleteUser = async (userOrId: any) => {
         const token = localStorage.getItem("token")
@@ -154,7 +149,7 @@ const Students = () => {
         }
     };
 
-    const showMessage = (msg = '', type = 'success') => {
+    const showMessage = (msg = '', type: SweetAlertIcon = 'success') => {
         const toast = Swal.mixin({
             toast: true,
             position: 'top',
@@ -162,6 +157,7 @@ const Students = () => {
             timer: 3000,
             customClass: { container: 'toast' },
         });
+    
         toast.fire({
             icon: type,
             title: msg,
