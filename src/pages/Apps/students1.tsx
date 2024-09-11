@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { Button, Table, TextInput, Box, Title, Group } from '@mantine/core';
+import * as XLSX from 'xlsx';
 interface Student {
     image: string;
     name: string;
@@ -37,16 +38,12 @@ const StudentTable: React.FC = () => {
     }, []);
 
     const fetchStudents = async () => {
-
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
         try {
             const response = await axios.get(`${backendUrl}/students`);
-            // Extract the students array from the response object
-            const studentsData = response.data.students; // Update this based on the actual response structure
+            const studentsData = response.data.students;
             setStudents(Array.isArray(studentsData) ? studentsData : []);
-            console.log(studentsData, 'jjjjj');
-            console.log('students', students);
         } catch (error) {
             console.error('Error fetching students:', error);
         }
@@ -57,7 +54,7 @@ const StudentTable: React.FC = () => {
         if (!file) return;
 
         const formData = new FormData();
-        formData.append('excel', file); // Ensure this name matches the one used in multer
+        formData.append('excel', file);
 
         try {
             await axios.post(`${backendUrl}/upload`, formData, {
@@ -65,89 +62,136 @@ const StudentTable: React.FC = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log('File uploaded successfully');
             fetchStudents(); // Fetch students after upload
         } catch (error) {
             console.error('Error uploading file:', error);
         }
     };
+//download
 
+const handleDownload = () => {
+    // Create worksheet from table data
+    const worksheetData = students.map(student => ({
+        Name: "",
+        "Admission Date":"", 
+        "Invoice Number": "",
+        Address: "",
+        State: "",
+        "Pin Code": "",
+        "Blood Group": "",
+        "Guardian Name": "",
+        "Guardian Relation": "",
+        "Date of Birth": "",
+        Age: "",
+        Gender: "",
+        "Marital Status": "",
+        Qualification: "",
+        "Mobile Number": "",
+        "Parent's Mobile": "",
+        Email: "",
+        "Course Name": "",
+        "Join Date": "",
+        "Course Fee": "",
+        "Guardian ID": "",
+        "Student ID": "",
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(worksheetData);
+
+    // Create a workbook and add the worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Students');
+
+    // Export the file
+    XLSX.writeFile(wb, 'students_data.xlsx');
+};
     return (
-        <div style={{ width: '100%', padding: '20px', overflowX: 'auto' }}>
-            <div style={{ display: 'flex', marginBottom: '10px' }}>
-                <p>All Students</p>
-                <input type="file" onChange={handleFileUpload} style={{ marginLeft: '10px' }} />
-            </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <Box sx={{ padding: '20px' }}>
+            <Group position="apart" sx={{ marginBottom: '20px' }}>
+                <Title order={2}>All Students</Title>
+                <Group>
+                <Button style={{backgroundColor: '#1976D2',color: 'white'}}>
+                    <TextInput
+                        type="file"
+                        onChange={handleFileUpload}
+                        styles={{ input: { display: 'none', } }}
+                        label="Upload"
+                    />
+                    </Button>
+                    <Button style={{backgroundColor: 'Gray'}} onClick={handleDownload}>Download</Button>
+                </Group>
+            </Group>
+
+            <Table striped highlightOnHover withBorder withColumnBorders>
                 <thead>
                     <tr>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Image</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Name</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Admission Date</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Invoice Number</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Address</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>State</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Pin Code</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Blood Group</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Guardian Name</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Guardian Relation</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Date of Birth</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Age</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Gender</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Marital Status</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Qualification</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Mobile Number</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Parent's Mobile</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Email</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Course Name</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Join Date</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Course Fee</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Guardian ID</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: '#f2f2f2' }}>Student ID</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Admission Date</th>
+                        <th>Invoice Number</th>
+                        <th>Address</th>
+                        <th>State</th>
+                        <th>Pin Code</th>
+                        <th>Blood Group</th>
+                        <th>Guardian Name</th>
+                        <th>Relation</th>
+                        <th>Date of Birth</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Marital Status</th>
+                        <th>Qualification</th>
+                        <th>Mobile</th>
+                        <th>Parent's Mobile</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Join Date</th>
+                        <th>Course Fee</th>
+                        <th>Guardian ID</th>
+                        <th>Student ID</th>
                     </tr>
                 </thead>
                 <tbody>
                     {students.map((student, index) => (
                         <tr key={index}>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                            <td>
                                 <img
                                     src={student.image ? `${backendUrl}/images/${student.image}` : imag1}
                                     alt="Student"
                                     style={{
                                         width: '50px',
                                         height: '50px',
-                                        borderRadius: '50%', // Makes the image circular
-                                        objectFit: 'cover', // Ensures the image covers the area without distortion
+                                        borderRadius: '50%',
+                                        objectFit: 'cover',
                                     }}
                                 />
                             </td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.name}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(student.admissionDate).toLocaleDateString()}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.invoiceNumber}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.fullAddress}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.state}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.pinCode}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.bloodGroup}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.guardianName}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.guardianRelation}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(student.dateOfBirth).toLocaleDateString()}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.age}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.gender}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.maritalStatus}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.academicQualification}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.mobileNumber}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.parentsMobileNumber}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.email}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.courseName}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(student.joinDate).toLocaleDateString()}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.courseFee}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.guardianId}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{student.studentId}</td>
+                            <td>{student.name}</td>
+                            <td>{new Date(student.admissionDate).toLocaleDateString()}</td>
+                            <td>{student.invoiceNumber}</td>
+                            <td>{student.fullAddress}</td>
+                            <td>{student.state}</td>
+                            <td>{student.pinCode}</td>
+                            <td>{student.bloodGroup}</td>
+                            <td>{student.guardianName}</td>
+                            <td>{student.guardianRelation}</td>
+                            <td>{new Date(student.dateOfBirth).toLocaleDateString()}</td>
+                            <td>{student.age}</td>
+                            <td>{student.gender}</td>
+                            <td>{student.maritalStatus}</td>
+                            <td>{student.academicQualification}</td>
+                            <td>{student.mobileNumber}</td>
+                            <td>{student.parentsMobileNumber}</td>
+                            <td>{student.email}</td>
+                            <td>{student.courseName}</td>
+                            <td>{new Date(student.joinDate).toLocaleDateString()}</td>
+                            <td>{student.courseFee}</td>
+                            <td>{student.guardianId}</td>
+                            <td>{student.studentId}</td>
                         </tr>
                     ))}
                 </tbody>
-            </table>
-        </div>
+            </Table>
+        </Box>
     );
 };
 

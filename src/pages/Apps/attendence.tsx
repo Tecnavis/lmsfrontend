@@ -16,6 +16,7 @@ interface AttendanceRecord {
 
 interface Student {
     _id: number;
+    active: boolean;
     name: string;
     courseName: string;
     present: boolean;
@@ -237,7 +238,7 @@ const AttendanceTable: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredStudents.map((student, index) => (
+                        {filteredStudents.filter(student=>student.active).map((student, index) => (
                             <TableRow key={student._id}>
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{student.name}</TableCell>
