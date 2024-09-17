@@ -50,7 +50,7 @@ const EditAdmissionForm = () => {
         academicQualification: '',
         mobileNumber: '',
         parentsMobileNumber: '',
-        email: '',
+        email: '' ,
         courseName: '',
         joinDate: '',
         courseFee: '',
@@ -438,7 +438,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         id="email"
                                         name="email"
                                         type="email"
-                                        value={data.email}
+                                        value={data.email || ''}
                                         onChange={handleChange}
                                         placeholder="Email"
                                         className="form-input ps-10 placeholder:text-white-dark"

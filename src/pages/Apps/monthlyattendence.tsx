@@ -27,7 +27,6 @@ const AttendanceTable: React.FC = () => {
             const [year, month] = currentMonth.split('-');
             const response = await axios.get(`${BASE_URL}/attendance/${month}/${year}`);
             const data = response.data
-            console.log(data,'this is the data')
             setAttendanceRecords(response.data.attendanceRecords);
         } catch (error) {
             console.error('Error fetching attendance records:', error);

@@ -2,8 +2,8 @@ import axios from 'axios';
 import { FormEvent } from 'react';
 import Swal from 'sweetalert2';
 
-// export const BASE_URL = 'http://localhost:4000';
-export const BASE_URL = 'https://api.lms.tecnavis.com';
+export const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 // Type definition for Admin (replace with actual structure)
 
@@ -80,15 +80,16 @@ export const fetchCourse = async (): Promise<Course[] | undefined> => {
     }
 };
 //fetch students
-export const fetchStudents = async () => {
-    try {
-        const response = await axios.get(`${BASE_URL}/students`);
-        return response.data;
-    } catch (err) {
-        console.error('Student details listing failed', err);
-        return [];
-    }
-}
+// export const fetchStudents = async () => {
+//     try {
+//         const response = await axios.get(`${BASE_URL}/students`);
+//         return response.data;
+//     } catch (err) {
+//         console.error('Student details listing failed', err);
+//         return [];
+//     }
+// }
+
 //fetch transaction
 export const fetchTransaction = async (): Promise<Admin[] | undefined> => {
     try {
@@ -99,6 +100,25 @@ export const fetchTransaction = async (): Promise<Admin[] | undefined> => {
         return undefined;
     }
 }
+// Example implementation of fetchStudents with pagination
+export const fetchStudents = async (page: number = 1, limit: number = 2000) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/students?page=${page}&limit=${limit}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching students:', error);
+        throw error;
+    }
+};
+//     try {
+//         const response = await axios.get(`${BASE_URL}/students`);
+//         return response.data;
+//     } catch (error) {
+//         console.error('Error fetching students:', error);
+//         throw error;
+//     }
+// };
+
 // Edit admin by ID
 export const adminEdit = async (id: string): Promise<Admin | undefined> => {
   const token = localStorage.getItem("token")
@@ -172,7 +192,7 @@ export const adminLogin = async (e: FormEvent<HTMLFormElement>, values: LoginVal
         Swal.fire('Login successful!');
 
     } catch (err) {
-        alert('Login failed');
+        Swal.fire('Invalid username or password!');
         if (axios.isAxiosError(err) && err.response && err.response.status === 400) {
             console.log(err.response.data.message);
         } else {

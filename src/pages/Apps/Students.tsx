@@ -1,6 +1,5 @@
 import { useState, Fragment, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconUserPlus from '../../components/Icon/IconUserPlus';
@@ -10,6 +9,7 @@ import IconSearch from '../../components/Icon/IconSearch';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
+import Swal from 'sweetalert2';
 
 const Students = () => {
     const dispatch = useDispatch();
@@ -73,6 +73,7 @@ const Students = () => {
     const editUser = (id : any) => {
         navigate(`/pages/EditAdmissionForm/${id}`);
     };
+    
 
     const deleteUser = async (userOrId: any) => {
         const token = localStorage.getItem("token")

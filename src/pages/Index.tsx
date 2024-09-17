@@ -19,7 +19,6 @@ const Index = () => {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            console.log(token);
         } else {
             console.log('Token not found in localStorage');
         }
@@ -118,7 +117,6 @@ const Index = () => {
             const response = await axios.get(`${BASE_URL}/log`);
             const data = response.data;
             setLogs(data);
-            console.log(data, 'this is the data of logs');
         } catch (error) {
             console.error(error);
         }
