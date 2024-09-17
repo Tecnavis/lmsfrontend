@@ -37,17 +37,42 @@ const StudentTable: React.FC = () => {
         fetchStudents();
     }, []);
 
+    // const fetchStudents = async () => {
+    //     const token = localStorage.getItem('token');
+    //     axios.defaults.headers.common['Authorization'] = token;
+    //     try {
+    //         const response = await axios.get(`${backendUrl}/students`);
+    //         const studentsData = response.data.students;
+    //         setStudents(Array.isArray(studentsData) ? studentsData : []);
+    //     } catch (error) {
+    //         console.error('Error fetching students:', error);
+    //     }
+    // };
     const fetchStudents = async () => {
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
+    
         try {
-            const response = await axios.get(`${backendUrl}/students`);
-            const studentsData = response.data.students;
-            setStudents(Array.isArray(studentsData) ? studentsData : []);
+            let studentsData: Student[] = [];
+            let page = 1;
+            let hasMore = true;
+    
+            while (hasMore) {
+                const response = await axios.get(`${backendUrl}/students`, {
+                    params: { page },
+                });
+                const { students, totalPages } = response.data;
+                studentsData = [...studentsData, ...students];
+                hasMore = page < totalPages;
+                page++;
+            }
+    
+            setStudents(studentsData);
         } catch (error) {
             console.error('Error fetching students:', error);
         }
     };
+    
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];

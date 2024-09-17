@@ -55,25 +55,35 @@ const AttendanceTable: React.FC = () => {
         axios.defaults.headers.common['Authorization'] = token;
         try {
             setLoading(true);
-            const response = await fetchStudents();
-            if (response) {
+            let page = 1;
+            const limit = 2000;
+            let allFetchedStudents: Student[] = [];
+            let hasMore = true;
+    
+            while (hasMore) {
+                const response = await fetchStudents(page, limit);
                 const students = response.students || [];
-                setAllStudents(
-                    students.map((student: any) => ({
-                        ...student,
-                        attendanceHistory: student.attendanceHistory || [],
-                    }))
-                );
-            } else {
-                setError('No data received');
+                allFetchedStudents = allFetchedStudents.concat(students);
+    
+                // Check if there's more data to fetch
+                hasMore = students.length === limit;
+                page += 1;
             }
-            setLoading(false);
+    
+            setAllStudents(
+                allFetchedStudents.map((student: any) => ({
+                    ...student,
+                    attendanceHistory: student.attendanceHistory || [],
+                }))
+            );
         } catch (error) {
             console.error('Error fetching student details:', error);
             setError('Failed to load student data');
+        } finally {
             setLoading(false);
         }
     };
+    
 
     const loadSpecificStudentAttendance = async (studentId: number) => {
         try {
@@ -193,16 +203,6 @@ const AttendanceTable: React.FC = () => {
     const handleClick = () => {
         window.location.href = '/apps/monthlyattendence';
     };
-
-    // const handleButtonClick = () => {
-    //     setFormOpen(true);
-    // };
-
-    const handleCloseForm = () => {
-        setFormOpen(false);
-    };
-
-
     // const fetchAttendanceRecords = async () => {}
     return (
         <Paper elevation={3} sx={{ padding: 3 }}>
@@ -210,11 +210,6 @@ const AttendanceTable: React.FC = () => {
                 <Button variant="contained" color="primary" onClick={handleClick}>
                     Monthly Attendance
                 </Button>
-                {/* <Button variant="contained" color="primary" style={{ marginLeft: 'auto' }} onClick={handleButtonClick}>
-                    Holiday
-                </Button> */}
-                {/* <HolidayForm open={isFormOpen} onClose={handleCloseForm} /> */}
-                
             </Typography>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <IconButton onClick={handlePreviousDay}>
@@ -238,21 +233,23 @@ const AttendanceTable: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredStudents.filter(student=>student.active).map((student, index) => (
-                            <TableRow key={student._id}>
-                                <TableCell>{index + 1}</TableCell>
-                                <TableCell>{student.name}</TableCell>
-                                <TableCell>{student.courseName}</TableCell>
-                                <TableCell align="center">
-                                    <Checkbox checked={student.present} onChange={() => handleAttendanceChange(student._id)} />
-                                </TableCell>
-                                <TableCell align="center">
-                                    <Button variant="contained" onClick={() => handleViewClick(student)}>
-                                        View
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {filteredStudents
+                            .filter((student) => student.active)
+                            .map((student, index) => (
+                                <TableRow key={student._id}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{student.name}</TableCell>
+                                    <TableCell>{student.courseName}</TableCell>
+                                    <TableCell align="center">
+                                        <Checkbox checked={student.present} onChange={() => handleAttendanceChange(student._id)} />
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <Button variant="contained" onClick={() => handleViewClick(student)}>
+                                            View
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                     </TableBody>
                 </Table>
             </TableContainer>
