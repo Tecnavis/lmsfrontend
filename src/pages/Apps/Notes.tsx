@@ -133,7 +133,6 @@ const Notes = () => {
         axios.defaults.headers.common['Authorization'] = token;
         try {
             const response = await axios.get(`${BASE_URL}/students`);
-
             // Extract the students array from the response data
             if (response.data && Array.isArray(response.data.students)) {
                 setStudents(response.data.students);
