@@ -2,8 +2,8 @@ import axios from 'axios';
 import { FormEvent } from 'react';
 import Swal from 'sweetalert2';
 
-// export const BASE_URL = 'http://localhost:4000';
-export const BASE_URL = 'https://api.lms.tecnavis.com';
+export const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 // Type definition for Admin (replace with actual structure)
 
