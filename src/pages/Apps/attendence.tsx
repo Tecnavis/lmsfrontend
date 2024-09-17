@@ -17,6 +17,7 @@ interface AttendanceRecord {
 interface Student {
     _id: number;
     name: string;
+    active:boolean;
     courseName: string;
     present: boolean;
     attendanceHistory?: AttendanceRecord[];
@@ -43,44 +44,29 @@ const AttendanceTable: React.FC = () => {
         loadData();
     }, [currentDate]);
 
-    interface Student {
-        _id: string;
-        name: string;
-        attendanceHistory?: any[];
-    }
-    
-
     useEffect(() => {
         if (selectedStudent?._id) {
-            const idAsNumber = parseInt(selectedStudent._id, 10); // Convert string to number
-            if (!isNaN(idAsNumber)) {
-                loadSpecificStudentAttendance(idAsNumber);
-            } else {
-                console.error('Invalid ID format');
-            }
+            loadSpecificStudentAttendance(selectedStudent._id);
         }
     }, [selectedStudent?._id]);
-    
 
-   
-    
-    interface StudentResponse {
-        students: Student[];
-    }
-    
     const loadData = async () => {
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
         try {
             setLoading(true);
-            const response: StudentResponse | Student[] = await fetchStudents(); // Response might be an array directly
-            const students = Array.isArray(response) ? response : response?.students || []; // Check if the response is an array
-            setAllStudents(
-                students.map((student: Student) => ({
-                    ...student,
-                    attendanceHistory: student.attendanceHistory || [],
-                }))
-            );
+            const response = await fetchStudents();
+            if (response) {
+                const students = response.students || [];
+                setAllStudents(
+                    students.map((student: any) => ({
+                        ...student,
+                        attendanceHistory: student.attendanceHistory || [],
+                    }))
+                );
+            } else {
+                setError('No data received');
+            }
             setLoading(false);
         } catch (error) {
             console.error('Error fetching student details:', error);
@@ -88,9 +74,8 @@ const AttendanceTable: React.FC = () => {
             setLoading(false);
         }
     };
-    
 
-    const loadSpecificStudentAttendance = async (studentId: string) => { // Ensure the type of studentId matches the actual data type
+    const loadSpecificStudentAttendance = async (studentId: number) => {
         try {
             const response = await axios.get(`${BASE_URL}/attendance/student/${studentId}`);
             setSelectedStudentAttendance(response.data);
@@ -112,42 +97,37 @@ const AttendanceTable: React.FC = () => {
             setError('Failed to load attendance records');
         }
     };
-    
-    const handleAttendanceChange = async (id: string) => { // Keep id as string
+
+    const handleAttendanceChange = async (id: number) => {
         try {
             const updatedStudent = allStudents.find((student) => student._id === id);
             if (!updatedStudent) return;
-    
+
             const attendanceHistory = updatedStudent.attendanceHistory || [];
             const attendanceIndex = attendanceHistory.findIndex((record) => record.date === currentDate);
             let newStatus: 'Present' | 'Absent' = 'Present';
-    
-            if (attendanceIndex !== -1) {
+            if (attendanceIndex !== undefined && attendanceIndex !== -1) {
                 newStatus = attendanceHistory[attendanceIndex].status === 'Present' ? 'Absent' : 'Present';
             }
-    
+
             const updatedAttendanceHistory =
-                attendanceIndex !== -1
-                    ? [
-                          ...attendanceHistory.slice(0, attendanceIndex),
-                          { ...attendanceHistory[attendanceIndex], status: newStatus },
-                          ...attendanceHistory.slice(attendanceIndex + 1)
-                      ]
+                attendanceIndex !== undefined && attendanceIndex !== -1
+                    ? [...attendanceHistory.slice(0, attendanceIndex), { ...attendanceHistory[attendanceIndex], status: newStatus }, ...attendanceHistory.slice(attendanceIndex + 1)]
                     : [
                           ...attendanceHistory,
                           {
                               date: currentDate,
                               status: newStatus,
-                          }
+                          },
                       ];
-    
+
             const requestData: AttendanceRequest = {
-                students: parseInt(id, 10), // Convert id to number
+                students: id,
                 date: currentDate,
                 status: newStatus,
             };
-    
-            const response = await axios.post(`${BASE_URL}/attendance`, requestData);
+
+            const response = await axios.post(`${BASE_URL}/attendance, requestData`);
             if (response.status === 200) {
                 setAllStudents((prevStudents) =>
                     prevStudents.map((student) =>
@@ -160,7 +140,6 @@ const AttendanceTable: React.FC = () => {
                             : student
                     )
                 );
-    
                 if (selectedStudent && selectedStudent._id === id) {
                     setSelectedStudent({
                         ...selectedStudent,
@@ -174,8 +153,6 @@ const AttendanceTable: React.FC = () => {
             console.error('Error saving attendance:', error);
         }
     };
-    
-    
 
     const handleViewClick = (student: Student) => {
         setSelectedStudent(student);
@@ -261,7 +238,8 @@ const AttendanceTable: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredStudents.map((student, index) => (
+                        {filteredStudents
+  .filter(student => student.active).map((student, index) => (
                             <TableRow key={student._id}>
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{student.name}</TableCell>
