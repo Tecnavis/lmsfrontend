@@ -292,8 +292,10 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
+
                 <div className="grid grid-cols-1  gap-5">
                     <div className="panel" style={{width:'100%'}}>
+
                         <div className="mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Payment Transactions</h5>
                         </div>
