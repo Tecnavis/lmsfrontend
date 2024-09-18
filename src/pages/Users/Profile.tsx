@@ -281,7 +281,7 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="">
                     <div className="panel">
                         <div className="mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Payment Transactions</h5>
@@ -323,7 +323,7 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="panel">
+                    {/* <div className="panel">
                         <div className="flex items-center justify-between mb-10">
                             <h5 className="font-semibold text-lg dark:text-white-light">Pro Plan</h5>
                             <button className="btn btn-primary">Renew Now</button>
@@ -344,7 +344,7 @@ const Profile = () => {
                                 <div className="bg-gradient-to-r from-[#f67062] to-[#fc5296] w-full h-full rounded-full relative" style={{ width: '65%' }}></div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
