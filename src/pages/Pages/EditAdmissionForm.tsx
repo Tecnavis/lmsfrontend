@@ -16,7 +16,7 @@ import Flatpickr from 'react-flatpickr';
 import ReactLoading from 'react-loading';
 import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
 import 'flatpickr/dist/flatpickr.css';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Swal from 'sweetalert2';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
@@ -26,6 +26,17 @@ const EditAdmissionForm = () => {
     const { id } = useParams();
     const [student, setStudent] = useState({});
     const [adminName, setAdminName] = useState('');
+    const [errors, setErrors] = useState({
+        admissionDate: '',
+        mobileNumber: '',
+        dateOfBirth: '',
+        courseName: '',
+        courseFee: ''
+    });
+    interface ErrorResponse {
+        message: string;
+    }
+    
     useEffect(() => {
         const admins = localStorage.getItem('Admins');
         if (admins) {
@@ -122,17 +133,61 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
 
 
 
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        let validationErrors: any = {};
+
+        // Admission Date validation
+        if (!data.admissionDate) {
+            validationErrors.admissionDate = 'Admission Date is required';
+        }
+
+        // Phone Number validation
+        const phoneRegex = /^[6-9]\d{9}$/;
+        if (!data.mobileNumber || !phoneRegex.test(data.mobileNumber)) {
+            validationErrors.mobileNumber = 'Please enter a valid 10-digit Indian Mobile Number.';
+        }
+
+        // Date of Birth validation
+        const today = new Date();
+        const birthDate = new Date(data.dateOfBirth);
+        if (!data.dateOfBirth || birthDate >= today) {
+            validationErrors.dateOfBirth = 'Please enter a valid Date of Birth that is in the past.';
+        }
+
+        // Course Name validation
+        if (!data.courseName) {
+            validationErrors.courseName = 'Course Name is required.';
+        }
+
+        // Course Fee validation
+        if (!data.courseFee || isNaN(Number(data.courseFee)) || Number(data.courseFee) <= 0) {
+            validationErrors.courseFee = 'Please enter a valid Course Fee greater than 0.';
+        }
+        
+
+        // If there are validation errors, update the state and prevent form submission
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
+        setErrors({
+            admissionDate: '',
+            mobileNumber: '',
+            dateOfBirth: '',
+            courseName: '',
+            courseFee: '',
+        }); // Clear errors if validation passes
         setLoading(true);
+        
         try {
             const formData = new FormData();
-
             // Append each field to the formData
-
             formData.append('admissionDate', data.admissionDate);
             formData.append('invoiceNumber', data.invoiceNumber);
-            formData.append('image', data.image); // Assuming this is a File object
+            formData.append('image', data.image);
             formData.append('name', data.name);
             formData.append('fullAddress', data.fullAddress);
             formData.append('state', data.state);
@@ -152,35 +207,62 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
             formData.append('courseFee', data.courseFee);
             formData.append('guardianId', data.guardianId);
             formData.append('studentId', data.studentId);
-            formData.append('adminName',adminName);
-
+            formData.append('adminName', adminName);
+        
             await axios.put(`${backendUrl}/students/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
-            // showMessage('Admission updated successfully!', 'success');
+        
             Swal.fire({
                 icon: 'success',
                 title: 'Admission updated successfully!',
                 showConfirmButton: false,
                 timer: 3000,
-            })
-            navigate('/apps/sutdents');
+            });
+            navigate(-1);
         } catch (error) {
-            console.error(error);
-            // showMessage('Failed to update admission.', 'error');
-            Swal.fire({
-                icon: 'error',
-                title: 'Failed to update admission.',
-                showConfirmButton: false,
-                timer: 3000,
-            })
+            // Type guard to check if the error is an AxiosError
+            const axiosError = error as AxiosError<ErrorResponse>;
+        
+            if (axiosError.response && axiosError.response.status === 401) {
+                // Ensure response data is of the expected type
+                const errorMessage = (axiosError.response.data as ErrorResponse).message || 'Unauthorized access';
+        
+                // Show a specific alert message if the error is related to the phone number
+                if (errorMessage.includes('Phone number is not unique')) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Phone number is not unique. Please provide a different number.',
+                        showConfirmButton: true,
+                    });
+                } else {
+                    // Handle other 401-related errors
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorMessage, // Show the error message from the server
+                        showConfirmButton: true,
+                    });
+                }
+            } else {
+                // Handle other errors
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to update admission.',
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            }
         } finally {
             setLoading(false);
         }
+        
+        
     };
+
+    
+    
 
     const handleImageChange = (e:any) => {
         const file = e.target.files[0];
@@ -226,6 +308,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                             className="form-input"
                                             onChange={(date) => handleDateChange('admissionDate', date)}
                                         />
+                                         {errors.admissionDate && <span className="text-red-500">{errors.admissionDate}</span>}
                                     </div>
                                     <div>
                                         <label htmlFor="joiningDate">Joining Date</label>
@@ -368,6 +451,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         className="form-input "
                                         onChange={(date) => handleDateChange('dateOfBirth', date)}
                                     />
+                                      {errors.dateOfBirth && <span className="text-red-500">{errors.dateOfBirth}</span>}
                                     {/* <span className="absolute start-4 top-1/2 -translate-y-1/2"></span> */}
                                 </div>
                                 <div className="relative text-white-dark">
@@ -426,6 +510,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Mobile Number"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
+                                      {errors.mobileNumber && <span className="text-red-500">{errors.mobileNumber}</span>}
                                     {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconPhoneCall />
                                     </span> */}
@@ -471,6 +556,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Course Name"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
+                                      {errors.courseName && <span className="text-red-500">{errors.courseName}</span>}
                                     {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
                                     </span> */}
@@ -486,6 +572,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Course Fee"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
+                                      {errors.courseFee && <span className="text-red-500">{errors.courseFee}</span>}
                                     {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
                                     </span> */}
