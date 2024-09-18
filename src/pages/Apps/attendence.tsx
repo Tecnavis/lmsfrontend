@@ -137,7 +137,7 @@ const AttendanceTable: React.FC = () => {
                 status: newStatus,
             };
 
-            const response = await axios.post(`${BASE_URL}/attendance, requestData`);
+            const response = await axios.post(`${BASE_URL}/attendance`, requestData);
             if (response.status === 200) {
                 setAllStudents((prevStudents) =>
                     prevStudents.map((student) =>

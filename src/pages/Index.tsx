@@ -259,7 +259,7 @@ const Index = () => {
 
     //handle delete
     const handleDelete = async (id: string) => {
-        const confirmation = window.confirm('Are you sure you want delete this product?');
+        const confirmation = window.confirm('Are you sure you want delete this staff?');
         if (confirmation) {
             try {
                 await deleteAdmin(editId);
@@ -336,6 +336,15 @@ const Index = () => {
             });
         }
     };
+
+
+    //signup
+    const signUp =() => {
+        navigate('/auth/boxed-signup')
+        
+    }
+        
+    
     //admin details
     const Admins = JSON.parse(localStorage.getItem('Admins') || '[]');
     if (token) {
@@ -489,6 +498,9 @@ const Index = () => {
                     <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
                         <div className="panel h-full w-full">
                             <div className="flex items-center justify-between mb-5">
+                            <button onClick={signUp}>
+                                    <IconPlusCircle />
+                                </button>
                                 <h5 className="font-semibold text-lg dark:text-white-light">LMs ADMINS</h5>
                             </div>
                             <div className="table-responsive">

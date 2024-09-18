@@ -76,7 +76,9 @@ const Profile = () => {
     }, [id]);
 
     // Format the date
-    const formattedDate = students.dateOfBirth ? new Date(students.dateOfBirth).toISOString().split('T')[0] : '';
+
+      
+
 
     const deleteUser = async (userOrId: any) => {
         const token = localStorage.getItem('token');
@@ -169,7 +171,7 @@ const Profile = () => {
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <IconCalendar className="shrink-0" />
-                                    {formattedDate}
+                                    {students.dateOfBirth ? formatDate(students.dateOfBirth) : 'N/A'}
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <IconMapPin className="shrink-0" />
@@ -201,6 +203,14 @@ const Profile = () => {
                                 <table className="whitespace-nowrap">
                                     <tbody className="dark:text-white-dark">
                                         <tr>
+                                            <td>Admission Date :</td>
+                                            <td>  {students.admissionDate ? formatDate(students.admissionDate) : 'N/A'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Joining Date :</td>
+                                            <td>  {students.joinDate ? formatDate(students.joinDate) : 'N/A'}</td>
+                                        </tr>
+                                        <tr>
                                             <td>Roll NO :</td>
                                             <td>{students.invoiceNumber}</td>
                                         </tr>
@@ -223,7 +233,8 @@ const Profile = () => {
                                         </tr>
                                         <tr>
                                             <td>Date of birth :</td>
-                                            <td>{new Date(students.dateOfBirth).toLocaleDateString('en-GB')}</td>
+                                            <td>{students.dateOfBirth ? new Date(students.dateOfBirth).toLocaleDateString('en-GB') : 'nil'}</td>
+
                                         </tr>
                                         <tr>
                                             <td>Age :</td>
@@ -235,7 +246,7 @@ const Profile = () => {
                                         </tr>
                                         <tr>
                                             <td>Marital status :</td>
-                                            <td>{students.maritalStatus}</td>
+                                            <td>{students.maritalStatus ? students.maritalStatus : 'nil'}</td>
                                         </tr>
                                         <tr>
                                             <td>Academic qualification :</td>
@@ -281,8 +292,10 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="panel">
+
+                <div className="grid grid-cols-1  gap-5">
+                    <div className="panel" style={{width:'100%'}}>
+
                         <div className="mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Payment Transactions</h5>
                         </div>
@@ -323,7 +336,7 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="panel">
+                    {/* <div className="panel">
                         <div className="flex items-center justify-between mb-10">
                             <h5 className="font-semibold text-lg dark:text-white-light">Pro Plan</h5>
                             <button className="btn btn-primary">Renew Now</button>
@@ -344,7 +357,7 @@ const Profile = () => {
                                 <div className="bg-gradient-to-r from-[#f67062] to-[#fc5296] w-full h-full rounded-full relative" style={{ width: '65%' }}></div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
