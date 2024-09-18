@@ -70,8 +70,7 @@ const EditAdmissionForm = () => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    // const [admissionDate, setAdmissionDate] = useState(null);
-    // const [joiningDate, setJoiningDate] = useState(null);
+ 
     const [admissionDate, setAdmissionDate] = useState<Date | null>(null);
 const [joiningDate, setJoiningDate] = useState<Date | null>(null);
 
@@ -222,7 +221,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                     <div>
                                         <label htmlFor="admissionDate">Admission Date</label>
                                         <Flatpickr
-                                           value={admissionDate || undefined} 
+                                           value={data.admissionDate || undefined} 
                                             options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                             className="form-input"
                                             onChange={(date) => handleDateChange('admissionDate', date)}
@@ -231,7 +230,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                     <div>
                                         <label htmlFor="joiningDate">Joining Date</label>
                                         <Flatpickr
-                                            value={joiningDate || undefined}
+                                            value={data.joinDate || undefined}
                                             options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                             className="form-input"
                                             onChange={(date) => handleDateChange('joinDate', date)}
@@ -257,6 +256,7 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                     <input id="studentPhoto" name="image" type="file" onChange={handleImageChange} className="form-input" accept=".jpg,.jpeg,.png" />
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Name</label>
                                     <input
                                         id="name"
                                         name="name"
@@ -266,11 +266,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Student Name"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconUser />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Address</label>
                                     <input
                                         id="fullAddress"
                                         name="fullAddress"
@@ -280,11 +281,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Full Address"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>State</label>
                                     <input
                                         id="state"
                                         name="state"
@@ -294,11 +296,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="State"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Pincode</label>
                                     <input
                                         id="pinCode"
                                         name="pinCode"
@@ -308,11 +311,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Pin Code"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Blood group</label>
                                     <input
                                         id="bloodGroup"
                                         name="bloodGroup"
@@ -322,11 +326,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Blood Group"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Guardian name</label>
                                     <input
                                         id="guardianName"
                                         name="guardianName"
@@ -336,11 +341,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Guardian Name"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconUser />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Guardian relationship</label>
                                     <input
                                         id="guardianRelation"
                                         name="guardianRelation"
@@ -350,20 +356,22 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Guardian Relation"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconUser />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Date of birth</label>
                                     <Flatpickr
                                         value={data.dateOfBirth}
                                         options={{ dateFormat: 'Y-m-d', position: isRtl ? 'auto right' : 'auto left' }}
                                         className="form-input "
-                                        onChange={(date) => handleDateChange('admissionDate', date)}
+                                        onChange={(date) => handleDateChange('dateOfBirth', date)}
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2"></span>
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2"></span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Gender</label>
                                     <input
                                         id="gender"
                                         name="gender"
@@ -373,11 +381,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Gender"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconUser />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Marital status</label>
                                     <input
                                         id="maritalStatus"
                                         name="maritalStatus"
@@ -387,11 +396,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Marital Status"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconUser />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Academic qualification</label>
                                     <input
                                         id="academicQualification"
                                         name="academicQualification"
@@ -401,11 +411,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Academic Qualification"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconUser />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Mobile number</label>
                                     <input
                                         id="mobileNumber"
                                         name="mobileNumber"
@@ -415,11 +426,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Mobile Number"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconPhoneCall />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Parents mobile number</label>
                                     <input
                                         id="parentsMobileNumber"
                                         name="parentsMobileNumber"
@@ -429,11 +441,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Parents Mobile Number"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconPhoneCall />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Email</label>
                                     <input
                                         id="email"
                                         name="email"
@@ -443,11 +456,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Email"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMail />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Course name</label>
                                     <input
                                         id="courseName"
                                         name="courseName"
@@ -457,11 +471,12 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Course Name"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <div className="relative text-white-dark">
+                                <label>Course fee</label>
                                     <input
                                         id="courseFee"
                                         name="courseFee"
@@ -471,9 +486,9 @@ const [joiningDate, setJoiningDate] = useState<Date | null>(null);
                                         placeholder="Course Fee"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                     />
-                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                    {/* <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                         <IconMessageDots />
-                                    </span>
+                                    </span> */}
                                 </div>
                                 <button
                                     type="submit"
