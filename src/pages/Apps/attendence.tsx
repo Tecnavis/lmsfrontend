@@ -84,6 +84,7 @@ const AttendanceTable: React.FC = () => {
         }
     };
     
+    const [selectAll, setSelectAll] = useState<boolean>(false);
 
     const loadSpecificStudentAttendance = async (studentId: number) => {
         try {
@@ -203,6 +204,59 @@ const AttendanceTable: React.FC = () => {
     const handleClick = () => {
         window.location.href = '/apps/monthlyattendence';
     };
+
+
+    const handleSelectAllChange = async () => {
+        try {
+            // Determine the new status based on the current state
+            const newStatus: 'Present' | 'Absent' = selectAll ? 'Absent' : 'Present';
+    
+            // Update each student's status
+            await Promise.all(
+                allStudents.map(async (student) => {
+                    const attendanceHistory = student.attendanceHistory || [];
+                    const attendanceIndex = attendanceHistory.findIndex((record) => record.date === currentDate);
+                    const updatedAttendanceHistory =
+                        attendanceIndex !== undefined && attendanceIndex !== -1
+                            ? [...attendanceHistory.slice(0, attendanceIndex), { ...attendanceHistory[attendanceIndex], status: newStatus }, ...attendanceHistory.slice(attendanceIndex + 1)]
+                            : [
+                                  ...attendanceHistory,
+                                  {
+                                      date: currentDate,
+                                      status: newStatus,
+                                  },
+                              ];
+    
+                    const requestData: AttendanceRequest = {
+                        students: student._id,
+                        date: currentDate,
+                        status: newStatus,
+                    };
+    
+                    await axios.post(`${BASE_URL}/attendance`, requestData);
+    
+                    // Update local state
+                    setAllStudents((prevStudents) =>
+                        prevStudents.map((s) =>
+                            s._id === student._id
+                                ? {
+                                      ...s,
+                                      present: newStatus === 'Present',
+                                      attendanceHistory: updatedAttendanceHistory,
+                                  }
+                                : s
+                        )
+                    );
+                })
+            );
+    
+            // Update select all state
+            setSelectAll(!selectAll);
+        } catch (error) {
+            console.error('Error updating attendance status for all students:', error);
+        }
+    };
+    
     // const fetchAttendanceRecords = async () => {}
     return (
         <Paper elevation={3} sx={{ padding: 3 }}>
@@ -223,34 +277,51 @@ const AttendanceTable: React.FC = () => {
 
             <TableContainer>
                 <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>No.</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Course</TableCell>
-                            <TableCell align="center">Present</TableCell>
-                            <TableCell align="center">View</TableCell>
-                        </TableRow>
-                    </TableHead>
+                <TableHead>
+    <TableRow>
+        <TableCell>
+            <Checkbox
+                checked={selectAll}
+                onChange={handleSelectAllChange}
+            />
+        </TableCell>
+        <TableCell>No.</TableCell>
+        <TableCell>Name</TableCell>
+        <TableCell>Course</TableCell>
+        <TableCell align="center">Present</TableCell>
+        <TableCell align="center">View</TableCell>
+    </TableRow>
+</TableHead>
+
                     <TableBody>
-                        {filteredStudents
-                            .filter((student) => student.active)
-                            .map((student, index) => (
-                                <TableRow key={student._id}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{student.name}</TableCell>
-                                    <TableCell>{student.courseName}</TableCell>
-                                    <TableCell align="center">
-                                        <Checkbox checked={student.present} onChange={() => handleAttendanceChange(student._id)} />
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <Button variant="contained" onClick={() => handleViewClick(student)}>
-                                            View
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                    </TableBody>
+    {filteredStudents
+        .filter((student) => student.active)
+        .map((student, index) => (
+            <TableRow key={student._id}>
+                <TableCell>
+                    <Checkbox
+                        checked={student.present}
+                        onChange={() => handleAttendanceChange(student._id)}
+                    />
+                </TableCell>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{student.name}</TableCell>
+                <TableCell>{student.courseName}</TableCell>
+                <TableCell align="center">
+                    <Checkbox
+                        checked={student.present}
+                        onChange={() => handleAttendanceChange(student._id)}
+                    />
+                </TableCell>
+                <TableCell align="center">
+                    <Button variant="contained" onClick={() => handleViewClick(student)}>
+                        View
+                    </Button>
+                </TableCell>
+            </TableRow>
+        ))}
+</TableBody>
+
                 </Table>
             </TableContainer>
 
