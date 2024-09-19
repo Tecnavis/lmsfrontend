@@ -1,0 +1,8 @@
+.status-label {
+    font-weight: bold;
+}
+
+.highlighted-reason {
+    color: red; /* Adjust color to your preference */
+    font-weight: bold; /* Make the reason stand out */
+}

@@ -40,8 +40,8 @@ const Students = () => {
         fetchStudents();
     }, [currentPage, searchName, backendUrl]);
     const fetchStudents = async () => {
-        const token = localStorage.getItem("token")
-       axios.defaults.headers.common["Authorization"] = token
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
         setLoading(true);
         try {
             const { data } = await axios.get(`${backendUrl}/students`, {
@@ -69,16 +69,14 @@ const Students = () => {
         setCurrentPage(page);
     };
 
- 
-    const editUser = (id : any) => {
+    const editUser = (id: any) => {
         navigate(`/pages/EditAdmissionForm/${id}`);
     };
-    
 
     const deleteUser = async (userOrId: any) => {
-        const token = localStorage.getItem("token")
-       axios.defaults.headers.common["Authorization"] = token
-       let userId: string;
+        const token = localStorage.getItem('token');
+        axios.defaults.headers.common['Authorization'] = token;
+        let userId: string;
         if (typeof userOrId === 'object') {
             userId = userOrId._id;
         } else {
@@ -105,7 +103,6 @@ const Students = () => {
                 // showMessage('User has been deleted successfully.');
 
                 Swal.fire('Success', 'User has been deleted successfully.', 'success');
-
             } else {
                 // showMessage('Deletion canceled.', 'info');
 
@@ -141,24 +138,66 @@ const Students = () => {
     const transactionDetails = (id: string) => {
         window.location.href = `/users/transaction/${id}`;
     };
-   // activate student 
-   const activateStudent = async(id : any)=>{
-    try {
-        await axios.put(`${backendUrl}/students/activate/${id}`)
-        fetchStudents();
-    } catch (error) {
-        console.error(error)
-    }
-}
-// deactivate student 
-const deactivateStudent = async(id : any)=>{
-    try {
-        await axios.put(`${backendUrl}/students/deactivate/${id}`)
-        fetchStudents();
-    } catch (error) {
-        console.error(error)
-    }
-}
+    // activate student
+    const activateStudent = async (id: any) => {
+        try {
+            await axios.put(`${backendUrl}/students/activate/${id}`);
+            fetchStudents();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    // deactivate student
+    // const deactivateStudent = async(id : any)=>{
+    //     try {
+    //         await axios.put(`${backendUrl}/students/deactivate/${id}`)
+    //         fetchStudents();
+    //     } catch (error) {
+    //         console.error(error)
+    //     }
+    // }
+    const deactivateStudent = async (id: any, reason: string) => {
+        try {
+            await axios.put(`${backendUrl}/students/deactivate/${id}`, { reason });
+            fetchStudents();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    // const handleDeactivate = (id: any) => {
+    //     const reason = prompt('Please enter the reason for deactivation:');
+    //     if (reason) {
+    //         deactivateStudent(id, reason);
+    //     }
+    // };
+    const handleDeactivate = (id: any) => {
+        Swal.fire({
+            title: 'Enter reason for deactivation',
+            input: 'textarea',
+            inputLabel: 'Reason',
+            inputPlaceholder: 'Enter the reason here...',
+            inputAttributes: {
+                'aria-label': 'Enter the reason for deactivation'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value: string) => {
+                return new Promise<string | null>((resolve) => {
+                    if (!value) {
+                        resolve('You need to enter a reason!');
+                    } else {
+                        resolve(null);
+                    }
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                const reason = result.value;
+                deactivateStudent(id, reason);
+            }
+        });
+    };
     return (
         <div>
             <div className="flex items-center justify-between flex-wrap gap-4">
@@ -219,15 +258,16 @@ const deactivateStudent = async(id : any)=>{
                                         <td className="whitespace-nowrap">{item.courseName}</td>
                                         <td>
                                             <div className="flex gap-4 items-center justify-center">
-                                            {item.active ? (
-  <button type="button" className="btn btn-sm btn-outline-success" onClick={() => deactivateStudent(item._id)}>
-    Active
-  </button>
-) : (
-  <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => activateStudent(item._id)}>
-    Deactive
-  </button>
-)}
+                                                {item.active ? (
+                                                    <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => handleDeactivate(item._id)}>
+                                                        Activate
+                                                    </button>
+                                                ) : (
+                                                    <button type="button" className="btn btn-sm btn-outline-success" onClick={() => activateStudent(item._id)}>
+                                                        Deactivate
+                                                    </button>
+                                                )}
+
                                                 <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => transactionDetails(item._id)}>
                                                     Transaction
                                                 </button>
