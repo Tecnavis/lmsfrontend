@@ -9,6 +9,7 @@ import IconMapPin from '../../components/Icon/IconMapPin';
 import IconMail from '../../components/Icon/IconMail';
 import IconPhone from '../../components/Icon/IconPhone';
 import IconClock from '../../components/Icon/IconClock';
+import './style.css';
 import axios from 'axios';
 import { BASE_URL } from '../Helper/handle-api';
 import defaultImage from '../../assets/css/Images/user-front-side-with-white-background.jpg';
@@ -76,9 +77,6 @@ const Profile = () => {
     }, [id]);
 
     // Format the date
-
-      
-
 
     const deleteUser = async (userOrId: any) => {
         const token = localStorage.getItem('token');
@@ -191,6 +189,19 @@ const Profile = () => {
                                         +91 {students.mobileNumber}
                                     </span>
                                 </li>
+                                <li className="flex items-center gap-2">
+                                    <span className="whitespace-nowrap" dir="ltr">
+                                        {students.active ? 'Active: ' : 'Deactivated: '}
+                                        <span
+                                            style={{
+                                                color: students.active ? 'green' : 'red',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {students.active ? 'Ongoing' : students.deactivationReason || 'No reason provided'}
+                                        </span>
+                                    </span>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -204,11 +215,11 @@ const Profile = () => {
                                     <tbody className="dark:text-white-dark">
                                         <tr>
                                             <td>Admission Date :</td>
-                                            <td>  {students.admissionDate ? formatDate(students.admissionDate) : 'N/A'}</td>
+                                            <td> {students.admissionDate ? formatDate(students.admissionDate) : 'N/A'}</td>
                                         </tr>
                                         <tr>
                                             <td>Joining Date :</td>
-                                            <td>  {students.joinDate ? formatDate(students.joinDate) : 'N/A'}</td>
+                                            <td> {students.joinDate ? formatDate(students.joinDate) : 'N/A'}</td>
                                         </tr>
                                         <tr>
                                             <td>Roll NO :</td>
@@ -234,7 +245,6 @@ const Profile = () => {
                                         <tr>
                                             <td>Date of birth :</td>
                                             <td>{students.dateOfBirth ? new Date(students.dateOfBirth).toLocaleDateString('en-GB') : 'nil'}</td>
-
                                         </tr>
                                         <tr>
                                             <td>Age :</td>
@@ -294,8 +304,7 @@ const Profile = () => {
                 </div>
 
                 <div className="grid grid-cols-1  gap-5">
-                    <div className="panel" style={{width:'100%'}}>
-
+                    <div className="panel" style={{ width: '100%' }}>
                         <div className="mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Payment Transactions</h5>
                         </div>
