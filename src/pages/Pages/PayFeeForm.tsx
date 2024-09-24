@@ -6,7 +6,12 @@ import axios from 'axios';
 import { useForm } from '../Helper/useForm';
 import Swal from 'sweetalert2';
 import { BASE_URL } from '../Helper/handle-api';
-
+type Student = {
+    name: string;
+    age: number;
+    grade: string;
+  };
+  
 const PayFeeform = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const dispatch = useDispatch();
@@ -90,19 +95,33 @@ const PayFeeform = () => {
         }
     };
 
-    // Fetch the list of students
     const fetchStudents = async () => {
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
+        let allStudents: Student[] = [];
+        let page = 1;
+        const limit = 10000; // Set to the backend limit if needed
+    
         try {
-            const response = await axios.get(`${backendUrl}/students`);
-            const studentsData = response.data.students;
-            setStudents(Array.isArray(studentsData) ? studentsData : []);
+            let hasMore = true;
+            while (hasMore) {
+                const response = await axios.get(`${backendUrl}/students?page=${page}&limit=${limit}`);
+                const studentsData = response.data.students;
+                if (studentsData.length > 0) {
+                    // Filter out inactive students
+                    const activeStudents = studentsData.filter((student: any) => student.active);
+                    allStudents = [...allStudents, ...activeStudents];
+                    page += 1; // Move to the next page
+                } else {
+                    hasMore = false; // Stop when no more students are returned
+                }
+            }
+            setStudents(allStudents);
         } catch (error) {
             console.error('Error fetching students:', error);
         }
     };
-
+  
     // Handle name input change and filter students
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
