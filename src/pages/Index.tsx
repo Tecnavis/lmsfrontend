@@ -12,6 +12,8 @@ import IconEdit from '../components/Icon/IconEdit';
 import IconPlusCircle from '../components/Icon/IconPlusCircle';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import trainingPanel from '../assets/css/Images/training-plan-1.png';
+import IconTrash from '../components/Icon/IconTrash';
 const Index = () => {
     const token = localStorage.getItem('token');
 
@@ -56,7 +58,105 @@ const Index = () => {
         name: '',
         duration: '',
         fee: '',
+        image: null, // For the uploaded image
     });
+
+    const [errors, setErrors] = useState({
+        name: '',
+        duration: '',
+        fee: '',
+        image: '',
+    });
+    const handleClose = () => {
+        setIsCreatePopupOpen(false);
+        setDatas({
+            name: '',
+            duration: '',
+            fee: '',
+            image: null, // For the uploaded image
+        });
+        setErrors({
+            name: '',
+            duration: '',
+            fee: '',
+            image: '',
+        });
+    };
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            console.log(file, 'this is the file');
+            setDatas({ ...datas, image: file });
+            setErrors({ ...errors, image: '' }); // Clear image error on valid input
+        }
+    };
+
+    const validate = () => {
+        let tempErrors = { name: '', duration: '', fee: '', image: '' };
+        let isValid = true;
+
+        if (!datas.name) {
+            tempErrors.name = 'Course name is required.';
+            isValid = false;
+        }
+        if (!datas.fee) {
+            tempErrors.fee = 'Fees are required.';
+            isValid = false;
+        } else if (Number(datas.fee) < 0) {
+            tempErrors.fee = 'Fees cannot be negative.';
+            isValid = false;
+        }
+        if (!datas.duration) {
+            tempErrors.duration = 'Duration is required.';
+            isValid = false;
+        } else if (Number(datas.duration) < 1) {
+            tempErrors.duration = 'Duration must be at least 1 month.';
+            isValid = false;
+        }
+        // if (!datas.image) {
+        //     tempErrors.image = 'Course image is required.';
+        //     isValid = false;
+        // }
+
+        setErrors(tempErrors);
+        return isValid;
+    };
+
+    const handleChangesWithValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleChanges(e); // Update the data
+
+        // Dynamically update errors for the specific field
+        const { name, value } = e.target;
+        let tempErrors = { ...errors };
+
+        switch (name) {
+            case 'name':
+                tempErrors.name = value ? '' : 'Course name is required.';
+                break;
+            case 'fee':
+                if (!value) {
+                    tempErrors.fee = 'Fees are required.';
+                } else if (Number(value) < 0) {
+                    tempErrors.fee = 'Fees cannot be negative.';
+                } else {
+                    tempErrors.fee = ''; // Clear the error if valid
+                }
+                break;
+            case 'duration':
+                if (!value) {
+                    tempErrors.duration = 'Duration is required.';
+                } else if (Number(value) < 1) {
+                    tempErrors.duration = 'Duration must be at least 1 month.';
+                } else {
+                    tempErrors.duration = ''; // Clear the error if valid
+                }
+                break;
+            default:
+                break;
+        }
+
+        setErrors(tempErrors); // Update the error state
+    };
 
     useEffect(() => {
         loadData();
@@ -189,12 +289,16 @@ const Index = () => {
 
     const handleClosePopup1 = () => {
         setIsPopupOpen1(false);
+        setDatas({
+            name: '',
+            duration: '',
+            fee: '',
+            image: null, // For the uploaded image
+        });
     };
 
     ///handle update
     const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault(); // Prevents default behavior of the button click
-
         const formData = new FormData();
         formData.append('email', values.email);
         formData.append('role', values.role);
@@ -231,13 +335,21 @@ const Index = () => {
     //handle update course
     const handleUpdateCourse = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const courseData = {
-            name: datas.name,
-            duration: Number(datas.duration),
-            fee: Number(datas.fee),
-        };
+        e.preventDefault(); // Prevents default behavior of the button click
+        validate();
+        if (!validate()) {
+            return; // Stop if validation fails
+        }
+        const formData = new FormData();
+        formData.append('name', datas.name);
+        formData.append('duration', String(datas.duration)); // Convert to string
+        formData.append('fee', String(datas.fee)); // Convert to string
+        if (datas.image) {
+            formData.append('image', datas.image); // Add the image file if it exists
+        }
+
         try {
-            await courseUpdate(editId1, courseData as any);
+            await courseUpdate(editId1, formData);
             setIsPopupOpen1(false);
             loadCourse();
             Swal.fire({
@@ -284,13 +396,23 @@ const Index = () => {
 
     //handle delete course
     const handleDeleteCourse = async (id: string) => {
-        const confirmation = window.confirm('Are you sure you want delete this course?');
-        if (confirmation) {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+        });
+    
+        if (result.isConfirmed) {
             try {
-                await deleteCourse(editId1);
+                await deleteCourse(id);
                 Swal.fire({
-                    title: 'Success!',
-                    text: 'Delete successful',
+                    title: 'Deleted!',
+                    text: 'Your course has been deleted.',
                     icon: 'success',
                     confirmButtonText: 'OK',
                 });
@@ -306,18 +428,32 @@ const Index = () => {
             }
         }
     };
+    
 
     //handle create course
 
-    const handleCreateCourse = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleCreateCourse = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const courseData: any = {
-            name: datas.name,
-            duration: Number(datas.duration),
-            fee: Number(datas.fee),
-        };
+        validate();
+        if (!validate()) {
+            return; // Stop if validation fails
+        }
+
+        // Create a FormData object
+        const formData = new FormData();
+        formData.append('name', datas.name);
+        formData.append('duration', datas.duration); // duration as a string will be fine
+        formData.append('fee', datas.fee); // fee as a string will be fine
+
+        // Assuming datas.image is a file object (if you're uploading a file)
+        if (datas.image instanceof File) {
+            formData.append('image', datas.image);
+        } else {
+            console.error('No valid image found.');
+        }
+
         try {
-            await createCourse(courseData); // Function to create the course in the backend
+            await createCourse(formData); // Send FormData to the backend
             setIsCreatePopupOpen(false); // Close the popup after successful creation
             loadCourse(); // Reload the courses
             Swal.fire({
@@ -337,14 +473,11 @@ const Index = () => {
         }
     };
 
-
     //signup
-    const signUp =() => {
-        navigate('/auth/boxed-signup')
-        
-    }
-        
-    
+    const signUp = () => {
+        navigate('/auth/boxed-signup');
+    };
+
     //admin details
     const Admins = JSON.parse(localStorage.getItem('Admins') || '[]');
     if (token) {
@@ -498,7 +631,7 @@ const Index = () => {
                     <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
                         <div className="panel h-full w-full">
                             <div className="flex items-center justify-between mb-5">
-                            <button onClick={signUp}>
+                                <button onClick={signUp}>
                                     <IconPlusCircle />
                                 </button>
                                 <h5 className="font-semibold text-lg dark:text-white-light">LMs ADMINS</h5>
@@ -652,16 +785,26 @@ const Index = () => {
                                             <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
                                                 <td className="min-w-[150px] text-black dark:text-white">
                                                     <div className="flex">
-                                                        <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src="/assets/images/product-headphones.jpg" alt="avatar" />
+                                                        {data.image ? (
+                                                            <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
+                                                        ) : (
+                                                            <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={trainingPanel} alt="avatar" />
+                                                        )}
+
                                                         <p className="whitespace-nowrap">{data.name}</p>
                                                     </div>
                                                 </td>
                                                 <td>{data.fee} </td>
                                                 <td>{data.duration} Months</td>
                                                 <td>
-                                                    <Link className="text-danger flex items-center" to="/" onClick={() => handleEditCourse(data._id)}>
-                                                        <IconEdit className="rtl:rotate-180 ltr:mr-1 rtl:ml-1" />
-                                                    </Link>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+                                                        <Link className="text-primary flex items-center" to="/" onClick={() => handleEditCourse(data._id)}>
+                                                            <IconEdit className="rtl:rotate-180 ltr:mr-1 rtl:ml-1" />
+                                                        </Link>
+                                                        <button className="text-danger flex items-center" onClick={() => handleDeleteCourse(data._id)}>
+                                                            <IconTrash className="rtl:rotate-180 ltr:mr-1 rtl:ml-1" />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -673,50 +816,59 @@ const Index = () => {
                             <div className="popup-overlay flex items-center justify-center fixed inset-0 bg-black bg-opacity-50 z-50">
                                 <div className="popup-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-full sm:max-w-lg w-full mx-4 sm:mx-0">
                                     <h2 className="text-xl font-semibold mb-4">Create New Course</h2>
-                                    <form>
+                                    <form onSubmit={handleCreateCourse}>
                                         <div className="mb-4">
                                             <label className="block mb-1">Name:</label>
                                             <input
                                                 type="text"
                                                 value={datas.name}
-                                                onChange={handleChanges}
+                                                onChange={handleChangesWithValidation}
                                                 name="name"
                                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
+                                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                                         </div>
                                         <div className="mb-4">
                                             <label className="block mb-1">Fees:</label>
                                             <input
                                                 type="number"
                                                 value={datas.fee}
-                                                onChange={handleChanges}
+                                                onChange={handleChangesWithValidation}
                                                 name="fee"
                                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
+                                            {errors.fee && <p className="text-red-500 text-sm">{errors.fee}</p>}
                                         </div>
                                         <div className="mb-4">
                                             <label className="block mb-1">Duration (Months):</label>
                                             <input
                                                 type="number"
                                                 value={datas.duration}
-                                                onChange={handleChanges}
+                                                onChange={handleChangesWithValidation}
                                                 name="duration"
                                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
+                                            {errors.duration && <p className="text-red-500 text-sm">{errors.duration}</p>}
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block mb-1">Course Image:</label>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageChange}
+                                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            />
+                                            {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
                                         </div>
                                         <div className="flex justify-end">
                                             <button
                                                 type="button"
-                                                onClick={() => setIsCreatePopupOpen(false)}
+                                                onClick={handleClose}
                                                 className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
                                             >
                                                 Close
                                             </button>
-                                            <button
-                                                type="submit"
-                                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                onClick={handleCreateCourse}
-                                            >
+                                            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
                                                 Create
                                             </button>
                                         </div>
@@ -734,28 +886,39 @@ const Index = () => {
                                             <input
                                                 type="text"
                                                 value={datas.name}
-                                                onChange={handleChanges}
+                                                onChange={handleChangesWithValidation}
                                                 name="name"
                                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
+                                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                                         </div>
                                         <div className="mb-4">
                                             <label className="block mb-1">Fees:</label>
                                             <input
-                                                type="type"
+                                                type="text"
                                                 value={datas.fee}
-                                                onChange={handleChanges}
+                                                onChange={handleChangesWithValidation}
                                                 name="fee"
                                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
+                                            {errors.fee && <p className="text-red-500 text-sm">{errors.fee}</p>}
                                         </div>
                                         <div className="mb-4">
                                             <label className="block mb-1">Duration:</label>
                                             <input
                                                 type="number"
                                                 value={datas.duration}
-                                                onChange={handleChanges}
+                                                onChange={handleChangesWithValidation}
                                                 name="duration"
+                                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            />
+                                            {errors.duration && <p className="text-red-500 text-sm">{errors.duration}</p>}
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block mb-1">Image:</label>
+                                            <input
+                                                type="file"
+                                                onChange={handleImageChange}
                                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
                                         </div>
@@ -769,17 +932,10 @@ const Index = () => {
                                             </button>
                                             <button
                                                 type="submit"
-                                                style={{ marginRight: '10px' }}
                                                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                                 onClick={handleUpdateCourse}
                                             >
-                                                Save
-                                            </button>
-                                            <button
-                                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                onClick={() => handleDeleteCourse(datas._id)}
-                                            >
-                                                Delete
+                                                Update
                                             </button>
                                         </div>
                                     </form>
