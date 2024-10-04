@@ -29,6 +29,7 @@ import IconMenuTables from '../Icon/Menu/IconMenuTables';
 import IconMenuDatatables from '../Icon/Menu/IconMenuDatatables';
 import IconMenuForms from '../Icon/Menu/IconMenuForms';
 import IconMenuUsers from '../Icon/Menu/IconMenuUsers';
+import { IoCalendarOutline } from "react-icons/io5";
 import IconMenuPages from '../Icon/Menu/IconMenuPages';
 import IconMenuAuthentication from '../Icon/Menu/IconMenuAuthentication';
 import IconMenuDocumentation from '../Icon/Menu/IconMenuDocumentation';
@@ -215,7 +216,7 @@ const Sidebar = () => {
                                     <li className="nav-item">
                                         <NavLink to="/apps/attendance" className="group">
                                             <div className="flex items-center">
-                                                <IconMenuUsers className="group-hover:!text-primary shrink-0" />
+                                                <IoCalendarOutline className="group-hover:!text-primary shrink-0" />
                                                 <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Attendence')}</span>
                                             </div>
                                         </NavLink>

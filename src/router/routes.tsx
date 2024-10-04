@@ -20,6 +20,7 @@ const Mailbox = lazy(() => import('../pages/Apps/Mailbox'));
 const Notes = lazy(() => import('../pages/Apps/Notes'));
 const Contacts = lazy(() => import('../pages/Apps/Contacts'));
 const Payfee = lazy(() => import('../pages/Apps/Payfee'));
+const CreateStaff = lazy(() => import('../pages/Apps/CreateStaff'));
 const Students = lazy(() => import('../pages/Apps/Students'));
 const Chat = lazy(() => import('../pages/Apps/Chat'));
 const Scrumboard = lazy(() => import('../pages/Apps/Scrumboard'));
@@ -185,6 +186,10 @@ const routes = [
     {
         path: '/apps/invoice/payfee',
         element: <Payfee />,
+    },
+    {
+        path: '/apps/pages/createsaff',
+        element: <CreateStaff />,
     },
     // components page
     {

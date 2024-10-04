@@ -14,6 +14,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import trainingPanel from '../assets/css/Images/training-plan-1.png';
 import IconTrash from '../components/Icon/IconTrash';
+import defaultImage from '../assets/css/Images/user-front-side-with-white-background.jpg'
 const Index = () => {
     const token = localStorage.getItem('token');
 
@@ -350,7 +351,7 @@ const Index = () => {
 
         try {
             await courseUpdate(editId1, formData);
-            setIsPopupOpen1(false);
+            handleClosePopup1();
             loadCourse();
             Swal.fire({
                 title: 'Success!',
@@ -374,7 +375,7 @@ const Index = () => {
         const confirmation = window.confirm('Are you sure you want delete this staff?');
         if (confirmation) {
             try {
-                await deleteAdmin(editId);
+                await deleteAdmin(id);
                 Swal.fire({
                     title: 'Success!',
                     text: 'Delete successful',
@@ -475,7 +476,7 @@ const Index = () => {
 
     //signup
     const signUp = () => {
-        navigate('/auth/boxed-signup');
+        navigate('/apps/pages/createsaff');
     };
 
     //admin details
@@ -653,18 +654,26 @@ const Index = () => {
                                                 <tr className="text-white-dark hover:text-black dark:hover:text-white-light/90 group" key={data._id}>
                                                     <td className="min-w-[150px] text-black dark:text-white">
                                                         <div className="flex items-center">
-                                                            <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
+                                                            {data.image ? (
+ <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={`${BASE_URL}/images/${data.image}`} alt="avatar" />
+                                                            ):(
+                                                                <img className="w-8 h-8 rounded-md ltr:mr-3 rtl:ml-3 object-cover" src={defaultImage} alt="avatar" /> 
+                                                            )}
+                                                           
                                                             <span className="whitespace-nowrap">{data.name}</span>
                                                         </div>
                                                     </td>
                                                     <td className="text-primary">{data.phone}</td>
                                                     <td>
-                                                        <Link to="/apps/invoice/preview">{data.email}</Link>
+                                                        {data.email}
                                                     </td>
                                                     <td>{data.role}</td>
                                                     <td>
-                                                        <span className="badge bg-success shadow-md dark:group-hover:bg-transparent" onClick={() => handleEditClick(data._id)}>
+                                                        <span style={{cursor:'pointer'}} className="mr-3 badge bg-info shadow-md dark:group-hover:bg-transparent" onClick={() => handleEditClick(data._id)}>
                                                             Edit
+                                                        </span>
+                                                        <span style={{cursor:'pointer'}} className="badge bg-danger shadow-md dark:group-hover:bg-transparent" onClick={() => handleDelete(data._id)}>
+                                                            Delete
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -748,12 +757,12 @@ const Index = () => {
                                             >
                                                 Save
                                             </button>
-                                            <button
+                                            {/* <button
                                                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                                 onClick={() => handleDelete(values.id)}
                                             >
                                                 Delete
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </form>
                                 </div>
