@@ -120,6 +120,7 @@ const Monthly = lazy(() => import('../pages/Apps/monthlyattendence'));
 const Transaction = lazy(() => import('../pages/Apps/transaction'));
 const Expence = lazy(() => import('../pages/Apps/expence'));
 const Expencehistory = lazy(() => import('../pages/Apps/expencehistory'));
+const Exam = lazy(() => import('../pages/Apps/Exam'));
 const routes = [
     // dashboard
     {
@@ -454,6 +455,10 @@ const routes = [
         path: '/pages/error404',
         element: <ERROR404 />,
         layout: 'blank',
+    },
+    {
+        path: '/pages/exam',
+        element: <Exam />
     },
     {
         path: '/pages/error500',
