@@ -2,12 +2,18 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../Helper/handle-api';
 import { useParams } from 'react-router-dom';
-
+interface Student {
+    // Define the fields that correspond to the student object
+    id: string; // Replace with actual field
+    name: string; // Replace with actual field
+    // Add other fields as necessary
+}
 const TransactionTable = () => {
     const [transactions, setTransactions] = useState([]);
-    const [students, setStudents] = useState([]); // Initialize as an empty array
+    const [students, setStudents] = useState<Student[]>([]);
+    const token = localStorage.getItem('token')
     const { id } = useParams();
-
+console.log(students,'this it the students')
     useEffect(() => {
         fetchStudent();
         const fetchTransactions = async () => {
@@ -25,12 +31,27 @@ const TransactionTable = () => {
     // Fetch student details by ID
     const fetchStudent = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/students/${id}`);
-            setStudents([response.data] as any); // Ensure response is wrapped in an array
+            const token = localStorage.getItem('token'); // Retrieve token
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            };
+    
+            const response = await axios.get(`${BASE_URL}/students/${id}`, config);
+            console.log(response.data, 'this is the response data');
+    
+            // Check if response.data is a valid student object
+            if (response.data) {
+                setStudents([response.data]); // Wrap response in an array
+            }
         } catch (error) {
             console.error('Error fetching student details:', error);
         }
     };
+    
+    
 
     if (transactions.length === 0) {
         return <p>No transactions available.</p>;
@@ -51,7 +72,7 @@ const TransactionTable = () => {
                 <tbody>
                     {transactions.map((transaction: any) => (
                         <tr key={transaction._id}>
-                            <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{new Date(transaction.date).toLocaleDateString()}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{new Date(transaction.date).toLocaleDateString('en-GB')}</td>
                             <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{transaction.receiptNumber}</td>
                             <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{transaction.referenceNumber || 'N/A'}</td>
                             <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{transaction.payAmount}</td>
@@ -68,6 +89,10 @@ const TransactionTable = () => {
                             <td>{student.courseFee}</td>
                         </tr>
                     ))}
+
+
+                       
+                
                 </tbody>
             </table>
         </div>

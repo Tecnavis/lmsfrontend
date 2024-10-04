@@ -20,6 +20,7 @@ const PayFeeform = () => {
     const [modeOfPayment, setModeOfPayment] = useState<string[]>([]);
     const [students, setStudents] = useState<any[]>([]);
     const [adminName, setAdminName] = useState('');
+    const [payAmountError, setPayAmountError] = useState('');
     const [date, setDate] = useState('');
     const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
     const [selectedStudentId, setSelectedStudentId] = useState<string>(''); // Store the selected student's ID
@@ -144,10 +145,10 @@ const PayFeeform = () => {
     // Handle form submission
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-
+    
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
-
+    
         try {
             if (!selectedStudentId) {
                 Swal.fire({
@@ -168,9 +169,18 @@ const PayFeeform = () => {
                 });
                 return;
             }
+            
+            // Check if payAmount exceeds balance
+            if (values.payAmount > values.balance) {
+                setPayAmountError('Pay Amount cannot be more than the balance.');
+                return;
+            }
+    
+            setPayAmountError(''); // Clear error if everything is fine
+    
             // Calculate the new balance
             const newBalance = values.balance - values.payAmount;
-
+    
             // Post the transaction to the database
             await axios.post(`${BASE_URL}/transaction`, {
                 receiptNumber: values.receiptNumber,
@@ -183,20 +193,20 @@ const PayFeeform = () => {
                 students: selectedStudentId, // Use selected student's ID
                 adminName: adminName,
             });
-
+    
             Swal.fire({
                 title: 'Success!',
-                text: 'Payment successfull',
+                text: 'Payment successful',
                 icon: 'success',
                 confirmButtonText: 'OK',
             });
-
+    
             // Update the student's balance and courseFee in the database
             await axios.patch(`${BASE_URL}/students/${selectedStudentId}`, {
                 balance: newBalance,
                 courseFee: newBalance, // Ensure courseFee is updated to the new balance
             });
-
+    
             setValues({
                 name: '',
                 receiptNumber: '', // Reset to empty string or initial value
@@ -207,7 +217,7 @@ const PayFeeform = () => {
             });
             setModeOfPayment([]);
             generateReceiptNumber();
-
+            fetchStudents();
             // Navigate or reset form here if necessary
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -217,6 +227,7 @@ const PayFeeform = () => {
             }
         }
     };
+    
 
     return (
         <div>
@@ -312,6 +323,7 @@ const PayFeeform = () => {
                                         inputMode="numeric" // Suggests a numeric keyboard on mobile
                                         pattern="[0-9]*" // Ensures only digits are valid
                                     />
+                                     {payAmountError && <p className="text-red-500 mt-2">{payAmountError}</p>}
                                 </div>
                                 <div className="relative text-white-dark">
                                     <div className="inline-flex items-center">
