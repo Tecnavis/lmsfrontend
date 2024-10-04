@@ -10,8 +10,8 @@ type Student = {
     name: string;
     age: number;
     grade: string;
-  };
-  
+};
+
 const PayFeeform = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const PayFeeform = () => {
     }, []);
 
     // Handle input change
-    const handleChangeDate = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDate(e.target.value);
     };
 
@@ -71,8 +71,6 @@ const PayFeeform = () => {
             modeOfPayment: mode,
         }));
     };
-    
-    
 
     // Generate the next receipt number
     const generateReceiptNumber = async () => {
@@ -101,7 +99,7 @@ const PayFeeform = () => {
         let allStudents: Student[] = [];
         let page = 1;
         const limit = 10000; // Set to the backend limit if needed
-    
+
         try {
             let hasMore = true;
             while (hasMore) {
@@ -121,7 +119,7 @@ const PayFeeform = () => {
             console.error('Error fetching students:', error);
         }
     };
-  
+
     // Handle name input change and filter students
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -160,7 +158,8 @@ const PayFeeform = () => {
                 });
                 return;
             }
-            if (modeOfPayment.length === 0) { // Validate that modeOfPayment array is not empty
+            if (modeOfPayment.length === 0) {
+                // Validate that modeOfPayment array is not empty
                 Swal.fire({
                     title: 'Error!',
                     text: 'Please select at least one mode of payment',
@@ -171,7 +170,7 @@ const PayFeeform = () => {
             }
             // Calculate the new balance
             const newBalance = values.balance - values.payAmount;
-           
+
             // Post the transaction to the database
             await axios.post(`${BASE_URL}/transaction`, {
                 receiptNumber: values.receiptNumber,
@@ -206,7 +205,7 @@ const PayFeeform = () => {
                 payAmount: '',
                 modeOfPayment: '',
             });
-            setModeOfPayment([])
+            setModeOfPayment([]);
             generateReceiptNumber();
 
             // Navigate or reset form here if necessary
@@ -294,15 +293,26 @@ const PayFeeform = () => {
                                 <div className="relative text-white-dark">
                                     <input
                                         id="PayAmount"
-                                        type="number"
+                                        type="text" // Change to text to control input more easily
                                         placeholder="Pay Amount"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                         name="payAmount"
                                         value={values.payAmount}
                                         onChange={handleChange}
+                                        onKeyDown={(e) => {
+                                            // Allow: backspace, delete, tab, escape, enter and arrow keys
+                                            if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'Escape' || e.key === 'Enter' || (e.key >= '0' && e.key <= '9')) {
+                                                // Allow key press
+                                                return;
+                                            } else {
+                                                // Prevent key press
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        inputMode="numeric" // Suggests a numeric keyboard on mobile
+                                        pattern="[0-9]*" // Ensures only digits are valid
                                     />
                                 </div>
-
                                 <div className="relative text-white-dark">
                                     <div className="inline-flex items-center">
                                         <input
@@ -326,7 +336,7 @@ const PayFeeform = () => {
                                             value="Cash"
                                             className="form-checkbox outline-success rounded-full"
                                             checked={modeOfPayment.includes('Cash')}
-                                            onChange={() => handlePaymentModeChange('Cash'as any)}
+                                            onChange={() => handlePaymentModeChange('Cash' as any)}
                                         />
                                         <label htmlFor="Cash" className="ml-2">
                                             Cash
