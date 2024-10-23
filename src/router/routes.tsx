@@ -66,6 +66,7 @@ const FontIcons = lazy(() => import('../pages/FontIcons'));
 const DragAndDrop = lazy(() => import('../pages/DragAndDrop'));
 const Tables = lazy(() => import('../pages/Tables'));
 const Basic = lazy(() => import('../pages/DataTables/Basic'));
+const UpdateTransaction = lazy(() => import('../pages/Pages/UpdateTransaction'));
 const Advanced = lazy(() => import('../pages/DataTables/Advanced'));
 const Skin = lazy(() => import('../pages/DataTables/Skin'));
 const OrderSorting = lazy(() => import('../pages/DataTables/OrderSorting'));
@@ -505,6 +506,10 @@ const routes = [
         path: '/auth/cover-register',
         element: <RegisterCover />,
         layout: 'blank',
+    },
+    {
+        path: '/app/updatetransaction/:id',
+        element: <UpdateTransaction />
     },
     {
         path: '/auth/cover-lockscreen',

@@ -337,7 +337,7 @@ const Profile = () => {
                                                     <span className="block text-base text-[#515365] dark:text-white-light">₹{item.payAmount}</span>
                                                 </h6>
 
-                                                <p className="ltr:ml-auto rtl:mr-auto text-secondary">{item.balance + item.payAmount}</p>
+                                                {/* <p className="ltr:ml-auto rtl:mr-auto text-secondary">{item.balance + item.payAmount}</p> */}
                                             </div>
                                             
                                         </div>
