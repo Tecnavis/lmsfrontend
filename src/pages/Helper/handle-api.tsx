@@ -155,15 +155,21 @@ export const adminUpdate = async (id: string, admin: Admin): Promise<Admin | und
     }
 };
 //course update by ID
-export const courseUpdate = async (id: string, course: Course): Promise<Course | undefined> => {
+export const courseUpdate = async (id: string, course: FormData): Promise<Course | undefined> => {
     try {
-        const response = await axios.put<Course>(`${BASE_URL}/course/${id}`, course);
+        // Ensure you pass the FormData object correctly
+        const response = await axios.put<Course>(`${BASE_URL}/course/${id}`, course, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Specify the content type
+            },
+        });
         return response.data;
     } catch (err) {
         console.error('An error occurred in course updating', err);
         return undefined;
     }
 };
+
 //handle signin
 export const adminLogin = async (e: FormEvent<HTMLFormElement>, values: LoginValues) => {
     e.preventDefault();
@@ -247,19 +253,24 @@ export const deleteCourse = async (id: string): Promise<void> => {
 
 //create course
 
-export const createCourse = async (formData: Course): Promise<any> => {
+export const createCourse = async (formData: FormData): Promise<any> => {
     try {
+        console.log(formData, 'This is the form data while submission');
+        
         const response = await axios.post(`${BASE_URL}/course`, formData, {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
             },
         });
+
         return response.data;
     } catch (err) {
-        console.error(err, 'An error occurred while creating the course');
+        console.error('An error occurred while creating the course:', err);
         throw err;
     }
 };
+
+
 
 //Get attendance records for a specific student
 export const getAttendanceRecords = async (studentId: string): Promise<Attendance[] | undefined> => {

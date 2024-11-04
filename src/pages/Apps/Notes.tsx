@@ -37,6 +37,14 @@ const Notes = () => {
     // Close the modal
     const closeNoteModal = () => {
         setIsNoteModalOpen(false);
+        setNoteData({
+            _id: '',
+            title: '',
+            description: '',
+            priority: 'Low | Medium | High',
+            date: '',
+            name: '',
+        })
     };
     const [noteData, setNoteData] = useState({
         _id: '',
@@ -90,13 +98,26 @@ const Notes = () => {
         setIsEditNoteModalOpen(true); // Open the modal
     };
 
+    const handleEditClose = ()=> {
+        setIsEditNoteModalOpen(false)
+       setNoteData({
+        _id: '',
+        title: '',
+        description: '',
+        priority: 'Low | Medium | High',
+        date: '',
+        name: '',
+       })
+    }
+  
     // update
     const handleUpdateNote = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const response = await axios.put(`${BASE_URL}/notes/${noteData._id}`, noteData);
-            setIsEditNoteModalOpen(false);
+           
             fetchNotes();
+            handleEditClose()
         } catch (error) {
             console.error('Error updating note:', error);
         }
@@ -151,6 +172,13 @@ const Notes = () => {
     });
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+
+   const convertDateFormat = (dateString: string): string => {
+    const day = dateString.substring(0, 2);
+    const month = dateString.substring(2, 4);
+    const year = dateString.substring(4, 8);
+    return `${day}-${month}-${year}`; // Convert to YYYY-MM-DD format
+};
 
     return (
         <div>
@@ -312,14 +340,15 @@ const Notes = () => {
                                         Date
                                     </label>
                                     <input
-                                        id="date"
-                                        type="date"
-                                        name="date"
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-opacity-50"
-                                        value={noteData.date}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
+    id="date"
+    type="date"
+    name="date"
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-opacity-50"
+    value={noteData.date.slice(0, 10)} // Extract the date part
+    onChange={handleInputChange}
+    required
+/>
+
                                 </div>
                                 <div className="mb-5">
                                     <label htmlFor="description" className="block text-sm font-medium text-gray-700">
@@ -357,7 +386,7 @@ const Notes = () => {
                                     <button
                                         type="button"
                                         className="px-4 py-2 bg-gray-500 text-white rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring focus:ring-opacity-50"
-                                        onClick={() => setIsEditNoteModalOpen(false)}
+                                        onClick={handleEditClose}
                                     >
                                         Cancel
                                     </button>
@@ -383,11 +412,11 @@ const Notes = () => {
                             {Array.isArray(notesList) &&
                                 notesList.map((note: INote) => (
                                     <div
-                                        className={`panel pb-12 ${
+                                        className={`panel ${
                                             note.priority === 'Low'
                                                 ? 'bg-primary-light shadow-primary'
                                                 : note.priority === 'Medium'
-                                                ? 'bg-info-light shadow-info'
+                                                ? 'bg-warning-light shadow-warning'
                                                 : note.priority === 'High'
                                                 ? 'bg-danger-light shadow-danger'
                                                 : 'dark:shadow-dark'
@@ -398,7 +427,7 @@ const Notes = () => {
                                                 <div className="flex items-center w-max">
                                                     <div className="ltr:ml-2 rtl:mr-2">
                                                         <div className="font-semibold">{note.name}</div>
-                                                        <div className="text-sx text-white-dark">{note.date}</div>
+                                                        <div className="text-sx text-white-dark">{new Date(note.date).toLocaleDateString('en-GB')}</div>
                                                     </div>
                                                 </div>
                                                 <div className="dropdown">

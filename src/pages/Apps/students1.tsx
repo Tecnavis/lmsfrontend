@@ -191,7 +191,7 @@ const handleDownload = () => {
                                 />
                             </td>
                             <td>{student.name}</td>
-                            <td>{new Date(student.admissionDate).toLocaleDateString()}</td>
+                            <td>{new Date(student.admissionDate).toLocaleDateString('en-GB')}</td>
                             <td>{student.invoiceNumber}</td>
                             <td>{student.fullAddress}</td>
                             <td>{student.state}</td>
@@ -199,7 +199,7 @@ const handleDownload = () => {
                             <td>{student.bloodGroup}</td>
                             <td>{student.guardianName}</td>
                             <td>{student.guardianRelation}</td>
-                            <td>{new Date(student.dateOfBirth).toLocaleDateString()}</td>
+                            <td>{new Date(student.dateOfBirth).toLocaleDateString('en-GB')}</td>
                             <td>{student.age}</td>
                             <td>{student.gender}</td>
                             <td>{student.maritalStatus}</td>
@@ -208,7 +208,7 @@ const handleDownload = () => {
                             <td>{student.parentsMobileNumber}</td>
                             <td>{student.email}</td>
                             <td>{student.courseName}</td>
-                            <td>{new Date(student.joinDate).toLocaleDateString()}</td>
+                            <td>{new Date(student.joinDate).toLocaleDateString('en-GB')}</td>
                             <td>{student.courseFee}</td>
                             <td>{student.guardianId}</td>
                             <td>{student.studentId}</td>

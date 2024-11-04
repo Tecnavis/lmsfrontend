@@ -10,8 +10,8 @@ type Student = {
     name: string;
     age: number;
     grade: string;
-  };
-  
+};
+
 const PayFeeform = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const dispatch = useDispatch();
@@ -20,6 +20,7 @@ const PayFeeform = () => {
     const [modeOfPayment, setModeOfPayment] = useState<string[]>([]);
     const [students, setStudents] = useState<any[]>([]);
     const [adminName, setAdminName] = useState('');
+    const [payAmountError, setPayAmountError] = useState('');
     const [date, setDate] = useState('');
     const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
     const [selectedStudentId, setSelectedStudentId] = useState<string>(''); // Store the selected student's ID
@@ -39,7 +40,7 @@ const PayFeeform = () => {
     }, []);
 
     // Handle input change
-    const handleChangeDate = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDate(e.target.value);
     };
 
@@ -71,8 +72,6 @@ const PayFeeform = () => {
             modeOfPayment: mode,
         }));
     };
-    
-    
 
     // Generate the next receipt number
     const generateReceiptNumber = async () => {
@@ -101,7 +100,7 @@ const PayFeeform = () => {
         let allStudents: Student[] = [];
         let page = 1;
         const limit = 10000; // Set to the backend limit if needed
-    
+
         try {
             let hasMore = true;
             while (hasMore) {
@@ -121,7 +120,7 @@ const PayFeeform = () => {
             console.error('Error fetching students:', error);
         }
     };
-  
+
     // Handle name input change and filter students
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -146,10 +145,10 @@ const PayFeeform = () => {
     // Handle form submission
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-
+    
         const token = localStorage.getItem('token');
         axios.defaults.headers.common['Authorization'] = token;
-
+    
         try {
             if (!selectedStudentId) {
                 Swal.fire({
@@ -160,7 +159,8 @@ const PayFeeform = () => {
                 });
                 return;
             }
-            if (modeOfPayment.length === 0) { // Validate that modeOfPayment array is not empty
+            if (modeOfPayment.length === 0) {
+                // Validate that modeOfPayment array is not empty
                 Swal.fire({
                     title: 'Error!',
                     text: 'Please select at least one mode of payment',
@@ -169,9 +169,18 @@ const PayFeeform = () => {
                 });
                 return;
             }
+            
+            // Check if payAmount exceeds balance
+            if (values.payAmount > values.balance) {
+                setPayAmountError('Pay Amount cannot be more than the balance.');
+                return;
+            }
+    
+            setPayAmountError(''); // Clear error if everything is fine
+    
             // Calculate the new balance
             const newBalance = values.balance - values.payAmount;
-           
+    
             // Post the transaction to the database
             await axios.post(`${BASE_URL}/transaction`, {
                 receiptNumber: values.receiptNumber,
@@ -184,20 +193,20 @@ const PayFeeform = () => {
                 students: selectedStudentId, // Use selected student's ID
                 adminName: adminName,
             });
-
+    
             Swal.fire({
                 title: 'Success!',
-                text: 'Payment successfull',
+                text: 'Payment successful',
                 icon: 'success',
                 confirmButtonText: 'OK',
             });
-
+    
             // Update the student's balance and courseFee in the database
             await axios.patch(`${BASE_URL}/students/${selectedStudentId}`, {
                 balance: newBalance,
                 courseFee: newBalance, // Ensure courseFee is updated to the new balance
             });
-
+    
             setValues({
                 name: '',
                 receiptNumber: '', // Reset to empty string or initial value
@@ -206,9 +215,9 @@ const PayFeeform = () => {
                 payAmount: '',
                 modeOfPayment: '',
             });
-            setModeOfPayment([])
+            setModeOfPayment([]);
             generateReceiptNumber();
-
+            fetchStudents();
             // Navigate or reset form here if necessary
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -218,6 +227,8 @@ const PayFeeform = () => {
             }
         }
     };
+    
+    
 
     return (
         <div>
@@ -294,15 +305,27 @@ const PayFeeform = () => {
                                 <div className="relative text-white-dark">
                                     <input
                                         id="PayAmount"
-                                        type="number"
+                                        type="text" // Change to text to control input more easily
                                         placeholder="Pay Amount"
                                         className="form-input ps-10 placeholder:text-white-dark"
                                         name="payAmount"
                                         value={values.payAmount}
                                         onChange={handleChange}
+                                        onKeyDown={(e) => {
+                                            // Allow: backspace, delete, tab, escape, enter and arrow keys
+                                            if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'Escape' || e.key === 'Enter' || (e.key >= '0' && e.key <= '9')) {
+                                                // Allow key press
+                                                return;
+                                            } else {
+                                                // Prevent key press
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        inputMode="numeric" // Suggests a numeric keyboard on mobile
+                                        pattern="[0-9]*" // Ensures only digits are valid
                                     />
+                                     {payAmountError && <p className="text-red-500 mt-2">{payAmountError}</p>}
                                 </div>
-
                                 <div className="relative text-white-dark">
                                     <div className="inline-flex items-center">
                                         <input
@@ -326,7 +349,7 @@ const PayFeeform = () => {
                                             value="Cash"
                                             className="form-checkbox outline-success rounded-full"
                                             checked={modeOfPayment.includes('Cash')}
-                                            onChange={() => handlePaymentModeChange('Cash'as any)}
+                                            onChange={() => handlePaymentModeChange('Cash' as any)}
                                         />
                                         <label htmlFor="Cash" className="ml-2">
                                             Cash

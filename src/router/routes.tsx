@@ -20,6 +20,7 @@ const Mailbox = lazy(() => import('../pages/Apps/Mailbox'));
 const Notes = lazy(() => import('../pages/Apps/Notes'));
 const Contacts = lazy(() => import('../pages/Apps/Contacts'));
 const Payfee = lazy(() => import('../pages/Apps/Payfee'));
+const CreateStaff = lazy(() => import('../pages/Apps/CreateStaff'));
 const Students = lazy(() => import('../pages/Apps/Students'));
 const Chat = lazy(() => import('../pages/Apps/Chat'));
 const Scrumboard = lazy(() => import('../pages/Apps/Scrumboard'));
@@ -65,6 +66,7 @@ const FontIcons = lazy(() => import('../pages/FontIcons'));
 const DragAndDrop = lazy(() => import('../pages/DragAndDrop'));
 const Tables = lazy(() => import('../pages/Tables'));
 const Basic = lazy(() => import('../pages/DataTables/Basic'));
+const UpdateTransaction = lazy(() => import('../pages/Pages/UpdateTransaction'));
 const Advanced = lazy(() => import('../pages/DataTables/Advanced'));
 const Skin = lazy(() => import('../pages/DataTables/Skin'));
 const OrderSorting = lazy(() => import('../pages/DataTables/OrderSorting'));
@@ -119,6 +121,7 @@ const Monthly = lazy(() => import('../pages/Apps/monthlyattendence'));
 const Transaction = lazy(() => import('../pages/Apps/transaction'));
 const Expence = lazy(() => import('../pages/Apps/expence'));
 const Expencehistory = lazy(() => import('../pages/Apps/expencehistory'));
+const Exam = lazy(() => import('../pages/Apps/Exam'));
 const routes = [
     // dashboard
     {
@@ -185,6 +188,10 @@ const routes = [
     {
         path: '/apps/invoice/payfee',
         element: <Payfee />,
+    },
+    {
+        path: '/apps/pages/createsaff',
+        element: <CreateStaff />,
     },
     // components page
     {
@@ -451,6 +458,10 @@ const routes = [
         layout: 'blank',
     },
     {
+        path: '/pages/exam',
+        element: <Exam />
+    },
+    {
         path: '/pages/error500',
         element: <ERROR500 />,
         layout: 'blank',
@@ -495,6 +506,10 @@ const routes = [
         path: '/auth/cover-register',
         element: <RegisterCover />,
         layout: 'blank',
+    },
+    {
+        path: '/app/updatetransaction/:id',
+        element: <UpdateTransaction />
     },
     {
         path: '/auth/cover-lockscreen',

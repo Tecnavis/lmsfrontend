@@ -37,7 +37,6 @@ const Profile = () => {
     const [course, setCourse] = useState<{ name?: string } | null>(null);
     const [transactions, setTransactions] = useState([]);
     const [adminName, setAdminName] = useState('');
-
     useEffect(() => {
         const admins = localStorage.getItem('Admins');
         if (admins) {
@@ -137,8 +136,8 @@ const Profile = () => {
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
                 <li>
-                    <Link to="#" className="text-primary hover:underline">
-                        Users
+                    <Link to="/apps/sutdents" className="text-primary hover:underline">
+                        Students
                     </Link>
                 </li>
                 <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
@@ -338,11 +337,25 @@ const Profile = () => {
                                                     <span className="block text-base text-[#515365] dark:text-white-light">₹{item.payAmount}</span>
                                                 </h6>
 
-                                                <p className="ltr:ml-auto rtl:mr-auto text-secondary">{item.balance}</p>
+                                                {/* <p className="ltr:ml-auto rtl:mr-auto text-secondary">{item.balance + item.payAmount}</p> */}
                                             </div>
+                                            
                                         </div>
                                     ))}
+                                    
                             </div>
+                            {students.courseFee ? (
+                                <div style={{width:'100%', padding:'20px', display:'flex', alignItems:'center', justifyContent:'space-around',background:'blanchedalmond'}}>
+                                                    <h1 style={{fontSize:'large'}}>Balance</h1>
+                                                    <h4 style={{fontSize:'large'}}>₹ {students.courseFee} /-</h4>
+                                            </div>
+                            ):(
+                                <div style={{width:'100%', padding:'20px', display:'flex', alignItems:'center', justifyContent:'center', background:'blanchedalmond'}}>
+                                                   
+                                                    <h4>No balance amount available </h4>
+                                            </div>
+                            )}
+                            
                         </div>
                     </div>
                     {/* <div className="panel">
