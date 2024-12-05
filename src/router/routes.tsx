@@ -122,11 +122,16 @@ const Transaction = lazy(() => import('../pages/Apps/transaction'));
 const Expence = lazy(() => import('../pages/Apps/expence'));
 const Expencehistory = lazy(() => import('../pages/Apps/expencehistory'));
 const Exam = lazy(() => import('../pages/Apps/Exam'));
+const AllTransaction = lazy(() => import('../pages/Apps/Alltransaction'));
 const routes = [
     // dashboard
     {
         path: '/',
         element: <Index />,
+    },
+    {
+        path: '/alltransaction',
+        element: <AllTransaction />,
     },
     {
         path: '/finance',
@@ -459,7 +464,7 @@ const routes = [
     },
     {
         path: '/pages/exam',
-        element: <Exam />
+        element: <Exam />,
     },
     {
         path: '/pages/error500',
@@ -509,7 +514,7 @@ const routes = [
     },
     {
         path: '/app/updatetransaction/:id',
-        element: <UpdateTransaction />
+        element: <UpdateTransaction />,
     },
     {
         path: '/auth/cover-lockscreen',
