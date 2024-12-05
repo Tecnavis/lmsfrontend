@@ -104,7 +104,7 @@ const TransactionTable: React.FC = () => {
                 <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{new Date(transaction.date).toLocaleDateString('en-GB')}</td>
                 <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{transaction.receiptNumber}</td>
                 <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{transaction.payAmount}</td>
-                <td style={{ padding: '12px', borderBottom: '1px solid #ddd' ,color:"green",textAlign:"center",fontWeight:"bold"}}>{student.courseFee}</td>
+                <td style={{ padding: '12px', borderBottom: '1px solid #ddd' ,color:"green",textAlign:"center",fontWeight:"bold"}}>{student.courseFee === 0 ? 'Payment complete' : student.courseFee}</td>
                 <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>{transaction.modeOfPayment}</td>
                 <td style={{ padding: '12px', borderBottom: '1px solid #ddd' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
