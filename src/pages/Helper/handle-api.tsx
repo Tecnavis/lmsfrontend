@@ -42,7 +42,15 @@ interface Attendance {
   __v: number;
 }
 
-
+export const fetchAllstudents = async () => {
+  try {
+      const response = await axios.get(`${BASE_URL}/students`);
+      return response.data;
+  } catch (err) {
+      console.error('Student details listing failed', err);
+      return [];
+  }
+}
 export const fetchAdmin = async (): Promise<Admin[] | undefined> => {
   const token = localStorage.getItem("token")
   axios.defaults.headers.common["Authorization"] = token
